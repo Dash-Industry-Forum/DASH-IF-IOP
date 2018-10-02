@@ -12,6 +12,6 @@ Join **#iop** on Slack for live chat: [![Slack Status](https://dashif-slack.azur
 
 Most recent output from the **master** branch:
 
-* [HTML document](https://documentauthoringtest.azurewebsites.net/DASH-IF-IOP/master/MyDocument.html)
-* [PDF document](https://documentauthoringtest.azurewebsites.net/DASH-IF-IOP/master/MyDocument.pdf)
-* [Download PDF + HTML as archive](https://documentauthoringtest.azurewebsites.net/DASH-IF-IOP/master/MyDocument.zip)
+* [HTML document](https://documentauthoringtest.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.html)
+* [PDF document](https://documentauthoringtest.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.pdf)
+* [Download PDF + HTML as archive](https://documentauthoringtest.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.zip)
