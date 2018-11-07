@@ -42,7 +42,7 @@ This section is informative.
 
 There exist scenarios where you would wish to split a period in two. Common reasons would be:
 
-* you wish to insert an ad period in the middle of an existing period.
+* to insert an ad period in the middle of an existing period.
 * parameters of one adaptation set change (e.g. KID or display aspect ratio), requiring a new period to update signaling.
 * some adaptation sets become available or unavailable (e.g. different languages).
 
@@ -52,7 +52,7 @@ Our starting point is a presentation with a single period that contains an audio
 
 <figure>
 	<img src="Images/Timing/SplitInTwoPeriods - Before.png" />
-	<figcaption>Presentation with one period, before splitting. Blue is a segment, yellow is a sample. Duration in arbitrary units is listed on segments and samples. `presentationTimeOffset` may have any value - it is listed because will be referenced later.</figcaption>
+	<figcaption>Presentation with one period, before splitting. Blue is a segment, yellow is a sample. Duration in arbitrary units is listed on samples. Segment durations are taken to be the sum of sample durations. `presentationTimeOffset` may have any value - it is listed because will be referenced later.</figcaption>
 </figure>
 
 Note: Splitting a period does not depend on any particular alignment between representations at the splitting point. Periods may be split anywhere. Furthermore, period splitting does not require manipulation of the segments themselves, only manipulation of the MPD.
