@@ -64,7 +64,7 @@ The mechanism that enables period splitting in the middle of a segment is the fo
 * a segment that overlaps a period boundary exists in both periods.
 * representations that are split are signaled in the MPD as period continuous.
 * clients are expected to deduplicate boundary-overlapping segments for representations on which period continuity is signaled.
-* clients are expected to present only the samples that are within the current period boundary (may be limited by client platform capabilities).
+* clients are expected to present only the samples that are within the bounds of the current period (may be limited by client platform capabilities).
 
 After splitting the example presentation, we arrive at the following structure.
 
