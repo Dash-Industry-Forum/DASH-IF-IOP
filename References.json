@@ -1,0 +1,48 @@
+{
+    "MPEGAAC": {
+        "aliasOf": "iso14496-3"
+    },
+    "SCTE128-1": {
+        "href": "https://www.scte.org/SCTEDocs/Standards/ANSI_SCTE%20128-1%202018.pdf",
+        "title": "ANSI/SCTE 128-1: AVC Video Constraints for Cable TelevisionPart 1 - Coding"
+    },
+    "SMPTE2052-10": {
+        "href": "https://www.smpte.org/sites/default/files/RP2052-10-2013.pdf",
+        "title": "SMPTE 2025-10: Conversion from CEA-608 Data to SMPTE-TT"
+    },
+    "ETSI102114": {
+        "href": "https://www.etsi.org/deliver/etsi_ts/102100_102199/102114/01.04.01_60/ts_102114v010401p.pdf",
+        "title": "ETSI TS 102 114: DTS Coherent Acoustics; Core and Extensions with Additional Profiles",
+        "publisher": "ETSI"
+    },
+    "ETSI102366": {
+        "href": "https://www.etsi.org/deliver/etsi_ts/102300_102399/102366/01.04.01_60/ts_102366v010401p.pdf",
+        "title": "ETSI TS 102 366: Digital Audio Compression (AC-3, Enhanced AC-3) Standard",
+        "publisher": "ETSI"
+    },
+    "ETSI103433-1": {
+        "href": "https://www.etsi.org/deliver/etsi_ts/103400_103499/10343301/01.02.01_60/ts_10343301v010201p.pdf",
+        "title": "ETSI TS 103 433-1: High-Performance Single Layer High Dynamic Range (HDR) System for use in Consumer Electronics devices; Part 1: Directly Standard Dynamic Range (SDR)  Compatible HDR System (SL-HDR1)",
+        "publisher": "ETSI"
+    },
+    "Dolby-TrueHD": {
+        "title": "MLP (Dolby TrueHD) streams within the ISO Base Media File Format, version 1.0, September 2009",
+        "publisher": "Dolby"
+    },
+    "DolbyVision-ISOBMFF": {
+        "href": "https://www.dolby.com/us/en/technologies/dolby-vision/dolby-vision-bitstreams-within-the-iso-base-media-file-format.pdf",
+        "title": "Dolby Vision streams within the ISO base media file format",
+        "publisher": "Dolby"
+    },
+    "DTS9302J81100": {
+        "title": "Implementation of DTS Audio in Media Files Based on ISO/IEC 14496",
+        "publisher": "DTS"
+    },
+    "DTS9302K62400": {
+        "title": "Implementation of DTS Audio in Dynamic Adaptive Streaming over HTTP (DASH)",
+        "publisher": "DTS"
+    },
+    "3GPP26.116": {
+        "title": "3GPP TS 26.116 (03/2016): Television (TV) over 3GPP services; Video Profiles."
+    }
+}

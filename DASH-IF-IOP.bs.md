@@ -1,17 +1,43 @@
-# Document editing notes # {#introduction-editing}
+#include "01-Intro.inc.md"
 
-Documentation: https://dashif.org/DocumentAuthoring/
+#include "20-CoreFeatures.inc.md"
 
-Example document repository: https://dashif.org/DocumentAuthoring/
+#include "30-BasicConstraints.inc.md"
 
-Live discussion in #document-authoring on Slack.
+#include "40-Timing.inc.md"
 
-# Chapter 1 # {#chapter1-the-real-intro}
+#include "45-Addressing.inc.md"
 
-Placeholder text. This document will eventually contain IOP v5.
+#include "50-ContentSelection.inc.md"
 
+#include "60-OptionalFeatures.inc.md"
 
+#include "70-Services.inc.md"
 
+#include "65-AdInsertion.inc.md"
+
+#include "80-Codecs.inc.md"
+
+#include "90-Security.inc.md"
+
+#include "99-Annexes.inc.md"
+
+# Externally defined terms # {#external-terms}
+
+: <dfn>adaptation set</dfn>
+:: See [[!MPEGDASH]]
+: <dfn>asset identifier</dfn>
+:: See [[!MPEGDASH]]
+: <dfn>CMAF track file</dfn>
+:: See [[!MPEGCMAF]]
+: <dfn>essential property descriptor</dfn>
+:: See [[!MPEGDASH]]
+: <dfn>index segment</dfn>
+:: See [[!MPEGDASH]]
+: <dfn>initialization segment</dfn>
+:: See [[!MPEGDASH]]
+: <dfn>supplemental property descriptor</dfn>
+:: See [[!MPEGDASH]]
 
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
@@ -35,10 +61,9 @@ Boilerplate: copyright off, abstract off
 Abstract: None
 </pre>
 
-<!-- Example of custom bibliography entries. Prefer adding your document to SpecRef over maintaining a custom definition. -->
+<!-- Custom bibliography entries go in References.json. Prefer adding your document to SpecRef over maintaining a custom definition. -->
 <pre class="biblio">
-{
-}
+#include "References.json"
 </pre>
 
 <pre boilerplate="logo">

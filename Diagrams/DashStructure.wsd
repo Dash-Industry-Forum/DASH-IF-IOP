@@ -1,0 +1,16 @@
+@startuml
+
+[MPD]
+
+[MPD] <-left- [MPEGDASH] : Defines
+
+[MPD] --> [CMAF header] : Initialization segment
+[MPD] --> [CMAF segment] : Media segment
+[MPD] --> [ISOBMFF sidx] : Index segment
+
+[MPEGCMAF] -up-> [CMAF header] : Defines
+[MPEGCMAF] -up-> [CMAF segment] : Defines
+[ISOBMFF] -up-> [ISOBMFF sidx] : Defines
+[MPEGCMAF] -> [ISOBMFF] : Based on
+
+@enduml
