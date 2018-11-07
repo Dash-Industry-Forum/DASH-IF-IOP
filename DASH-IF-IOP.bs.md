@@ -15,6 +15,7 @@ Placeholder text. This document will eventually contain IOP v5.
 Constraints from proposals in [#166](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/166) and [#178](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/178) applied, concisely reworded in minimal form:
 
 * There SHALL be an addressable segment for every instant of every representation in every period.
+* Representations SHALL last from period start to period end. `@presentationDuration` SHALL NOT be used.
 * The sample to be presented at the period start point (indicated by Representation@presentationTimeOffset) SHALL be contained in the first segment in the period if using the ISO BMFF Live profile (even if the first segment is no longer be available or no longer referenced by the MPD). The sample MAY be in any segment/subsegment if using the ISO BMFF On-demand profile.
 * Clients SHOULD NOT present any samples before the period start point and SHALL NOT present any samples from segments entirely composed of samples before the period start point.
 * Periods SHOULD NOT reference segments that fall entirely outside the bounds of the period. Such segments MAY be referenced when a period is only a partial view over existing content that has a larger scope (e.g. `SegmentBase` addressing is used with a segment index defining segments from which only a subset are the segments within the bounds of to the period).
