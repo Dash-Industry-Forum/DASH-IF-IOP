@@ -117,7 +117,7 @@ A <dfn>media segment</dfn> is an HTTP-addressable data structure that contains o
 
 Note: Parts of [[MPEGDASH]] use the term "subsegment" instead of "segment". The distinction is largely irrelevant in practice.
 
-[=Media segments=] SHALL contain one or more continuous media samples.
+[=Media segments=] SHALL contain one or more consecutive media samples.
 
 [=Media segments=] SHALL contain the media samples that exactly match the time span on the [=sample timeline=] that is mapped to the segment's associated time span on the [=MPD timeline=], except when the [[#timing-addressingmodes|addressing mode]] in use allows for inaccuracy in [=media segment=] contents.
 
