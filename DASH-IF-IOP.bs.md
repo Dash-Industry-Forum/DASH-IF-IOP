@@ -109,7 +109,7 @@ The point on the sample timeline indicated by `@presentationTimeOffset` (in time
 
 If a `SegmentTemplate` [[#timing-addressingmodes|addressing mode]] is used, `@presentationTimeOffset` SHALL be a point within or at the start of the first [=media segment=] referenced by the [=period=] (even if the first [=media segment=] is no longer available or no longer referenced by the [=MPD=], as may be the case with a dynamic MPD).
 
-If a `SegmentBase` [[#timing-addressingmodes|addressing mode]] is used, `@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the MPD.
+If a `SegmentBase` [[#timing-addressingmodes|addressing mode]] is used, `@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
 
 ## Media segments ## {#timing-mediasegment}
 
