@@ -60,7 +60,7 @@ In a static MPD, the first period SHALL start at the zero point of the [=MPD tim
 
 In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period MAY lack a `Period@duration`, in which case it SHALL be considered to have an unlimited duration.
 
-In a static MPD, `MPD@mediaPresentationDuration` SHALL be present and SHALL accurately reflect the total duration of the presentation (sum of all periods). In a dynamic MPD, `MPD@mediaPresentationDuration` SHALL NOT be present.
+In a static MPD, `MPD@mediaPresentationDuration` SHALL be present. In a dynamic MPD, `MPD@mediaPresentationDuration` MAY be present. When present, `MPD@mediaPresentationDuration` SHALL accurately indicate the duration between the zero point on the [=MPD timeline=] and the end of the last period.
 
 ## Representations ## {#timing-representation}
 
