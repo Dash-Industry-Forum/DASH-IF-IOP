@@ -107,7 +107,7 @@ The sample timeline is measured in unnamed timescale units. The term timescale r
 
 The point on the sample timeline indicated by `@presentationTimeOffset` (in timescale units, default zero) SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
 
-If a `SegmentTemplate` [[#timing-addressingmodes|addressing mode]] is used, `@presentationTimeOffset` SHALL be a point within or at the start of the first [=media segment=] referenced by the [=period=] (even if the first [=media segment=] is no longer available or no longer referenced by the [=MPD=], as may be the case with a dynamic MPD).
+If a `SegmentTemplate` [[#timing-addressingmodes|addressing mode]] is used, `@presentationTimeOffset` SHALL be a point within or at the start of the first [=media segment=] that is currently or was previously referenced by the [=period=] (the first [=media segment=] might no longer be referenced by a dynamic [=MPD=] if it has fallen out of the time shift window).
 
 If a `SegmentBase` [[#timing-addressingmodes|addressing mode]] is used, `@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
 
