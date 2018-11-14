@@ -231,6 +231,7 @@ The mechanism that enables [=period=] splitting in the middle of a segment is th
 
 * a segment that overlaps a period boundary exists in both periods.
 * representations that are split are signaled in the MPD as period continuous.
+* a representation that is period-continuous with a representation in a previous period is marked with the period continuity descriptor.
 * clients are expected to deduplicate boundary-overlapping segments for representations on which period continuity is signaled.
 * clients are expected to present only the samples that are within the bounds of the current period (may be limited by client platform capabilities).
 
@@ -240,8 +241,6 @@ After splitting the example presentation, we arrive at the following structure.
 	<img src="Images/Timing/SplitInTwoPeriods - After.png" />
 	<figcaption>Presentation with two periods, after splitting. Audio segment 3 and video segment 3 are shared by both periods, with the continuity signaling indicating that continuous playback with de-duplicating behavior is expected from clients.</figcaption>
 </figure>
-
-Issue: Which way does the continuity reference go? [#209](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/209)
 
 Depending on the segment addressing mode used, the two resulting periods may reference more segments than necessary. For example, if `SegmentBase` addressing is used, both periods will reference all segments as both periods will use the same unmodified index segment. Clients are expected to ignore [=media segments=] that fall outside the [=period=] bounds.
 
