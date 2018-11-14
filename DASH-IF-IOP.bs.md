@@ -35,7 +35,7 @@ The chapters below explore these relationships in detail.
 
 ## Periods ## {#timing-period}
 
-An MPD SHALL define an ordered list of one or more <dfn id="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
+An MPD SHALL define an ordered list of one or more <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
 
 All periods SHALL be consecutive and non-overlapping.
 
@@ -67,6 +67,8 @@ When present, `MPD@mediaPresentationDuration` SHALL accurately indicate the dura
 ## Representations ## {#timing-representation}
 
 A <dfn>representation</dfn> is a sequence of references to [=media segments=] containing media samples. Each representation belongs to exactly one adaptation set and to exactly one [=period=], although [[#timing-continuity|a representation may be logically continuous with a representation in another period]].
+
+A reference to a [=media segment=] determines which [=media segment=] corresponds to which time span on the [=MPD timeline=] and the [=sample timeline=].
 
 In a static MPD, a representation SHALL reference media segments so that the [=MPD timeline=] is covered with segments at least from the beginning of the period to the end of the period.
 
@@ -147,7 +149,25 @@ If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 se
 
 ## Segment addressing modes ## {#timing-addressingmodes}
 
-Issue: Determine appropriate content for this section.
+[=indexed addressing=]
+[=explicit addressing=]
+[=simple addressing=]
+
+### Indexed addressing ### {#timing-addressing-indexed}
+
+<dfn>indexed addressing</dfn> means `SegmentBase` with index segment.
+
+### Explicit addressing ### {#timing-addressing-explicit}
+
+Placeholder chapter.
+
+<dfn>explicit addressing</dfn> means `SegmentTemplate` with `SegmentTimeline`.
+
+### Simple addressing ### {#timing-addressing-simple}
+
+Placeholder chapter.
+
+<dfn>simple addressing</dfn> means `SegmentTemplate` without `SegmentTimeline`.
 
 ## Segment alignment ## {#timing-segmentalignment}
 
