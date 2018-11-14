@@ -37,16 +37,14 @@ The chapters below explore these relationships in detail.
 
 An MPD SHALL define an ordered list of one or more <dfn id="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
 
-All periods SHALL be consecutive and non-overlapping. In determining the duration of a period, the `Period@start` of the next period, if the attribute is present, SHALL be used to determine the duration of the preceding period, ignoring any conflicting `Period@duration`.
-
-Note: By allowing `Period@start` to override `Period@duration` we enable a simplification often used in live content processing workflows, where a new period "cuts short" an existing period without having to update the MPD elements describing the existing period.
+All periods SHALL be consecutive and non-overlapping.
 
 <div class="example">
-The below MPD example consists of two 20-second periods despite the first period having a `Period@duration` value of 30 seconds.
+The below MPD example consists of two 20-second periods. The duration of the first period is calculated using the start point of the second period.
 
 <xmp highlight="xml">
 <MPD type="static" mediaPresentationDuration="PT40S">
-	<Period duration="PT30S">
+	<Period>
 		...
 	</Period>
 	<Period start="PT20S" duration="PT20S">
