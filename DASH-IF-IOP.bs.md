@@ -64,14 +64,14 @@ In a static MPD, `MPD@mediaPresentationDuration` SHALL be present. In a dynamic 
 
 A <dfn>representation</dfn> is a sequence of references to [=media segments=] containing media samples. Each representation belongs to exactly one adaptation set and to exactly one [=period=], although [[#timing-continuity|a representation may be logically continuous with a representation in another period]].
 
-In a static MPD, the representation SHALL reference media segments so that the [=MPD timeline=] is covered with segments at least from the beginning of the period to the end of the period.
+In a static MPD, a representation SHALL reference media segments so that the [=MPD timeline=] is covered with segments at least from the beginning of the period to the end of the period.
 
 <figure>
 	<img src="Images/Timing/MandatorySegmentReferencesInDynamicMpd.png" />
 	<figcaption>In a dynamic MPD, the time shift window determines the set of required [=media segment=] references. Segments filled with gray need not be referenced by representations due to falling outside the time shift window, despite falling within the bounds of a period.</figcaption>
 </figure>
 
-In a dynamic MPD, the representation SHALL reference [=media segments=] for the part of the [=period=] which falls within the time shift window and SHOULD NOT reference [=media segments=] that lie entirely outside the time shift window.
+In a dynamic MPD, a representation SHALL reference [=media segments=] for the part of the [=period=] which falls within the time shift window and SHOULD NOT reference [=media segments=] that lie entirely outside the time shift window.
 
 Note: In other words, outdated references should be cleaned up once they are entirely outside the time shift window and future [=media segments=] that are not yet in the time shift window need not be referenced.
 
