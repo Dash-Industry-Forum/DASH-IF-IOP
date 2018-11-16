@@ -116,7 +116,9 @@ Note: It may be impractical to present [=media segments=] only partially, depend
 	<figcaption>Sample timelines are mapped onto the [=MPD timeline=] based on parameters defined in the [=MPD=].</figcaption>
 </figure>
 
-The samples within a [=representation=] exist on a <dfn>sample timeline</dfn> defined by the encoder that created the samples. One or more sample timelines are mapped onto the [=MPD timeline=] by metadata stored in or referenced by the [=MPD=].
+The samples within a [=representation=] exist on a linear <dfn>sample timeline</dfn> defined by the encoder that created the samples. One or more sample timelines are mapped onto the [=MPD timeline=] by metadata stored in or referenced by the [=MPD=].
+
+Note: The sample timeline is linear - encoders are expected to use an appropriate timescale and sufficiently large timestamp fields to avoid any wrap-around. If wrap-around does occur, a new [=period=] must be started in order to establish a new sample timeline.
 
 The sample timeline SHALL be shared by all [=representations=] in the same [=adaptation set=]. [=Representations=] in different [=adaptation sets=] MAY use different sample timelines.
 
@@ -153,11 +155,15 @@ Note: The requirements on providing samples for the [=period=] start/end point i
 
 ## Segment addressing modes ## {#timing-addressing}
 
-This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] in interopreable services.
+Issue: Need to go over segment-related terminology and ideally move to CMAF terms (https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/217). Right now this is a bit too "media segment" oriented.
 
-[=indexed addressing=]
-[=explicit addressing=]
-[=simple addressing=]
+This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] in interopreable DASH presentations.
+
+The choice of addressing mode depends on the implementation details of a particular content processing flow. Use whichever addressing mode is suitable for your needs when authoring content.
+
+Addressing modes not listed in this chapter SHALL NOT be used.
+
+All [=representations=] in the same [=adaptation set=] SHALL use the same addressing mode. [=Representations=] in different [=adaptation sets=] MAY use different addressing modes.
 
 ### Indexed addressing ### {#timing-addressing-indexed}
 
@@ -396,15 +402,41 @@ This chapter contains a set of terms that will exist in the IOP document but tha
 
 ## Editorial notes ## {#editorial-notes}
 
-Notes on merging IOP v4.3 into this chapter:
+Notes on merging IOP v4.3 content into this chapter:
 
+* 1 - not relevant
+* 2 - not relevant
+* 3.1 - not relevant
+* 3.2.1 - potentially merged, needs a 2nd pass later to be sure
+* 3.2.2 - not relevant (some overlap with relevant chapters, nothing unique)
+* 3.2.3 - merged
+* 3.2.4 - not relevant
+* 3.2.5 - not relevant
+* 3.2.6 - not relevant
+* 3.2.7 - partially merged/superseded
+	* This PR currently misses the "availability" aspect of timing, describing only the "when to play what" aspect.
+* 3.2.7.2 - TODO ("availability" aspect)
+* 3.2.7.3 - TODO ("availability" aspect)
+* 3.2.7.4 - not relevant (?), make a 2nd pass later to verify where to put this - sounds like a "MPD format" thing rather than "timing" but maybe timing chapter is nearest fit
+* 3.2.8 - not relevant
+* 3.2.9 - not relevant
+* 3.2.10 - not relevant
+* 3.2.11 - not relevant
+	* this seems more "file format" level text; while timing-related, it seems very specific to BMFF internals to have a place in the timing chapter (where the general situation seems already sufficiently well described); review this after we have restructured the rest of the document, see where the best home for this information (or whatever part of this information we keep) is
 * 3.2.12 Content Offering With Periods - merged
 	* There is some implied period-continuity logic. This is excessive combinatorics to expect the player to do. Just signal it on the service with the descriptor. Omitted.
 	* AssetIdentifier has some implied connectivity logic that seems needless. Omitted. See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/215
+* 3.2.13 - not relevant
+* 3.2.14 - not relevant
+* 3.2.15 - TODO (addressing and base URLs)
 
-Needs review for possible merge:
+Needs review:
+* 4.8 Robust Operation - needs review
 
-* 4.8 Robust Operation
+General comments:
+
+* Chapter 3 in v4.3 is largely a random pile of constraints. Some that were timing-relevant are merged here. Others were not. Needs thorough review to ensure that nothing got unexpectedly missed or duplicated.
+* Some terms "defined" in the timing chapter should probably be defined elsewhere once we have more content migrated.
 
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
