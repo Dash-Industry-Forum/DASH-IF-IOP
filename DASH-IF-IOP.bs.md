@@ -14,7 +14,7 @@ Placeholder text. This document will eventually contain IOP v5.
 
 This chapter describes an interoperable view of DASH presentation timing and segment addressing. The presentation manifest or <dfn>MPD</dfn> defines the <dfn>MPD timeline</dfn> which serves as the baseline for all scheduling decisions made during DASH presentation playback.
 
-The playback of a static MPD SHALL NOT depend on the mapping of the MPD timeline to real time. A client MAY play any part of the presentation at any time as long as the presentation exists.
+The playback of a static MPD SHALL NOT depend on the mapping of the MPD timeline to real time. A client MAY play any part of the presentation at any time.
 
 The MPD timeline of a dynamic MPD SHALL have a fixed mapping to real time, with each point on the timeline corresponding to a point in real time. Clients MAY introduce an additional offset with respect to real time [[#timing-timeshift|to the extent allowed by the time shift signaling in the MPD]].
 
@@ -296,7 +296,7 @@ It may be that for various content processing workflow reasons, some tracks have
 	<figcaption>Content with different track lengths, before packaging as DASH.</figcaption>
 </figure>
 
-You now have some choices to make in how you package these tracks into a DASH presentation that conforms to this document. Specifically, there exists the requirement that every **[=representation=] must cover the entire [=period=] with media samples**.
+You now have some choices to make in how you package these tracks into a DASH presentation that conforms to this document. Specifically, there exists the requirement that every [=representation=] must cover the entire [=period=] with media samples.
 
 <figure>
 	<img src="Images/Timing/NonequalLengthTracks - CutEverything.png" />
@@ -310,14 +310,14 @@ The simplest option is to define a single [=period=] that contains [=representat
 	<figcaption>Content may be padded (indicated in green) to equalize track lengths.</figcaption>
 </figure>
 
-If you wish to preserve data, the most compatible option is to add padding samples (e.g. silence or black frames) to all tracks to ensure that all [=representations=] have enough data to cover the entire [=period=] with samples. This may require customization of the encoding process, as the padding much match the codec configuration of the real content and might be impractical to add after the fact.
+If you wish to preserve track contents in their entirety, the most interoperable option is to add padding samples (e.g. silence or black frames) to all tracks to ensure that all [=representations=] have enough data to cover the entire [=period=] with samples. This may require customization of the encoding process, as the padding must match the codec configuration of the real content and might be impractical to add after the real content has already been encoded.
 
 <figure>
 	<img src="Images/Timing/NonequalLengthTracks - MakePeriods.png" />
 	<figcaption>New periods may be started at any change in the set of available tracks.</figcaption>
 </figure>
 
-Another option that preserves data is to split the content into multiple [=periods=] that each contain a different set of [=representations=], starting a new [=period=] whenever a track starts or ends. This enables you to ensure that the time span of the representations matches the time span of the period. The downside of this approach is that some clients may be unable to seamlessly play across every period transition.
+Another option that preserves track contents is to [[#timing-examples-splitperiod|split the content]] into multiple [=periods=] that each contain a different set of [=representations=], starting a new [=period=] whenever a track starts or ends. This enables you to ensure every [=representations=] covers its [=period=] with samples. The upside of this approach is that it can be done easily, requiring only manipulation of the [=MPD=]. The downside is that some clients may be unable to seamlessly play across every [=period=] transition.
 
 <figure>
 	<img src="Images/Timing/NonequalLengthTracks - Mix.png" />
@@ -330,7 +330,7 @@ Some clients are known to fail when transitioning from a period with audio and v
 
 ### Split a period ### {#timing-examples-splitperiod}
 
-There exist scenarios where you would wish to split a period in two. Common reasons would be:
+There exist scenarios where you would wish to split a [=period=] in two. Common reasons would be:
 
 * to insert an ad [=period=] in the middle of an existing [=period=].
 * parameters of one [=adaptation set=] change (e.g. KID or display aspect ratio), requiring a new [=period=] to update signaling.
