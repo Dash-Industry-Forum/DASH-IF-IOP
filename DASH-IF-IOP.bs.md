@@ -215,7 +215,7 @@ Equivalent aligned [=media segments=] in different [=representations=] SHALL con
 
 ## Period connectivity ## {#timing-connectivity}
 
-In certain circumstances content may be offered such that a [=period=] contains a continuation of the content in a previous [=period=]. Such content SHOULD be signaled in the [=MPD=] as period-connected, to help clients ensure seamless playback across [=period=] transitions. Any subset of the [=representations=] in a [=period=] MAY be <dfn>period-connected</dfn> with their counterparts in the next or previous [=period=]. Period connectivity MAY be chained across any number of [=periods=].
+In certain circumstances content may be offered such that a [=period=] contains a continuation of the content in a previous [=period=]. Such content SHOULD be signaled in the [=MPD=] as period-connected, to help clients ensure seamless playback across [=period=] transitions. Any subset of the [=representations=] in a [=period=] MAY be <dfn>period-connected</dfn> with their counterparts in a future or past [=period=]. Period connectivity MAY be chained across any number of [=periods=].
 
 An [=MPD=] MAY contain unrelated [=periods=] between [=periods=] that contain period-connected [=representations=].
 
