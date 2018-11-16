@@ -104,24 +104,29 @@ Note: It may be impractical to present [=media segments=] only partially, depend
 
 ## Sample timeline ## {#timing-sampletimeline}
 
+<figure>
+	<img src="Images/Timing/TimelineAlignment.png" />
+	<figcaption>Sample timelines are mapped onto the [=MPD timeline=] based on parameters defined in the [=MPD=].</figcaption>
+</figure>
+
 The samples within a [=representation=] exist on a <dfn>sample timeline</dfn> defined by the encoder that created the samples. One or more sample timelines are mapped onto the [=MPD timeline=] by metadata stored in or referenced by the [=MPD=].
 
 The sample timeline SHALL be shared by all [=representations=] in the same adaptation set. [=Representations=] in different adaptation sets MAY use different sample timelines.
 
-The sample timeline is measured in unnamed timescale units. The term timescale refers to the number of timescale units per second. This value may be present in the [=MPD=] as the `@timescale` attribute, [[#timing-addressing|depending on the addressing mode used]].
+The sample timeline is measured in unnamed timescale units. The term timescale refers to the number of timescale units per second. This value SHALL be present in the [=MPD=] as `SegmentTemplate@timescale`.
 
 <figure>
 	<img src="Images/Timing/PresentationTimeOffset.png" />
-	<figcaption>`@presentationTimeOffset` establishes the relationship between the [=MPD timeline=] and the sample timeline.</figcaption>
+	<figcaption>`SegmentTemplate@presentationTimeOffset` establishes the relationship between the [=MPD timeline=] and the sample timeline.</figcaption>
 </figure>
 
-The point on the sample timeline indicated by `@presentationTimeOffset` (in timescale units, default zero) SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
+The point on the sample timeline indicated by `SegmentTemplate@presentationTimeOffset` (in timescale units, default zero) SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
 
-If [=simple addressing=] or [=explicit addressing=] is used, `@presentationTimeOffset` SHALL be a point within or at the start of the first [=media segment=] that is currently or was previously referenced by the [=period=].
+If [=simple addressing=] or [=explicit addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of the first [=media segment=] that is currently or was previously referenced by the [=period=].
 
 Note: The first [=media segment=] might no longer be referenced in a dynamic [=MPD=] if it has fallen out of the time shift window.
 
-If [=indexed addressing=] is used, `@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
+If [=indexed addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
 
 ## Media segments ## {#timing-mediasegment}
 
@@ -129,13 +134,15 @@ A <dfn>media segment</dfn> is an HTTP-addressable data structure that contains o
 
 Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document refers to both concepts as "segment".
 
-[=Media segments=] SHALL contain one or more consecutive media samples.
+[=Media segments=] SHALL contain one or more consecutive media samples. Consecutive [=media segments=] in the same [=representation=] SHALL contain consecutive media samples.
 
 [=Media segments=] SHALL contain the media samples that exactly match the time span on the [=sample timeline=] that is mapped to the segment's associated time span on the [=MPD timeline=], except when using [=simple addressing=] in which case a certain amount of inaccuracy MAY be present as defined in [[#timing-addressing-inaccuracy]].
 
 The [=media segment=] that starts at or overlaps the [=period=] start point on the [=MPD timeline=] SHALL contain a media sample that starts at or overlaps the [=period=] start point.
 
 The [=media segment=] that ends at or overlaps the [=period=] end point on the [=MPD timeline=] SHALL contain a media sample that ends at or overlaps the [=period=] end point.
+
+Note: The requirements on providing samples for the [=period=] start/end point in the first/last [=media segment=] apply even when [[#timing-addressing-inaccuracy|inaccurate addressing]] is used.
 
 ## Segment addressing modes ## {#timing-addressing}
 
@@ -149,7 +156,7 @@ This section defines the <dfn title="addressing mode">addressing modes</dfn> tha
 
 Placeholder chapter.
 
-<dfn>indexed addressing</dfn> means `SegmentBase` with index segment.
+<dfn>indexed addressing</dfn> means `SegmentTemplate` with `@indexRange`.
 
 ### Explicit addressing ### {#timing-addressing-explicit}
 
@@ -165,15 +172,20 @@ Placeholder chapter.
 
 #### Inaccurate addressing #### {#timing-addressing-inaccuracy}
 
-When using [=simple addressing=], the samples contained in a [=media segment=] MAY cover a different time span on the [=sample timeline=] than what is indicated in the [=MPD=].
+When using [=simple addressing=], the samples contained in a [=media segment=] MAY cover a different time span on the [=sample timeline=] than what is indicated in the [=MPD=], as long as no constraints defined in this document are violated by this deviation.
 
-The allowed deviation is defined as the maximum offset between the edges of the nominal time span (as defined in the segment references in the [=MPD=]) and the edges of the true time span (as defined by the contents of the [=media segment=]). The deviation is measured separately for each edge.
+<figure>
+	<img src="Images/Timing/InaccurateAddressing.png" />
+	<figcaption>Inaccurate addressing relaxes the requirement on [=media segment=] contents matching the [=MPD timeline=] and the [=sample timeline=]. Red boxes indicate samples.</figcaption>
+</figure>
+
+The allowed deviation is defined as the maximum offset between the edges of the nominal time span (as defined by the segment reference in the [=MPD=]) and the edges of the true time span (as defined by the contents of the [=media segment=]). The deviation is evaluated separately for each edge.
 
 The deviation SHALL be no more than 50% of the nominal segment duration and MAY be in either direction.
 
 Note: This results in a maximum true duration of 200% (+50% outward extension on both edges) and a minimum segment duration of 1 sample (-50% inward from both edges would result in 0 but empty segments are not allowed).
 
-This allowed deviation does not relax any requirements that do not explicitly define an exception. For example, [=periods=] must still be covered with samples for their entire duration, which might constrain the flexibility allowed for the first and last [=media segment=].
+This allowed deviation does not relax any requirements that do not explicitly define an exception. For example, [=periods=] must still be covered with samples for their entire duration, which constrains the flexibility allowed for the first and last [=media segment=].
 
 Note: Inaccurate addressing is intended to allow reasoning on the [=MPD timeline=] using average values for [=media segment=] timing. If the addressing data says that a [=media segment=] contains 4 seconds of data on average, a client can predict with reasonable accuracy which samples are found in which segments, while at the same time the packager is not required to emit per-segment timing data in the [=MPD=]. It is expected that the content is packaged with this contraint in mind (i.e. **every** segment cannot be inaccurate in the same direction - a shorter segment now implies a longer segment in the future to make up for it).
 
@@ -190,7 +202,7 @@ The following are all valid contents for such a [=media segment=]:
 
 Near [=period=] boundaries, all the constraints of timing and addressing must still be respected. Consider a [=media segment=] with a nominal start time of 0 seconds from [=period=] start and a nominal duration of 4 seconds.
 
-If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because it would leave a gap of 1 second at the start of the [=period=] that is not covered by samples.
+If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because of the requirement in [[#timing-mediasegment]] that the first [=media segment=] contain a media sample that starts at or overlaps the [=period=] start point.
 </div>
 
 ## Segment alignment ## {#timing-segmentalignment}
