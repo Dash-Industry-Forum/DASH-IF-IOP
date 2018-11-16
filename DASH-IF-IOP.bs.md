@@ -133,6 +133,10 @@ Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entit
 
 [=Media segments=] SHALL contain the media samples that exactly match the time span on the [=sample timeline=] that is mapped to the segment's associated time span on the [=MPD timeline=], except when using [=simple addressing=] in which case a certain amount of inaccuracy MAY be present as defined in [[#timing-addressing-inaccuracy]].
 
+The [=media segment=] that starts at or overlaps the [=period=] start point on the [=MPD timeline=] SHALL contain a media sample that starts at or overlaps the [=period=] start point.
+
+The [=media segment=] that ends at or overlaps the [=period=] end point on the [=MPD timeline=] SHALL contain a media sample that ends at or overlaps the [=period=] end point.
+
 ## Segment addressing modes ## {#timing-addressing}
 
 This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] in interopreable services.
@@ -264,7 +268,7 @@ It may be that for various content processing workflow reasons, some tracks have
 	<figcaption>Content with different track lengths, before packaging as DASH.</figcaption>
 </figure>
 
-You now have some choices to make in how you package these tracks into a DASH presentation that conforms to this document. Specifically, we have the requirement that every [=representation=] must provide samples for the entire [=period=].
+You now have some choices to make in how you package these tracks into a DASH presentation that conforms to this document. Specifically, there exists the requirement that every **[=representation=] must cover the entire [=period=] with media samples**.
 
 <figure>
 	<img src="Images/Timing/NonequalLengthTracks - CutEverything.png" />
