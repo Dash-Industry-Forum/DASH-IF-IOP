@@ -37,6 +37,13 @@ The chapters below explore these relationships in detail.
 
 An MPD SHALL define an ordered list of one or more <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
 
+Common reasons for defining multiple periods are:
+
+* Assembling a presentation from multiple self-contained pieces of content.
+* Inserting ads in the middle of existing content and/or replacing spans of existing content with ads.
+* Adding/removing certain representations as the nature of the content changes (e.g. a new title starts with a different set of offered languages).
+* Updating period-scoped metadata (e.g. codec configuration or DRM signaling).
+
 All periods SHALL be consecutive and non-overlapping.
 
 <div class="example">
@@ -246,6 +253,16 @@ Clients SHOULD ensure seamless playback of period-connected [=representations=] 
 
 Note: The exact mechanism that ensures seamless playback depends on client capabilities and will be implementation-specific. The shared [=media segment=] may need to be detected and deduplicated to avoid presenting it twice.
 
+### Period continuity ### {#timing-connectivity-continuity}
+
+In addition to [[#timing-connectivity|period connectivity]], [[!MPEGDASH]] defines period continuity, which is a special case of period connectivity where the two samples on the boundary between the connected [=representations=] are consecutive on the same [=sample timeline=].
+
+Note: The above can only be true if the sample boundary exactly matches the period boundary.
+
+Period continuity MAY be signaled in the [=MPD=] when the above condition is met, in which case period connectivity SHALL NOT be simultaneously signaled on the same [=representation=]. Continuity implies connectivity.
+
+Clients MAY take advantage of any platform-specific optimizations for seamless playback that knowledge of period continuity enables; otherwise, clients SHALL treat continuity the same as connectivity.
+
 ## Time shift window ## {#timing-timeshift}
 
 Issue: Determine appropriate content for this section.
@@ -368,13 +385,24 @@ If [=indexed addressing=] is used, both periods will reference all segments as b
 
 Other [=periods=] (e.g. ads) may be inserted between the two [=periods=] resulting from the split. This does not affect the addressing and timing of the two [=periods=].
 
-# Placeholder chapter # {#placeholder-for-temporary-terms}
+## Placeholder chapter ## {#placeholder-for-temporary-terms}
 
 This chapter contains a set of terms that will exist in the IOP document but that do not exist in it yet. By defining these terms here, we enable references to be already inserted in existing text, simplifying the editing process.
 
 * <dfn>adaptation set</dfn>
 * <dfn>initialization segment</dfn>
 
+## Editorial notes ## {#editorial-notes}
+
+Notes on merging IOP v4.3 into this chapter:
+
+* 3.2.12 Content Offering With Periods - merged
+	* There is some implied period-continuity logic. This is excessive combinatorics to expect the player to do. Just signal it on the service with the descriptor. Omitted.
+	* AssetIdentifier has some implied connectivity logic that seems needless. Omitted. See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/215
+
+Needs review for possible merge:
+
+* 4.8 Robust Operation
 
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
