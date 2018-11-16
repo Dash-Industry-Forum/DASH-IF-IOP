@@ -261,6 +261,8 @@ Note: The above can only be true if the sample boundary exactly matches the peri
 
 Period continuity MAY be signaled in the [=MPD=] when the above condition is met, in which case period connectivity SHALL NOT be simultaneously signaled on the same [=representation=]. Continuity implies connectivity.
 
+The signaling of period continuity is the same as for [[#timing-connectivity|period connectivity]], except that the value to use for `@schemeIdUri` is `urn:mpeg:dash:period-continuity:2015`.
+
 Clients MAY take advantage of any platform-specific optimizations for seamless playback that knowledge of period continuity enables; otherwise, clients SHALL treat continuity the same as connectivity.
 
 ## Time shift window ## {#timing-timeshift}
