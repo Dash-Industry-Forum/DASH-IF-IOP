@@ -10,7 +10,7 @@ Live discussion in #document-authoring on Slack.
 
 Placeholder text. This document will eventually contain IOP v5.
 
-# Addressing and timing # {#timing}
+# Timing and addressing # {#timing}
 
 This chapter describes an interoperable view of DASH presentation timing and segment addressing. The presentation manifest or <dfn>MPD</dfn> defines the <dfn>MPD timeline</dfn> which serves as the baseline for all scheduling decisions made during DASH presentation playback.
 
@@ -24,7 +24,7 @@ The ultimate purpose of the MPD is to enable the client to obtain media samples 
 
 1. The MPD consists of consecutive [=periods=] which map data onto the MPD timeline.
 1. Each period contains of one or more [=representations=], each of which provides media samples inside a sequence of [=media segments=].
-1. Representations within a period are grouped in adaptation sets, which associate related representations and decorate them with metadata.
+1. Representations within a period are grouped in [=adaptation sets=], which associate related representations and decorate them with metadata.
 
 <figure>
 	<img src="Images/Timing/BasicMpdElements.png" />
@@ -66,9 +66,9 @@ When present, `MPD@mediaPresentationDuration` SHALL accurately indicate the dura
 
 ## Representations ## {#timing-representation}
 
-A <dfn>representation</dfn> is a sequence of references to [=media segments=] containing media samples. Each representation belongs to exactly one adaptation set and to exactly one [=period=], although [[#timing-continuity|a representation may be internally continuous with a representation in another period]].
+A <dfn>representation</dfn> is a sequence of references to [=media segments=] containing media samples. Each representation belongs to exactly one [=adaptation set=] and to exactly one [=period=], although [[#timing-connectivity|a representation may be connected with a representation in another period]].
 
-A reference to a [=media segment=] determines which [=media segment=] corresponds to which time span on the [=MPD timeline=]. The exact mechanism used to define references depends on the [=addressing mode=] used by the representation. All representations in the same adaptation set SHALL use the same [=addressing mode=].
+A reference to a [=media segment=] determines which [=media segment=] corresponds to which time span on the [=MPD timeline=]. The exact mechanism used to define references depends on the [=addressing mode=] used by the representation. All representations in the same [=adaptation set=] SHALL use the same [=addressing mode=].
 
 A representation SHALL reference a set of media segments that ensures the [=MPD timeline=] is covered with segments at least from the beginning of the period active range to the end of the period active range.
 
@@ -111,7 +111,7 @@ Note: It may be impractical to present [=media segments=] only partially, depend
 
 The samples within a [=representation=] exist on a <dfn>sample timeline</dfn> defined by the encoder that created the samples. One or more sample timelines are mapped onto the [=MPD timeline=] by metadata stored in or referenced by the [=MPD=].
 
-The sample timeline SHALL be shared by all [=representations=] in the same adaptation set. [=Representations=] in different adaptation sets MAY use different sample timelines.
+The sample timeline SHALL be shared by all [=representations=] in the same [=adaptation set=]. [=Representations=] in different [=adaptation sets=] MAY use different sample timelines.
 
 The sample timeline is measured in unnamed timescale units. The term timescale refers to the number of timescale units per second. This value SHALL be present in the [=MPD=] as `SegmentTemplate@timescale`.
 
@@ -207,26 +207,42 @@ If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 se
 
 ## Segment alignment ## {#timing-segmentalignment}
 
-[=Media segments=] are said to be aligned if the start/end points of all [=media segments=] on the [=MPD timeline=] are equal in all [=representations=] that belong to the same adaptation set.
+[=Media segments=] are said to be aligned if the start/end points of all [=media segments=] on the [=MPD timeline=] are equal in all [=representations=] that belong to the same [=adaptation set=].
 
 [=Media segments=] SHALL be aligned. When using [=simple addressing=] or [=explicit addressing=], this means `AdaptationSet@segmentAlignment=true` in the [=MPD=]. When using [=indexed addressing=], this means `AdaptationSet@subsegmentAlignment=true` in the [=MPD=].
 
 Equivalent aligned [=media segments=] in different [=representations=] SHALL contain samples for the same time span on the [=sample timeline=], even if using [[#timing-addressing-inaccuracy|inaccurate addressing]].
 
-## Period continuity ## {#timing-continuity}
+## Period connectivity ## {#timing-connectivity}
+
+In certain circumstances content may be offered such that a [=period=] contains a continuation of the content in a previous [=period=]. Such content SHOULD be signaled in the [=MPD=] as period-connected, to help clients ensure seamless playback across [=period=] transitions. Any subset of the [=representations=] in a [=period=] MAY be <dfn>period-connected</dfn> with their counterparts in the next or previous [=period=]. Period connectivity MAY be chained across any number of [=periods=].
+
+An [=MPD=] MAY contain unrelated [=periods=] between [=periods=] that contain period-connected [=representations=].
+
+[=Initialization segments=] of period-connected [=representations=] SHALL be functionally equivalent (i.e. the [=initialization segment=] from any period-connected [=representation=] can be used to initialize playback of any period-connected [=representation=]).
+
+The following signaling SHALL be used to identify period-connected [=representations=] across two [=periods=]:
+
+* `Representation@id` is equal.
+* `AdaptationSet@id` is equal.
+* The [=adaptation set=] in the second [=period=] has a supplemental property with:
+	* `@shemeIdUri` set to `urn:mpeg:dash:period-connectivity:2015`.
+	* `@value` set to the `Period@id` of the first period.
+
+Note: Not all [=representations=] in an [=adaptation set=] need to be period-connected. For example, if a new [=period=] is introduced to add a [=representation=] that contains a new video quality level, all other [=representations=] will likely be connected but not the one that was added.
+
+The [=sample timelines=] of period-connected [=representations=] MAY be mutually discontinuous (e.g. due to skipping some content, encoder clock wrap-around or editorial decisions).
 
 <figure>
-	<img src="Images/Timing/SegmentOverlapOnPeriodContinuity.png" />
-	<figcaption>The same [=media segment=] will often exist in two periods at a period-continuous transition. On the diagram, this is segment 4.</figcaption>
+	<img src="Images/Timing/SegmentOverlapOnPeriodConnectivity.png" />
+	<figcaption>The same [=media segment=] will often exist in two periods at a period-connected transition. On the diagram, this is segment 4.</figcaption>
 </figure>
 
-As a [=period=] may start and/or end in the middle of a [=media segment=], the same [=media segment=] MAY simultaneously exist in two period-continuous [=representations=], with one part of it scheduled for playback during the first [=period=] and the other part during the second [=period=].
+As a [=period=] may start and/or end in the middle of a [=media segment=], the same [=media segment=] MAY simultaneously exist in two period-connected [=representations=] if no [=sample timeline=] discontinuity is introduced by the transition, with one part of it scheduled for playback during the first [=period=] and the other part during the second [=period=].
 
-Clients SHOULD NOT present a [=media segment=] twice when it occurs on both sides of a period transition in a period-continuous [=representation=].
+Clients SHOULD NOT present a [=media segment=] twice when it occurs on both sides of a period transition in a period-connected [=representation=].
 
-An [=MPD=] MAY contain unrelated [=periods=] between [=periods=] that contain period-continuous [=representations=].
-
-Clients SHOULD ensure seamless playback of period-continuous [=representations=] in consecutive [=periods=].
+Clients SHOULD ensure seamless playback of period-connected [=representations=] in consecutive [=periods=].
 
 Note: The exact mechanism that ensures seamless playback depends on client capabilities and will be implementation-specific. The shared [=media segment=] may need to be detected and deduplicated to avoid presenting it twice.
 
@@ -317,10 +333,10 @@ Some clients are known to fail when transitioning from a period with audio and v
 There exist scenarios where you would wish to split a period in two. Common reasons would be:
 
 * to insert an ad [=period=] in the middle of an existing [=period=].
-* parameters of one adaptation set change (e.g. KID or display aspect ratio), requiring a new [=period=] to update signaling.
-* some adaptation sets become available or unavailable (e.g. different languages).
+* parameters of one [=adaptation set=] change (e.g. KID or display aspect ratio), requiring a new [=period=] to update signaling.
+* some [=adaptation sets=] become available or unavailable (e.g. different languages).
 
-This example shows how an existing [=period=] can be split in a way that clients capable of [[#timing-continuity|period-continuous playback]] do not experience interruptions in playback among representations that are present both before and after the split.
+This example shows how an existing [=period=] can be split in a way that clients capable of [[#timing-connectivity|seamless period-connected playback]] do not experience interruptions in playback among [=representations=] that are present both before and after the split.
 
 Our starting point is a presentation with a single period that contains an audio [=representation=] with short samples and a video [=representation=] with slightly longer samples, so that [=media segment=] start points do not always overlap.
 
@@ -335,22 +351,29 @@ Let's split this period at position 220. This split occurs during segment 3 for 
 
 The mechanism that enables [=period=] splitting in the middle of a segment is the following:
 
-* a segment that overlaps a period boundary exists in both periods.
-* representations that are split are signaled in the MPD as period continuous.
-* a representation that is period-continuous with a representation in a previous period is marked with the period continuity descriptor.
-* clients are expected to deduplicate boundary-overlapping segments for representations on which period continuity is signaled, if necessary for seamless playback (implementation-specific).
-* clients are expected to present only the samples that are within the bounds of the current period (may be limited by client platform capabilities).
+* a [=media segment=] that overlaps a [=period=] boundary exists in both [=periods=].
+* [=representations=] that are split are signaled in the MPD as [=period-connected=].
+* a representation that is [=period-connected=] with a representation in a previous period [[#timing-connectivity|is marked with the period connectivity descriptor]].
+* clients are expected to deduplicate boundary-overlapping [=media segments=] for [=representations=] on which [[#timing-connectivity|period connectivity]] is signaled, if necessary for seamless playback (implementation-specific).
+* clients are expected to present only the samples that are within the bounds of the current [=period=] (may be limited by client platform capabilities).
 
 After splitting the example presentation, we arrive at the following structure.
 
 <figure>
 	<img src="Images/Timing/SplitInTwoPeriods - After.png" />
-	<figcaption>Presentation with two periods, after splitting. Audio segment 3 and video segment 3 are shared by both periods, with the continuity signaling indicating that continuous playback with de-duplicating behavior is expected from clients.</figcaption>
+	<figcaption>Presentation with two periods, after splitting. Audio segment 3 and video segment 3 are shared by both periods, with the connectivity signaling indicating that seamless playback with de-duplicating behavior is expected from clients.</figcaption>
 </figure>
 
 If [=indexed addressing=] is used, both periods will reference all segments as both periods will use the same unmodified index segment. Clients are expected to ignore [=media segments=] that fall outside the [=period=] bounds.
 
 Other [=periods=] (e.g. ads) may be inserted between the two [=periods=] resulting from the split. This does not affect the addressing and timing of the two [=periods=].
+
+# Placeholder chapter # {#placeholder-for-temporary-terms}
+
+This chapter contains a set of terms that will exist in the IOP document but that do not exist in it yet. By defining these terms here, we enable references to be already inserted in existing text, simplifying the editing process.
+
+* <dfn>adaptation set</dfn>
+* <dfn>initialization segment</dfn>
 
 
 
