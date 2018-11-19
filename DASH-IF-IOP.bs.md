@@ -326,21 +326,6 @@ Some aspects of [[!MPEGDASH]] are not compatible with the interoperable timing m
 
 Issue: Determine appropriate content for this section.
 
-## Bringing nonconforming content into conformance ## {#timing-make-conformant}
-
-Some existing content that does not conform to IOP addressing and timing requirements can be easily made conforming via manifest manipulation. This section describes some common issues and their solutions.
-
-<table class="def">
-	<tr>
-		<th>Nonconforming aspect</th>
-		<th>Solution</th>
-	</tr>
-	<tr>
-		<td>One or more representations are "short" - there are no addressable segments for them for some time span before the end of the period.</td>
-		<td>[[#timing-examples-splitperiod|Split the period]] at the point where the last segment of a "short" representation ends and drop the representation from the next period.</td>
-	</tr>
-</table>
-
 ## Examples ## {#timing-examples}
 
 This section is informative.
