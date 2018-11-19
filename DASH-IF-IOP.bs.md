@@ -248,11 +248,22 @@ Equivalent aligned [=media segments=] in different [=representations=] SHALL con
 
 ## Period connectivity ## {#timing-connectivity}
 
-In certain circumstances content may be offered such that a [=period=] contains a continuation of the content in a previous [=period=]. Such content SHOULD be signaled in the [=MPD=] as period-connected, to help clients ensure seamless playback across [=period=] transitions. Any subset of the [=representations=] in a [=period=] MAY be <dfn>period-connected</dfn> with their counterparts in a future or past [=period=]. Period connectivity MAY be chained across any number of [=periods=].
+In certain circumstances content may be offered such that a [=representation=] is technically compatible with the content of a [=representation=] in a previous [=period=]. Such [=representations=] are <dfn>period-connected</dfn>.
+
+[=Initialization segments=] of period-connected [=representations=] SHALL be functionally equivalent (i.e. the [=initialization segment=] from any period-connected [=representation=] can be used to initialize playback of any period-connected [=representation=]).
+
+Note: Connectivity is generally achieved by using the same encoder to encode the content of multiple [=periods=] using the same settings. Keep in mind, however, that decryption is also a part of the client media pipeline - it is not only the codec parameters that are configured by the [=initialization segment=].
+
+Such content SHOULD be signaled in the [=MPD=] as period-connected. This is expected to help clients ensure seamless playback across [=period=] transitions. Any subset of the [=representations=] in a [=period=] MAY be period-connected with their counterparts in a future or past [=period=]. Period connectivity MAY be chained across any number of [=periods=].
+
+<figure>
+	<img src="Images/Timing/PeriodConnectivity.png" />
+	<figcaption>[=Representations=] can be signaled as period connected, enabling client optimizations. Arrows on diagram indicate direction of connectivity reference (from future to past), with the implied message being "the client can use the same decoder it used where the arrow points to".</figcaption>
+</figure>
 
 An [=MPD=] MAY contain unrelated [=periods=] between [=periods=] that contain period-connected [=representations=].
 
-[=Initialization segments=] of period-connected [=representations=] SHALL be functionally equivalent (i.e. the [=initialization segment=] from any period-connected [=representation=] can be used to initialize playback of any period-connected [=representation=]).
+The [=sample timelines=] of period-connected [=representations=] MAY be mutually discontinuous (e.g. due to skipping some content, encoder clock wrap-around or editorial decisions).
 
 The following signaling SHALL be used to identify period-connected [=representations=] across two [=periods=]:
 
@@ -263,8 +274,6 @@ The following signaling SHALL be used to identify period-connected [=representat
 	* `@value` set to the `Period@id` of the first period.
 
 Note: Not all [=representations=] in an [=adaptation set=] need to be period-connected. For example, if a new [=period=] is introduced to add a [=representation=] that contains a new video quality level, all other [=representations=] will likely be connected but not the one that was added.
-
-The [=sample timelines=] of period-connected [=representations=] MAY be mutually discontinuous (e.g. due to skipping some content, encoder clock wrap-around or editorial decisions).
 
 <figure>
 	<img src="Images/Timing/SegmentOverlapOnPeriodConnectivity.png" />
@@ -277,7 +286,7 @@ Clients SHOULD NOT present a [=media segment=] twice when it occurs on both side
 
 Clients SHOULD ensure seamless playback of period-connected [=representations=] in consecutive [=periods=].
 
-Note: The exact mechanism that ensures seamless playback depends on client capabilities and will be implementation-specific. The shared [=media segment=] may need to be detected and deduplicated to avoid presenting it twice.
+Note: The exact mechanism that ensures seamless playback depends on client capabilities and will be implementation-specific. Any shared [=media segment=] overlapping the [=period=] boundary may need to be detected and deduplicated to avoid presenting it twice.
 
 ### Period continuity ### {#timing-connectivity-continuity}
 
@@ -289,7 +298,7 @@ Period continuity MAY be signaled in the [=MPD=] when the above condition is met
 
 The signaling of period continuity is the same as for [[#timing-connectivity|period connectivity]], except that the value to use for `@schemeIdUri` is `urn:mpeg:dash:period-continuity:2015`.
 
-Clients MAY take advantage of any platform-specific optimizations for seamless playback that knowledge of period continuity enables; otherwise, clients SHALL treat continuity the same as connectivity.
+Clients MAY take advantage of any platform-specific optimizations for seamless playback that knowledge of period continuity enables; beyond that, clients SHALL treat continuity the same as connectivity.
 
 ## Time shift window ## {#timing-timeshift}
 
