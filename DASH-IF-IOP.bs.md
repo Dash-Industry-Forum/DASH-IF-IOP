@@ -12,11 +12,15 @@ Placeholder text. This document will eventually contain IOP v5.
 
 # Timing and addressing # {#timing}
 
-This chapter describes an interoperable view of DASH presentation timing and segment addressing. The presentation manifest or <dfn>MPD</dfn> defines the <dfn>MPD timeline</dfn> which serves as the baseline for all scheduling decisions made during DASH presentation playback.
+This chapter describes an interoperable view of DASH presentation timing and segment addressing. This interpretation is considerably narrower than afforded by [[MPEGDASH]], constraining services to a specific set of reasonably flexible behaviors that are highly interoperable with modern client platforms. Services conforming to this document SHALL use this timing model.
+
+The presentation manifest or <dfn>MPD</dfn> defines the <dfn>MPD timeline</dfn> which serves as the baseline for all scheduling decisions made during DASH presentation playback.
 
 The playback of a static MPD SHALL NOT depend on the mapping of the MPD timeline to real time. A client MAY play any part of the presentation at any time.
 
 The MPD timeline of a dynamic MPD SHALL have a fixed mapping to real time, with each point on the timeline corresponding to a point in real time. Clients MAY introduce an additional offset with respect to real time [[#timing-timeshift|to the extent allowed by the time shift signaling in the MPD]].
+
+Note: In addition to mapping the content to real time, [[#timing-mpd-updates|a dynamic MPD can be updated during the presentation]]. Updates may add new periods and remove or modify existing ones.
 
 The zero point in the MPD timeline of a dynamic MPD SHALL be mapped to the point in real time indicated by `MPD@availabilityStartTime`. This value SHALL NOT change between MPD updates.
 
@@ -28,7 +32,7 @@ The ultimate purpose of the MPD is to enable the client to obtain media samples 
 
 <figure>
 	<img src="Images/Timing/BasicMpdElements.png" />
-	<figcaption>Illustration of the primary elements described by an MPD.</figcaption>
+	<figcaption>The primary elements described by an MPD.</figcaption>
 </figure>
 
 The chapters below explore these relationships in detail.
@@ -37,6 +41,11 @@ The chapters below explore these relationships in detail.
 
 An MPD SHALL define an ordered list of one or more <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
 
+<figure>
+	<img src="Images/Timing/PeriodsMakeTheMpd.png" />
+	<figcaption>An MPD is a collection of periods, starting from a zero point and with a total duration (which may be unlimited for live services).</figcaption>
+</figure>
+
 Common reasons for defining multiple periods are:
 
 * Assembling a presentation from multiple self-contained pieces of content.
@@ -44,7 +53,11 @@ Common reasons for defining multiple periods are:
 * Adding/removing certain representations as the nature of the content changes (e.g. a new title starts with a different set of offered languages).
 * Updating period-scoped metadata (e.g. codec configuration or DRM signaling).
 
-All periods SHALL be consecutive and non-overlapping.
+Perioods are self-contained - a service SHALL NOT require a client to know the contents of another period in order to correctly present a period. Knowledge of the contents of different periods MAY be used by a client to achieve seamless period transitions, especially when working with [[#timing-connectivity|period-connected representations]].
+
+All periods SHALL be consecutive and non-overlapping. A period MAY have a duration of zero.
+
+Note: A period with a duration of zero might, for example, be the result of ad-insertion logic deciding not to insert any ad.
 
 <div class="example">
 The below MPD example consists of two 20-second periods. The duration of the first period is calculated using the start point of the second period.
@@ -81,6 +94,11 @@ A representation SHALL reference a set of media segments that ensures the [=MPD 
 
 In a static MPD, the period active range SHALL be the entire time span of a [=period=].
 
+<figure>
+	<img src="Images/Timing/StaticMpdMustBeCovered.png" />
+	<figcaption>In a static MPD, the entire period must be covered with [=media segments=].</figcaption>
+</figure>
+
 In a dynamic MPD, the period active range SHALL be the time span of the [=period=] constrained to the time shift window.
 
 <figure>
@@ -107,6 +125,8 @@ Note: If you use [=indexed addressing=], there exists an index segment on disk t
 
 [=Media segment=] start/end points MAY be unaligned with [=period=] start/end points. If a [=media segment=] overlaps a [=period=] boundary, clients SHOULD NOT present the samples that lie outside the [=period=]. Whether samples that overlap a [=period=] boundary are to be considered inside or outside the [=period=] is implementation-defined.
 
+Issue: The boundary-overlapping sample treatment being vague like this feels wrong. Is there an interoperable interpretation that we can just state here? It feels a very low level detail, hard to estimate what is practical.
+
 Note: It may be impractical to present [=media segments=] only partially, depending on the capabilties of the client platform, the type of media samples involved and any dependencies between samples. It is up to the client to ensure that platform capabilities are not exceeded and to account for the time shift that it incurs due to over-/underplayback.
 
 ## Sample timeline ## {#timing-sampletimeline}
@@ -131,9 +151,7 @@ The sample timeline is measured in unnamed timescale units. The term timescale r
 
 The point on the sample timeline indicated by `SegmentTemplate@presentationTimeOffset` (in timescale units, default zero) SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
 
-If [=simple addressing=] or [=explicit addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of the first [=media segment=] that is currently or was previously referenced by the [=period=].
-
-Note: The first [=media segment=] might no longer be referenced in a dynamic [=MPD=] if it has fallen out of the time shift window.
+If [=simple addressing=] or [=explicit addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of the [=media segment=] that starts at or overlaps the [=period=] start point, even if this [=media segment=] is no longer referenced by the [=MPD=] (as may be the case with a dynamic MPD if the [=media segment=] has fallen out of the time shift window).
 
 If [=indexed addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
 
@@ -142,6 +160,8 @@ If [=indexed addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHAL
 A <dfn>media segment</dfn> is an HTTP-addressable data structure that contains one or more media samples.
 
 Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document refers to both concepts as "segment".
+
+Issue: Moving to CMAF terms might simplify the linguistic overhead caused by DASH terminology here. See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/217
 
 [=Media segments=] SHALL contain one or more consecutive media samples. Consecutive [=media segments=] in the same [=representation=] SHALL contain consecutive media samples.
 
@@ -251,7 +271,7 @@ The [=sample timelines=] of period-connected [=representations=] MAY be mutually
 	<figcaption>The same [=media segment=] will often exist in two periods at a period-connected transition. On the diagram, this is segment 4.</figcaption>
 </figure>
 
-As a [=period=] may start and/or end in the middle of a [=media segment=], the same [=media segment=] MAY simultaneously exist in two period-connected [=representations=] if no [=sample timeline=] discontinuity is introduced by the transition, with one part of it scheduled for playback during the first [=period=] and the other part during the second [=period=].
+As a [=period=] may start and/or end in the middle of a [=media segment=], the same [=media segment=] MAY simultaneously exist in two period-connected [=representations=], with one part of it scheduled for playback during the first [=period=] and the other part during the second [=period=]. This is likely to be the case when no [=sample timeline=] discontinuity is introduced by the transition.
 
 Clients SHOULD NOT present a [=media segment=] twice when it occurs on both sides of a period transition in a period-connected [=representation=].
 
@@ -275,6 +295,10 @@ Clients MAY take advantage of any platform-specific optimizations for seamless p
 
 Issue: Determine appropriate content for this section.
 
+## Real time clock synchronization ## {#timing-sync}
+
+Issue: Determine appropriate content for this section.
+
 ## XLink ## {#timing-xlink}
 
 Issue: Determine appropriate content for this section.
@@ -289,7 +313,7 @@ Some aspects of [[!MPEGDASH]] are not compatible with the interoperable timing m
 
 * The `@presentationDuration` attribute SHALL NOT be used.
 
-## Dynamic MPD updates ## {#timing-mpdupdates}
+## Dynamic MPD updates ## {#timing-mpd-updates}
 
 Issue: Determine appropriate content for this section.
 
