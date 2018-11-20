@@ -302,6 +302,9 @@ Clients MAY take advantage of any platform-specific optimizations for seamless p
 
 ## Time shift window ## {#timing-timeshift}
 
+TSBD
+SPD
+
 Issue: Determine appropriate content for this section.
 
 ## Real time clock synchronization ## {#timing-sync}
@@ -323,6 +326,50 @@ Some aspects of [[!MPEGDASH]] are not compatible with the interoperable timing m
 * The `@presentationDuration` attribute SHALL NOT be used.
 
 ## Dynamic MPD updates ## {#timing-mpd-updates}
+
+Dynamic MPDs MAY change over time. The nature of the change is not restricted unless such a restriction is explicitly defined.
+
+Some common reasons to make changes in dynamic [=MPDs=]:
+
+* Adding new [=media segments=] to an existing [=period=].
+* Adding new [=periods=].
+* Adjusting the durations and start times of [=periods=].
+* Removing [=media segments=] and/or [=periods=] that have fallen out of the time shift window.
+* Adding `MPD@mediaPresentationDuration` and (on the last [=period=]) `Period@duration` to signal that a live service has ended.
+* Converting the [=MPD=] to a static [=MPD=] to signal that a live service has become available on-demand as a recording.
+
+The following restrictions are defined here for MPD updates:
+
+* `MPD@id` SHALL NOT change.
+* `MPD@availabilityStartTime` SHALL NOT change.
+* `Period@id` SHALL NOT change.
+* `Period@start` SHALL NOT change.
+* The adaptation sets present in a [=period=] (i.e. the set of `AdaptationSet@id` values) SHALL NOT change.
+* The functional behavior of a representation (identified by a matching `Representation@id` value) shall not change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of segment timing.
+
+Issue: Do we need to restrict to "extend-only" behavior? https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/224
+
+Issue: Review synchronization with 4.4.3.3
+
+Additional restrictions can be defined by other parts of this document.
+
+Clients SHOULD use `Period@id` to track [=period=] identity across [=MPD=] updates.
+
+The presence of `MPD@minimumUpdatePeriod` SHALL be used to signal that the [=MPD=] is expected to change. The value of this field indicates the frequency at which a client is expected to poll for [=MPD=] updates.
+
+Note: In other words, `MPD@minimumUpdatePeriod` is the maximum expected delay between an update being made to the [=MPD=] on the service side and this update becoming available to a client. For practical considerations, you should add on top of this the time spent on acquiring and processing the updated [=MPD=].
+
+If `MPD@minimumUpdatePeriod` is absent then `MPD@mediaPresentationDuration` SHALL be present.
+
+Issue: Is it OK to have the two be present simultaneously? That is, a fixed-size MPD that may still change? Does it match any IOP use cases? I think not but have to double-check.
+
+In addition to signaling that clients are expected to poll for regular [=MPD=] updates, a service MAY publish in-band events to schedule [=MPD=] updates at moments of its choosing.
+
+### In-band events ### {#timing-mpd-updates-inband}
+
+Issue: Determine appropriate content for this section.
+
+## Segment availability ## {#timing-availability}
 
 Issue: Determine appropriate content for this section.
 
@@ -455,6 +502,8 @@ General comments:
 
 * Chapter 3 in v4.3 is largely a random pile of constraints. Some that were timing-relevant are merged here. Others were not. Needs thorough review to ensure that nothing got unexpectedly missed or duplicated.
 * Some terms "defined" in the timing chapter should probably be defined elsewhere once we have more content migrated.
+* Where does minBufferTime go? It needs a home and some nice illustrations.
+* Where do we define the `lmsg` mechanism?
 
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
