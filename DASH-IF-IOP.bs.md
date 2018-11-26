@@ -76,7 +76,7 @@ The below MPD example consists of two 20-second periods. The duration of the fir
 
 In a static MPD, the first period SHALL start at the zero point of the [=MPD timeline=]. In a dynamic MPD, the first period SHALL start at or after the zero point of the [=MPD timeline=].
 
-In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period MAY lack a `Period@duration`, in which case it SHALL be considered to have an unlimited duration.
+In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period SHALL have a `Period@duration` if no new [=media segment=] references will be added to it in future MPD updates (i.e. it has a fixed duration) and SHALL NOT have `Period@duration` if new [=media segment=] references might be added to it in future MPD updates.
 
 Note: A period with an unlimited duration may be converted to a fixed-duration period by an MPD update.
 
@@ -85,9 +85,7 @@ In a static MPD, `MPD@mediaPresentationDuration` SHALL be present.
 In a dynamic MPD, `MPD@mediaPresentationDuration` SHALL be present if the following conditions are true and SHALL NOT be present otherwise:
 
 1. The last period has a `Period@duration`.
-1. No new [=media segment=] references will be added to the [=MPD=] in the future (either in the form of new periods or extension of existing periods).
-
-Note: Publishing a dynamic MPD that will not receive any new [=media segment=] references enables a service to schedule the availability of content that has already been fully generated (e.g. a finished live event or a scheduled playback of existing content).
+1. No new periods will be added to the [=MPD=] in the future.
 
 When present, `MPD@mediaPresentationDuration` SHALL accurately indicate the duration between the zero point on the [=MPD timeline=] and the end of the last [=period=].
 
@@ -180,7 +178,7 @@ The [=media segment=] that starts at or overlaps the [=period=] start point on t
 
 The [=media segment=] that ends at or overlaps the [=period=] end point on the [=MPD timeline=] SHALL contain a media sample that ends at or overlaps the [=period=] end point.
 
-Note: The requirements on providing samples for the [=period=] start/end point in the first/last [=media segment=] apply even when [[#timing-addressing-inaccuracy|inaccurate addressing]] is used.
+Note: The requirements on providing samples for the [=period=] start/end point in the first/last [=media segment=] apply even when [=simple addressing=] is used with [[#timing-addressing-inaccuracy|inaccurate media segment timing]].
 
 ## Segment addressing modes ## {#timing-addressing}
 
@@ -212,7 +210,7 @@ Placeholder chapter.
 
 <dfn>simple addressing</dfn> means `SegmentTemplate` without `SegmentTimeline`.
 
-#### Inaccurate addressing #### {#timing-addressing-inaccuracy}
+#### Inaccuracy in media segment timing when using simple addressing #### {#timing-addressing-inaccuracy}
 
 When using [=simple addressing=], the samples contained in a [=media segment=] MAY cover a different time span on the [=sample timeline=] than what is indicated in the [=MPD=], as long as no constraints defined in this document are violated by this deviation.
 
@@ -229,7 +227,7 @@ Note: This results in a maximum true duration of 200% (+50% outward extension on
 
 This allowed deviation does not relax any requirements that do not explicitly define an exception. For example, [=periods=] must still be covered with samples for their entire duration, which constrains the flexibility allowed for the first and last [=media segment=].
 
-Note: Inaccurate addressing is intended to allow reasoning on the [=MPD timeline=] using average values for [=media segment=] timing. If the addressing data says that a [=media segment=] contains 4 seconds of data on average, a client can predict with reasonable accuracy which samples are found in which segments, while at the same time the packager is not required to emit per-segment timing data in the [=MPD=]. It is expected that the content is packaged with this contraint in mind (i.e. **every** segment cannot be inaccurate in the same direction - a shorter segment now implies a longer segment in the future to make up for it).
+Note: Allowing inaccurate timing is intended to enable reasoning on the [=MPD timeline=] using average values for [=media segment=] timing. If the addressing data says that a [=media segment=] contains 4 seconds of data on average, a client can predict with reasonable accuracy which samples are found in which segments, while at the same time the packager is not required to emit per-segment timing data in the [=MPD=]. It is expected that the content is packaged with this contraint in mind (i.e. **every** segment cannot be inaccurate in the same direction - a shorter segment now implies a longer segment in the future to make up for it).
 
 <div class="example">
 Consider a [=media segment=] with a nominal start time of 10 seconds from period start and a nominal duration of 4 seconds, within a [=period=] of unlimited duration.
@@ -253,7 +251,7 @@ If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 se
 
 [=Media segments=] SHALL be aligned. When using [=simple addressing=] or [=explicit addressing=], this means `AdaptationSet@segmentAlignment=true` in the [=MPD=]. When using [=indexed addressing=], this means `AdaptationSet@subsegmentAlignment=true` in the [=MPD=].
 
-Equivalent aligned [=media segments=] in different [=representations=] SHALL contain samples for the same time span on the [=sample timeline=], even if using [[#timing-addressing-inaccuracy|inaccurate addressing]].
+Equivalent aligned [=media segments=] in different [=representations=] SHALL contain samples for the same time span on the [=sample timeline=], even if using [=simple addressing=] with [[#timing-addressing-inaccuracy|inaccurate media segment timing]].
 
 ## Period connectivity ## {#timing-connectivity}
 
