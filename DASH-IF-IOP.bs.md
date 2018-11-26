@@ -53,7 +53,7 @@ Common reasons for defining multiple periods are:
 * Adding/removing certain representations as the nature of the content changes (e.g. a new title starts with a different set of offered languages).
 * Updating period-scoped metadata (e.g. codec configuration or DRM signaling).
 
-Perioods are self-contained - a service SHALL NOT require a client to know the contents of another period in order to correctly present a period. Knowledge of the contents of different periods MAY be used by a client to achieve seamless period transitions, especially when working with [[#timing-connectivity|period-connected representations]].
+Periods are self-contained - a service SHALL NOT require a client to know the contents of another period in order to correctly present a period. Knowledge of the contents of different periods MAY be used by a client to achieve seamless period transitions, especially when working with [[#timing-connectivity|period-connected representations]].
 
 All periods SHALL be consecutive and non-overlapping. A period MAY have a duration of zero.
 
@@ -78,9 +78,14 @@ In a static MPD, the first period SHALL start at the zero point of the [=MPD tim
 
 In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period MAY lack a `Period@duration`, in which case it SHALL be considered to have an unlimited duration.
 
-In a static MPD, `MPD@mediaPresentationDuration` SHALL be present. In a dynamic MPD, `MPD@mediaPresentationDuration` SHALL be present if the content of the MPD will no longer be updated and SHALL NOT be present if the content of the MPD might be updated.
+In a static MPD, `MPD@mediaPresentationDuration` SHALL be present.
 
-Note: Publishing a dynamic MPD that will not be updated enables a service to schedule the availability of content that has already been fully generated (e.g. a finished live event or a scheduled playback of existing content).
+In a dynamic MPD, `MPD@mediaPresentationDuration` SHALL be present if the following conditions are true and SHALL NOT be present otherwise:
+
+1. The last period has a `Period@duration`.
+1. No new [=media segment=] references will be added to the [=MPD=] in the future (either in the form of new periods or extension of existing periods).
+
+Note: Publishing a dynamic MPD that will not receive any new [=media segment=] references enables a service to schedule the availability of content that has already been fully generated (e.g. a finished live event or a scheduled playback of existing content).
 
 When present, `MPD@mediaPresentationDuration` SHALL accurately indicate the duration between the zero point on the [=MPD timeline=] and the end of the last [=period=].
 
@@ -150,6 +155,8 @@ The sample timeline is measured in unnamed timescale units. The term timescale r
 </figure>
 
 The point on the sample timeline indicated by `SegmentTemplate@presentationTimeOffset` (in timescale units, default zero) SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
+
+`SegmentTempleate@presentationTimeOffset` SHALL NOT change between updates of a dynamic MPD.
 
 If [=simple addressing=] or [=explicit addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of the [=media segment=] that starts at or overlaps the [=period=] start point, even if this [=media segment=] is no longer referenced by the [=MPD=] (as may be the case with a dynamic MPD if the [=media segment=] has fallen out of the time shift window).
 
@@ -333,9 +340,9 @@ Some common reasons to make changes in dynamic [=MPDs=]:
 
 * Adding new [=media segments=] to an existing [=period=].
 * Adding new [=periods=].
-* Adjusting the durations and start times of [=periods=].
+* Extending the durations of [=periods=] or converting unlimited-duration [=periods=] to fixed-duration [=periods=] by adding `Period@duration`.
 * Removing [=media segments=] and/or [=periods=] that have fallen out of the time shift window.
-* Adding `MPD@mediaPresentationDuration` and (on the last [=period=]) `Period@duration` to signal that a live service has ended.
+* Adding `MPD@mediaPresentationDuration` to signal that the timeline of the MPD will no longer be extended with new [=media segment=] references.
 * Converting the [=MPD=] to a static [=MPD=] to signal that a live service has become available on-demand as a recording.
 
 The following restrictions are defined here for MPD updates:
@@ -344,12 +351,12 @@ The following restrictions are defined here for MPD updates:
 * `MPD@availabilityStartTime` SHALL NOT change.
 * `Period@id` SHALL NOT change.
 * `Period@start` SHALL NOT change.
+* `Period@duration` SHALL NOT decrease but MAY increase or be added to a [=period=] that lacked it.
 * The adaptation sets present in a [=period=] (i.e. the set of `AdaptationSet@id` values) SHALL NOT change.
 * The functional behavior of a representation (identified by a matching `Representation@id` value) shall not change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of segment timing.
+* `SegmentTemplate@presentationTimeOffset` SHALL NOT change.
 
-Issue: Do we need to restrict to "extend-only" behavior? https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/224
-
-Issue: Review synchronization with 4.4.3.3
+Issue: Review synchronization with 4.4.3.3 - lots of clauses in there, possible that something got lost in translation.
 
 Additional restrictions can be defined by other parts of this document.
 
@@ -359,9 +366,7 @@ The presence of `MPD@minimumUpdatePeriod` SHALL be used to signal that the [=MPD
 
 Note: In other words, `MPD@minimumUpdatePeriod` is the maximum expected delay between an update being made to the [=MPD=] on the service side and this update becoming available to a client. For practical considerations, you should add on top of this the time spent on acquiring and processing the updated [=MPD=].
 
-If `MPD@minimumUpdatePeriod` is absent then `MPD@mediaPresentationDuration` SHALL be present.
-
-Issue: Is it OK to have the two be present simultaneously? That is, a fixed-size MPD that may still change? Does it match any IOP use cases? I think not but have to double-check.
+If `MPD@minimumUpdatePeriod` is absent then `MPD@mediaPresentationDuration` SHALL be present. Both attributes MAY be present simultaneously to signal that the [=MPD=] might still receive updates but these updates will not introduce new [=media segment=] references.
 
 In addition to signaling that clients are expected to poll for regular [=MPD=] updates, a service MAY publish in-band events to schedule [=MPD=] updates at moments of its choosing.
 
