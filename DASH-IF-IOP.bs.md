@@ -78,6 +78,8 @@ In a static MPD, the first period SHALL start at the zero point of the [=MPD tim
 
 In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period MAY lack a `Period@duration`, in which case it SHALL be considered to have an unlimited duration.
 
+Note: A period with an unlimited duration may be converted to a fixed-duration period by an MPD update.
+
 In a static MPD, `MPD@mediaPresentationDuration` SHALL be present.
 
 In a dynamic MPD, `MPD@mediaPresentationDuration` SHALL be present if the following conditions are true and SHALL NOT be present otherwise:
@@ -340,7 +342,7 @@ Some common reasons to make changes in dynamic [=MPDs=]:
 
 * Adding new [=media segments=] to an existing [=period=].
 * Adding new [=periods=].
-* Extending the durations of [=periods=] or converting unlimited-duration [=periods=] to fixed-duration [=periods=] by adding `Period@duration`.
+* Converting unlimited-duration [=periods=] to fixed-duration [=periods=] by adding `Period@duration`.
 * Removing [=media segments=] and/or [=periods=] that have fallen out of the time shift window.
 * Adding `MPD@mediaPresentationDuration` to signal that the timeline of the MPD will no longer be extended with new [=media segment=] references.
 * Converting the [=MPD=] to a static [=MPD=] to signal that a live service has become available on-demand as a recording.
@@ -351,7 +353,7 @@ The following restrictions are defined here for MPD updates:
 * `MPD@availabilityStartTime` SHALL NOT change.
 * `Period@id` SHALL NOT change.
 * `Period@start` SHALL NOT change.
-* `Period@duration` SHALL NOT decrease but MAY increase or be added to a [=period=] that lacked it.
+* `Period@duration` SHALL NOT change MAY be added to a [=period=] that lacked it.
 * The adaptation sets present in a [=period=] (i.e. the set of `AdaptationSet@id` values) SHALL NOT change.
 * The functional behavior of a representation (identified by a matching `Representation@id` value) shall not change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of segment timing.
 * `SegmentTemplate@presentationTimeOffset` SHALL NOT change.
