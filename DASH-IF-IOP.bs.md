@@ -60,10 +60,10 @@ All periods SHALL be consecutive and non-overlapping. A period MAY have a durati
 Note: A period with a duration of zero might, for example, be the result of ad-insertion logic deciding not to insert any ad.
 
 <div class="example">
-The below MPD example consists of two 20-second periods. The duration of the first period is calculated using the start point of the second period.
+The below MPD example consists of two 20-second periods. The duration of the first period is calculated using the start point of the second period. The total duration is also listed, as it is required for static MPDs.
 
 <xmp highlight="xml">
-<MPD type="static" mediaPresentationDuration="PT40S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" type="static" mediaPresentationDuration="PT40S">
 	<Period>
 		...
 	</Period>
@@ -72,6 +72,8 @@ The below MPD example consists of two 20-second periods. The duration of the fir
 	</Period>
 </MPD>
 </xmp>
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
 </div>
 
 In a static MPD, the first period SHALL start at the zero point of the [=MPD timeline=]. In a dynamic MPD, the first period SHALL start at or after the zero point of the [=MPD timeline=].
@@ -128,11 +130,11 @@ Note: If you use [=indexed addressing=], there exists an index segment on disk t
 	<figcaption>[=Media segments=] and samples need not align with [=period=] boundaries. Some samples may be entirely outside a [=period=] (marked gray) and some may overlap the [=period=] boundary (yellow).</figcaption>
 </figure>
 
-[=Media segment=] start/end points MAY be unaligned with [=period=] start/end points. If a [=media segment=] overlaps a [=period=] boundary, clients SHOULD NOT present the samples that lie outside the [=period=]. Whether samples that overlap a [=period=] boundary are to be considered inside or outside the [=period=] is implementation-defined.
-
-Issue: The boundary-overlapping sample treatment being vague like this feels wrong. Is there an interoperable interpretation that we can just state here? It feels a very low level detail, hard to estimate what is practical.
+[=Media segment=] start/end points MAY be unaligned with [=period=] start/end points. If a [=media segment=] overlaps a [=period=] boundary, clients SHOULD NOT present the samples that lie outside the [=period=].
 
 Note: It may be impractical to present [=media segments=] only partially, depending on the capabilties of the client platform, the type of media samples involved and any dependencies between samples. It is up to the client to ensure that platform capabilities are not exceeded and to account for the time shift that it incurs due to over-/underplayback.
+
+Whether samples that overlap a [=period=] boundary are to be considered inside or outside the [=period=] is implementation-defined and the behavior may differ from sample to sample, depending on the type of the sample and the platform capabilities.
 
 ## Sample timeline ## {#timing-sampletimeline}
 
@@ -166,10 +168,6 @@ If [=indexed addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHAL
 
 A <dfn>media segment</dfn> is an HTTP-addressable data structure that contains one or more media samples.
 
-Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document refers to both concepts as "segment".
-
-Issue: Moving to CMAF terms might simplify the linguistic overhead caused by DASH terminology here. See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/217
-
 [=Media segments=] SHALL contain one or more consecutive media samples. Consecutive [=media segments=] in the same [=representation=] SHALL contain consecutive media samples.
 
 [=Media segments=] SHALL contain the media samples that exactly match the time span on the [=sample timeline=] that is mapped to the segment's associated time span on the [=MPD timeline=], except when using [=simple addressing=] in which case a certain amount of inaccuracy MAY be present as defined in [[#timing-addressing-inaccuracy]].
@@ -182,33 +180,240 @@ Note: The requirements on providing samples for the [=period=] start/end point i
 
 ## Segment addressing modes ## {#timing-addressing}
 
-Issue: Need to go over segment-related terminology and ideally move to CMAF terms (https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/217). Right now this is a bit too "media segment" oriented.
-
-This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] in interopreable DASH presentations.
+This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] and [=initialization segments=] in interopreable DASH presentations.
 
 The choice of addressing mode depends on the implementation details of a particular content processing flow. Use whichever addressing mode is suitable for your needs when authoring content.
 
-Addressing modes not listed in this chapter SHALL NOT be used.
+Addressing modes not defined in this chapter SHALL NOT be used by DASH services. Clients SHOULD support all addressing modes defined in this chapter.
 
 All [=representations=] in the same [=adaptation set=] SHALL use the same addressing mode. [=Representations=] in different [=adaptation sets=] MAY use different addressing modes.
 
 ### Indexed addressing ### {#timing-addressing-indexed}
 
-Placeholder chapter.
+A representation that uses <dfn>indexed addressing</dfn> consists of an [=ISO BMFF=] track file containing an index segment, an [=initialization segment=] and a sequence of [=media segments=].
 
-<dfn>indexed addressing</dfn> means `SegmentTemplate` with `@indexRange`.
+Clauses in section only apply to [=representations=] that use indexed addressing.
+
+Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document does not make such a distinction and has no concept of subsegments.
+
+<figure>
+	<img src="Images/Timing/IndexedAddressing.png" />
+	<figcaption>Indexed addressing is based on an index segment that references all [=media segments=].</figcaption>
+</figure>
+
+The [=MPD=] defines the byte range of the track file that contains the index segment. The index segment informs the client of all the [=media segments=] that exist, the time spans they cover on the [=sample timeline=] and their byte ranges.
+
+Multiple representations (tracks) SHALL NOT be stored in the same track file.
+
+At least one `Representation/BaseURL` element SHALL be present in the MPD and SHALL contain a reference to the track file. See [[#timing-urls-and-http]] for details on URL handling.
+
+The `SegmentTemplate@indexRange` attribute SHALL be present in the MPD and SHALL reference the byte range of the segment index in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!rfc7233]], referencing a single range of bytes. The `SegmentTemplate@indexRangeExact` attribute SHALL have the value `true`.
+
+The `SegmentTemplate@timescale` attribute SHALL be present and its value SHALL match the value of the `timescale` field in the index segment.
+
+The `AdaptationSet@subsegmentStartsWithSAP` attribute SHALL be present in the MPD and SHALL have a value of `1` or `2`, depending on the sample structure of the [=media segments=].
+
+Issue: We need to clarify how to determine the right value. [#235](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/235)
+
+The `SegmentTemplate/Initialization@range` attribute SHALL reference the byte range of the [=initialization segment=] in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!rfc7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
+
+<div class="example">
+Below is an example of common usage of the indexed addressing mode.
+
+The example defines a timescale of 48000 units per second, with the period starting at position 8100 on the [=sample timeline=]. The client can use the index segment referenced by `indexRange` to determine where the [=media segment=] containing position 8100 (and all other [=media segments=]) can be found. The byte range of the [=initialization segment=] is also referenced here.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
+	<Period>
+		<AdaptationSet subsegmentStartsWithSAP="1">
+			<Representation>
+				<BaseURL>showreel_audio_dashinit.mp4</BaseURL>
+				<SegmentTemplate timescale="48000" presentationTimeOffset="8100"
+						indexRangeExact="true" indexRange="848-999">
+					<Initialization range="0-847"/>
+				</SegmentTemplate>
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+</xmp>
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
+</div>
+
+#### Structure of the index segment #### {#timing-addressing-indexed-indexstructure}
+
+The index segment SHALL consist of a single Segment Index Box (`sidx`) as defined by [[!ISOBMFF]]. The field layout is as follows:
+
+<xmp>
+aligned(8) class SegmentIndexBox extends FullBox('sidx', version, 0) {
+	unsigned int(32) reference_ID;
+	unsigned int(32) timescale;
+
+	if (version==0) {
+		unsigned int(32) earliest_presentation_time;
+		unsigned int(32) first_offset;
+	}
+	else {
+		unsigned int(64) earliest_presentation_time;
+		unsigned int(64) first_offset;
+	}
+
+	unsigned int(16) reserved = 0;
+	unsigned int(16) reference_count;
+
+	for (i = 1; i <= reference_count; i++)
+	{
+		bit (1)              reference_type;
+		unsigned int(31)     referenced_size;
+		unsigned int(32)     subsegment_duration;
+		bit(1)               starts_with_SAP;
+		unsigned int(3)      SAP_type;
+		unsigned int(28)     SAP_delta_time;
+	}
+}
+</xmp>
+
+The values of the fields SHALL be as follows:
+
+: `reference_ID`
+:: The `track_ID` of the track that contains the data of this [=representation=].
+
+: `timescale`
+:: Same as the `timescale` field of the Media Header Box.
+
+: `earliest_presentation_time`
+:: The earliest presentation time in the first [=media segment=] (in `timescale` units).
+
+: `first_offset`
+:: Distance from the anchor point to the first [=media segment=].
+
+: `reference_count`
+:: Total number of [=media segments=] referenced by the index segment.
+
+: `reference_type`
+:: `0`
+
+: `referenced_size`
+:: Size of the [=media segment=] in bytes. [=Media segments=] are assumed to be consecutive, so this is also the distance to the start of the next [=media segment=].
+
+: `subsegment_duration`
+:: Sum of all sample durations in the [=media segment=], in `timescale` units.
+
+: `starts_with_SAP`
+:: `1`
+
+: `SAP_type`
+:: Either `1` or `2`, depending on the sample structure in the [=media segment=].
+
+: `SAP_delta_time`
+:: `0`
+
+Issue: BMFF mentions edit lists when talking of this box, whereas IOP does not. Do we need to mention edit lists? Are they intentionally omitted from IOP?
 
 ### Explicit addressing ### {#timing-addressing-explicit}
 
-Placeholder chapter.
+A representation that uses <dfn>explicit addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the [=MPD=], with the exact time span covered by each [=media segment=] described in the MPD.
 
-<dfn>explicit addressing</dfn> means `SegmentTemplate` with `SegmentTimeline`.
+Clauses in section only apply to [=representations=] that use explicit addressing.
+
+<figure>
+	<img src="Images/Timing/ExplicitAddressing.png" />
+	<figcaption>Explicit addressing uses a segment template that is combined with explicitly defined time spans for each [=media segment=] in order to reference [=media segments=].</figcaption>
+</figure>
+
+The [=MPD=] SHALL contain a `SegmentTemplate/SegmentTimeline` element that contains a set of [=media segment=] references that satisfies the requirements defined in this document. The references exist as a sequence of `S` elements, each of which references one or more [=media segments=] with start time `S@t` and duration `S@d` in `SegmentTemplate@timescale` units on the [=sample timeline=]. The `SegmentTemplate@duration` attribute SHALL NOT be present.
+
+Note: `SegmentTimeline` places segments on the [=sample timeline=], from which they are mapped onto the [=MPD timeline=] using `SegmentTemplate@presentationTimeOffset`. See also [[#timing-sampletimeline]].
+
+To enable concise reference definitions, an `S` element may be a repeating [=media segment=] reference that indicates a number of repeated consecutive [=media segments=] with the same duration. The value of `S@r` SHALL indicate the number of additional consecutive [=media segments=] that exist.
+
+Note: Only additional references are counted, so `S@r=5` indicates a total of 6 consecutive [=media segments=] with the same duration.
+
+The start time of a [=media segment=] reference SHALL be calculated from the start time and duration of the previous reference if not specified by `S@t`. There SHALL NOT be any gaps or overlap between [=media segment=] references.
+
+The value of `S@r` SHALL be nonnegative, except for the last `S` element which MAY have a negative value in `S@r`, indicating that the repeated references continue indefinitely up to a [=media segment=] that either ends at or overlaps the period end point on the [=MPD timeline=].
+
+Updates to a dynamic MPD MAY add more `S` elements but SHALL NOT modify existing ones.
+
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
+
+<div class="example">
+Below is an example of common usage of the explicit addressing mode.
+
+The example defines a sequence of 11 [=media segments=] starting at position 120 on the [=sample timeline=] and lasting for a total of 95520 units at a timescale of 1000 units per second (which results in 95.52 seconds of data). The [=period=] starts at position 810, which is within the first [=media segment=], found at the relative URL `video/120.m4s`. The fifth [=media segment=] repeats once, resulting in a sixth [=media segment=] with the same duration.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
+	<Period>
+		<AdaptationSet>
+			<Representation>
+				<SegmentTemplate timescale="1000" presentationTimeOffset="810"
+						media="video/$Time$.m4s" initialization="video/init.mp4">
+					<SegmentTimeline>
+						<S t="120" d="8520"/>
+						<S d="8640"/>
+						<S d="8600"/>
+						<S d="8680"/>
+						<S d="9360" r="1"/>
+						<S d="8480"/>
+						<S d="9080"/>
+						<S d="6440"/>
+						<S d="10000"/>
+						<S d="8360"/>
+					</SegmentTimeline>
+				</SegmentTemplate>
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+</xmp>
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
+</div>
 
 ### Simple addressing ### {#timing-addressing-simple}
 
-Placeholder chapter.
+A representation that uses <dfn>simple addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the [=MPD=], with the nominal time span covered by each [=media segment=] described in the MPD.
 
-<dfn>simple addressing</dfn> means `SegmentTemplate` without `SegmentTimeline`.
+The MPD defines the nominal timing of each [=media segment=], used only for referencing purposes. The true time span covered by the samples within the [=media segment=] can be slightly different. This chapter defines addressing based on the nominal timing parameters, with details on the allowed inaccuracy provided by the subchapter [[#timing-addressing-inaccuracy]].
+
+Clauses in section only apply to [=representations=] that use simple addressing.
+
+<figure>
+	<img src="Images/Timing/SimpleAddressing.png" />
+	<figcaption>Simple addressing uses a segment template that is combined with approximate first [=media segment=] timing information and an average [=media segment=] duration in order to reference [=media segments=].</figcaption>
+</figure>
+
+The `SegmentTemplate@duration` attribute SHALL define the average duration of a [=media segment=] in `SegmentTemplate@timescale` units.
+
+The nominal [=media segment=] time spans SHALL consist of the first [=media segment=] starting exactly at the [=period=] start time and all other [=media segments=] following in a consecutive series of equal time spans, ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
+
+Note: The first [=media segment=] will always start at the point on the [=sample timeline=] indicated by `SegmentTemplate@presentationTimeOffset` when using simple addressing.
+
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
+
+<div class="example">
+Below is an example of common usage of the simple addressing mode.
+
+The example defines a [=sample timeline=] with a timescale of 1000 units per second, with the [=period=] starting at position 900. The average duration of a [=media segment=] is 4001. [=Media segment=] numbering starts at 800, so the first [=media segment=] is found at the relative URL `video/800.m4s`. The sequence of [=media segments=] continues to the end of the period, which is 900 seconds long, making for a total of 225 defined [=media segment=] references.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
+	<Period duration="PT900S">
+		<AdaptationSet>
+			<Representation>
+				<SegmentTemplate timescale="1000" presentationTimeOffset="900"
+						media="video/$Number$.m4s" initialization="video/init.mp4"
+						duration="4001" startNumber="800" />
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+</xmp>
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
+</div>
 
 #### Inaccuracy in media segment timing when using simple addressing #### {#timing-addressing-inaccuracy}
 
@@ -216,7 +421,7 @@ When using [=simple addressing=], the samples contained in a [=media segment=] M
 
 <figure>
 	<img src="Images/Timing/InaccurateAddressing.png" />
-	<figcaption>Inaccurate addressing relaxes the requirement on [=media segment=] contents matching the [=MPD timeline=] and the [=sample timeline=]. Red boxes indicate samples.</figcaption>
+	<figcaption>Simple addressing relaxes the requirement on [=media segment=] contents matching the [=MPD timeline=] and the [=sample timeline=]. Red boxes indicate samples.</figcaption>
 </figure>
 
 The allowed deviation is defined as the maximum offset between the edges of the nominal time span (as defined by the segment reference in the [=MPD=]) and the edges of the true time span (as defined by the contents of the [=media segment=]). The deviation is evaluated separately for each edge.
@@ -244,6 +449,10 @@ Near [=period=] boundaries, all the constraints of timing and addressing must st
 
 If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because of the requirement in [[#timing-mediasegment]] that the first [=media segment=] contain a media sample that starts at or overlaps the [=period=] start point.
 </div>
+
+## Resolving URLs and performing HTTP requests ## {#timing-urls-and-http}
+
+Issue: Determine appropriate content for this section.
 
 ## Segment alignment ## {#timing-segmentalignment}
 
@@ -469,6 +678,7 @@ This chapter contains a set of terms that will exist in the IOP document but tha
 
 * <dfn>adaptation set</dfn>
 * <dfn>initialization segment</dfn>
+* <dfn>ISO BMFF</dfn>
 
 ## Editorial notes ## {#editorial-notes}
 
@@ -509,7 +719,7 @@ General comments:
 * Some terms "defined" in the timing chapter should probably be defined elsewhere once we have more content migrated.
 * Where does minBufferTime go? It needs a home and some nice illustrations.
 * Where do we define the `lmsg` mechanism?
-
+* "@subsegmentStartsWithSAP" is related to timing in some sense but in another sense it is just a question of segment/sample structure. Not sure if it fits into this chapter.
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
 
