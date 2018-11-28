@@ -20,7 +20,7 @@ The playback of a static MPD SHALL NOT depend on the mapping of the MPD timeline
 
 The MPD timeline of a dynamic MPD SHALL have a fixed mapping to real time, with each point on the timeline corresponding to a point in real time. Clients MAY introduce an additional offset with respect to real time [[#timing-timeshift|to the extent allowed by the time shift signaling in the MPD]].
 
-Note: In addition to mapping the content to real time, [[#timing-mpd-updates|a dynamic MPD can be updated during the presentation]]. Updates may add new periods and remove or modify existing ones.
+Note: In addition to mapping the content to real time, [[#timing-mpd-updates|a dynamic MPD can be updated during the presentation]]. Updates may add new periods and remove or modify existing ones, though some restrictions apply. See [[#timing-mpd-updates]].
 
 The zero point in the MPD timeline of a dynamic MPD SHALL be mapped to the point in real time indicated by `MPD@availabilityStartTime`. This value SHALL NOT change between MPD updates.
 
@@ -78,9 +78,9 @@ Parts of the MPD structure that are not relevant for this chapter have been omit
 
 In a static MPD, the first period SHALL start at the zero point of the [=MPD timeline=]. In a dynamic MPD, the first period SHALL start at or after the zero point of the [=MPD timeline=].
 
-In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period SHALL have a `Period@duration` if no new [=media segment=] references will be added to it in future MPD updates (i.e. it has a fixed duration) and SHALL NOT have `Period@duration` if new [=media segment=] references might be added to it in future MPD updates.
+In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MPD, the last period MAY have a `Period@duration`, in which case it is considered to have a fixed duration. If without `Period@duration`, the last period in a dynamic MPD SHALL be considered to have an unlimited duration.
 
-Note: A period with an unlimited duration may be converted to a fixed-duration period by an MPD update.
+Note: In a dynamic MPD, a period with an unlimited duration may be converted to fixed-duration by an MPD update. Periods in a dynamic MPD may also be shortened or removed entirely under certain conditions. See [[#timing-mpd-updates]].
 
 In a static MPD, `MPD@mediaPresentationDuration` SHALL be present.
 
@@ -110,7 +110,7 @@ In a dynamic MPD, the period active range SHALL be the time span of the [=period
 
 <figure>
 	<img src="Images/Timing/MandatorySegmentReferencesInDynamicMpd.png" />
-	<figcaption>In a dynamic MPD, the time shift window determines the set of required [=media segment=] references. [=Media segments=] filled with gray need not be referenced due to falling outside the time shift window, despite falling within the bounds of a [=period=].</figcaption>
+	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required [=media segment=] references. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
 </figure>
 
 In a static MPD, a representation SHALL NOT reference [=media segments=] that are not necessary to cover the period active range with segments, except when using [=indexed addressing=] in which case such [=media segments=] MAY be referenced.
@@ -121,20 +121,22 @@ Note: For scheduled playback of pre-generated content, it is needless complexity
 
 There SHALL NOT be gaps or overlapping [=media segments=] in a representation.
 
-A representation SHALL NOT reference [=media segments=] that are entirely out of the bounds of the [=period=], except when using [=indexed addressing=] in which case such [=media segments=] MAY be referenced. Clients SHALL NOT present any samples from [=media segments=] that are entirely outside the [=period=], even if such [=media segments=] are referenced.
+A representation using [=explicit addressing=] SHALL NOT reference [=media segments=] that are entirely out of the bounds of the [=period=].
 
-Note: If you use [=indexed addressing=], there exists an index segment on disk that references all [=media segments=]. If a [=period=] is only intended to present a subset of these [=media segments=], it would be needlessly complicated to require a period-specific index segment to be generated.
+Note: The constraint above is defined only for [=explicit addressing=] because [=simple addressing=] always defines an infinite sequence of references and when you use [=indexed addressing=], there exists an index segment on disk that references all [=media segments=]. If a [=period=] is only intended to present a subset of these [=media segments=], it would be needlessly complicated to require a period-specific index segment to be generated.
+
+Clients SHALL NOT present any samples from [=media segments=] that are entirely outside the [=period=], even if such [=media segments=] are referenced.
 
 <figure>
 	<img src="Images/Timing/SamplesOnPeriodBoundary.png" />
 	<figcaption>[=Media segments=] and samples need not align with [=period=] boundaries. Some samples may be entirely outside a [=period=] (marked gray) and some may overlap the [=period=] boundary (yellow).</figcaption>
 </figure>
 
-[=Media segment=] start/end points MAY be unaligned with [=period=] start/end points. If a [=media segment=] overlaps a [=period=] boundary, clients SHOULD NOT present the samples that lie outside the [=period=].
+[=Media segment=] start/end points MAY be unaligned with [=period=] start/end points except when forbidden by the [[#timing-addressing|addressing mode]] used by the representation.
 
-Note: It may be impractical to present [=media segments=] only partially, depending on the capabilties of the client platform, the type of media samples involved and any dependencies between samples. It is up to the client to ensure that platform capabilities are not exceeded and to account for the time shift that it incurs due to over-/underplayback.
+If a [=media segment=] overlaps a [=period=] boundary, clients SHOULD NOT present the samples that lie outside the [=period=] and SHOULD present the samples that lie either partially or entirely within the [=period=].
 
-Whether samples that overlap a [=period=] boundary are to be considered inside or outside the [=period=] is implementation-defined and the behavior may differ from sample to sample, depending on the type of the sample and the platform capabilities.
+Note: In the end, which samples are presented is entirely up to the client. It may sometimes be impractical to present [=media segments=] only partially, depending on the capabilties of the client platform, the type of media samples involved and any dependencies between samples.
 
 ## Sample timeline ## {#timing-sampletimeline}
 
@@ -149,20 +151,24 @@ Note: The sample timeline is linear - encoders are expected to use an appropriat
 
 The sample timeline SHALL be shared by all [=representations=] in the same [=adaptation set=]. [=Representations=] in different [=adaptation sets=] MAY use different sample timelines.
 
-The sample timeline is measured in unnamed timescale units. The term timescale refers to the number of timescale units per second. This value SHALL be present in the [=MPD=] as `SegmentTemplate@timescale`.
+The sample timeline is measured in unnamed timescale units. The term timescale refers to the number of timescale units per second. This value SHALL be present in the [=MPD=] as `SegmentTemplate@timescale` or `SegmentBase@timescale` (depending on the [[#timing-addressing|addressing mode]]).
 
 <figure>
 	<img src="Images/Timing/PresentationTimeOffset.png" />
-	<figcaption>`SegmentTemplate@presentationTimeOffset` establishes the relationship between the [=MPD timeline=] and the sample timeline.</figcaption>
+	<figcaption>`@presentationTimeOffset` establishes the relationship between the [=MPD timeline=] and the sample timeline.</figcaption>
 </figure>
 
-The point on the sample timeline indicated by `SegmentTemplate@presentationTimeOffset` (in timescale units, default zero) SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
+The presentation time offset or PTO indicates a point on the sample timeline which SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=].
 
-`SegmentTempleate@presentationTimeOffset` SHALL NOT change between updates of a dynamic MPD.
+PTO is defined by `SegmentTemplate@presentationTimeOffset` or `SegmentBase@presentationTimeOffset`, depending on the [[#timing-addressing|addressing mode]], and has a default value of 0 `@timescale` units.
 
-If [=simple addressing=] or [=explicit addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of the [=media segment=] that starts at or overlaps the [=period=] start point, even if this [=media segment=] is no longer referenced by the [=MPD=] (as may be the case with a dynamic MPD if the [=media segment=] has fallen out of the time shift window).
+`@presentationTimeOffset` SHALL NOT change between updates of a dynamic MPD.
 
-If [=indexed addressing=] is used, `SegmentTemplate@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
+If [=indexed addressing=] is used, `@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
+
+If [=explicit addressing=] is used, `@presentationTimeOffset` SHALL be a point within or at the start of the [=media segment=] that starts at or overlaps the [=period=] start point, even if this [=media segment=] is no longer referenced by the [=MPD=] (as may be the case with a dynamic MPD if the [=media segment=] has fallen out of the [=time shift window=]).
+
+If [=simple addressing=] is used, `@presentationTimeOffset` SHALL be the nominal start point of the first [=media segment=] referenced by the [=period=].
 
 ## Media segments ## {#timing-mediasegment}
 
@@ -182,9 +188,17 @@ Note: The requirements on providing samples for the [=period=] start/end point i
 
 This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] and [=initialization segments=] in interopreable DASH presentations.
 
-The choice of addressing mode depends on the implementation details of a particular content processing flow. Use whichever addressing mode is suitable for your needs when authoring content.
-
 Addressing modes not defined in this chapter SHALL NOT be used by DASH services. Clients SHOULD support all addressing modes defined in this chapter.
+
+The choice of addressing mode depends on the implementation details of a particular content processing flow. Some addressing modes may set constraints on data alignment that limit their usefulness in certain situations.
+
+A [=representation=] that is entirely pre-generated in advance of publishing SHOULD use either [=indexed addressing=] or [=explicit addressing=].
+
+A [=representation=] that is generated on the fly SHOULD use [=explicit addressing=].
+
+Note: If you offer both on-demand and live services, you may wish to use [=explicit addressing=] for both types of services simply to use the same addressing mode for all content, thereby reducing the scope of packager and client implementations that are exercised and reducing the likelyhood of being affected by software defects or differences in implementation behavior.
+
+[=Simple addressing=] enables the packager logic to be very simple but this comes at a cost of reduced interoperability in multi-period scenarios and additional client complexity. You MAY use [=simple addressing=] in any situation where you are not affected by its limitations.
 
 All [=representations=] in the same [=adaptation set=] SHALL use the same addressing mode. [=Representations=] in different [=adaptation sets=] MAY use different addressing modes.
 
@@ -203,19 +217,19 @@ Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entit
 
 The [=MPD=] defines the byte range of the track file that contains the index segment. The index segment informs the client of all the [=media segments=] that exist, the time spans they cover on the [=sample timeline=] and their byte ranges.
 
-Multiple representations (tracks) SHALL NOT be stored in the same track file.
+Multiple representations SHALL NOT be stored in the same track file.
 
 At least one `Representation/BaseURL` element SHALL be present in the MPD and SHALL contain a reference to the track file. See [[#timing-urls-and-http]] for details on URL handling.
 
-The `SegmentTemplate@indexRange` attribute SHALL be present in the MPD and SHALL reference the byte range of the segment index in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!rfc7233]], referencing a single range of bytes. The `SegmentTemplate@indexRangeExact` attribute SHALL have the value `true`.
+The `SegmentBase@indexRange` attribute SHALL be present in the MPD and SHALL reference the byte range of the segment index in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!rfc7233]], referencing a single range of bytes.
 
-The `SegmentTemplate@timescale` attribute SHALL be present and its value SHALL match the value of the `timescale` field in the index segment.
+The `SegmentBase@timescale` attribute SHALL be present and its value SHALL match the value of the `timescale` field in the index segment.
 
 The `AdaptationSet@subsegmentStartsWithSAP` attribute SHALL be present in the MPD and SHALL have a value of `1` or `2`, depending on the sample structure of the [=media segments=].
 
 Issue: We need to clarify how to determine the right value. [#235](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/235)
 
-The `SegmentTemplate/Initialization@range` attribute SHALL reference the byte range of the [=initialization segment=] in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!rfc7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
+The `SegmentBase/Initialization@range` attribute SHALL reference the byte range of the [=initialization segment=] in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!rfc7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
 
 <div class="example">
 Below is an example of common usage of the indexed addressing mode.
@@ -228,10 +242,10 @@ The example defines a timescale of 48000 units per second, with the period start
 		<AdaptationSet subsegmentStartsWithSAP="1">
 			<Representation>
 				<BaseURL>showreel_audio_dashinit.mp4</BaseURL>
-				<SegmentTemplate timescale="48000" presentationTimeOffset="8100"
+				<SegmentBase timescale="48000" presentationTimeOffset="8100"
 						indexRangeExact="true" indexRange="848-999">
 					<Initialization range="0-847"/>
-				</SegmentTemplate>
+				</SegmentBase>
 			</Representation>
 		</AdaptationSet>
 	</Period>
@@ -334,7 +348,7 @@ The start time of a [=media segment=] reference SHALL be calculated from the sta
 
 The value of `S@r` SHALL be nonnegative, except for the last `S` element which MAY have a negative value in `S@r`, indicating that the repeated references continue indefinitely up to a [=media segment=] that either ends at or overlaps the period end point on the [=MPD timeline=].
 
-Updates to a dynamic MPD MAY add more `S` elements but SHALL NOT modify existing ones.
+[[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
 
 The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
 
@@ -388,8 +402,6 @@ Clauses in section only apply to [=representations=] that use simple addressing.
 The `SegmentTemplate@duration` attribute SHALL define the average duration of a [=media segment=] in `SegmentTemplate@timescale` units.
 
 The nominal [=media segment=] time spans SHALL consist of the first [=media segment=] starting exactly at the [=period=] start time and all other [=media segments=] following in a consecutive series of equal time spans, ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
-
-Note: The first [=media segment=] will always start at the point on the [=sample timeline=] indicated by `SegmentTemplate@presentationTimeOffset` when using simple addressing.
 
 The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
 
@@ -449,6 +461,16 @@ Near [=period=] boundaries, all the constraints of timing and addressing must st
 
 If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because of the requirement in [[#timing-mediasegment]] that the first [=media segment=] contain a media sample that starts at or overlaps the [=period=] start point.
 </div>
+
+#### Requirements on segment alignment at period start when using simple addressing #### {#timing-addressing-simple-alignment}
+
+When using [=simple addressing=], the first [=media segment=] will always start at the [=period=] start point. This matches the point the [=sample timeline=] indicated by `SegmentTemplate@presentationTimeOffset`.
+
+This means that it is not possible to start a [=period=] in the middle of a [=media segment=], such as when cutting an existing [=period=] in two (e.g. to insert an ad) at an arbitrary point (which might be in the middle of a [=media segment=]). Therefore, a [=period=] can only be started at a point where all its [=representations=] that use [=simple addressing=] have a segment boundary. Consider also that [=representations=] in different [=adaptation sets=] may have segment boundaries in different places on the timeline.
+
+This severely limits the usefulness of this addressing mode in multi-period services. Therefore, you SHOULD NOT use [=simple addressing=] in multi-period scenarios. While it might work if everything aligns properly, such occasions will be the exception and not the rule.
+
+Note: If you have existing content that uses [=simple addressing=] and you wish to use it in a multi-period scenario, it will generally be fairly easy to convert it to [=explicit addressing=]. Beware that the latter does not allow timing inaccuracy in media segments.
 
 ## Resolving URLs and performing HTTP requests ## {#timing-urls-and-http}
 
@@ -518,8 +540,11 @@ Clients MAY take advantage of any platform-specific optimizations for seamless p
 
 ## Time shift window ## {#timing-timeshift}
 
-TSBD
-SPD
+The <dfn>live edge</dfn> is the current time, according to the synchronized clocks on the service and the client. The live edge segment is the [=media segment=] that either starts at or overlaps the live edge.
+
+The <dfn>time shift window</dfn> is the span of time that ends at the [=live edge=] and has a duration of `MPD@timeShiftBufferDepth`.
+
+TODO: Mention SPD
 
 Issue: Determine appropriate content for this section.
 
@@ -547,11 +572,13 @@ Dynamic MPDs MAY change over time. The nature of the change is not restricted un
 
 Some common reasons to make changes in dynamic [=MPDs=]:
 
-* Adding new [=media segments=] to an existing [=period=].
+* Adding new [=media segment=] references to an existing [=period=].
 * Adding new [=periods=].
 * Converting unlimited-duration [=periods=] to fixed-duration [=periods=] by adding `Period@duration`.
-* Removing [=media segments=] and/or [=periods=] that have fallen out of the time shift window.
-* Adding `MPD@mediaPresentationDuration` to signal that the timeline of the MPD will no longer be extended with new [=media segment=] references.
+* Removing [=media segments=] and/or [=periods=] that have fallen out of the [=time shift window=].
+* Shortening an existing [=period=] to stop it ahead of schedule when changes in content scheduling occur.
+* Adding `MPD@mediaPresentationDuration` to signal that the timeline of the MPD will no longer be extended with new [=periods=].
+* Removing `MPD@minimumUpdatePeriod` to signal that MPD will no longer be updated (even though it may remain a dynamic MPD).
 * Converting the [=MPD=] to a static [=MPD=] to signal that a live service has become available on-demand as a recording.
 
 The following restrictions are defined here for MPD updates:
@@ -560,22 +587,28 @@ The following restrictions are defined here for MPD updates:
 * `MPD@availabilityStartTime` SHALL NOT change.
 * `Period@id` SHALL NOT change.
 * `Period@start` SHALL NOT change.
-* `Period@duration` SHALL NOT change MAY be added to a [=period=] that lacked it.
 * The adaptation sets present in a [=period=] (i.e. the set of `AdaptationSet@id` values) SHALL NOT change.
-* The functional behavior of a representation (identified by a matching `Representation@id` value) shall not change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of segment timing.
+* The functional behavior of a representation (identified by a matching `Representation@id` value) SHALL NOT change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of segment timing.
 * `SegmentTemplate@presentationTimeOffset` SHALL NOT change.
+* `SegmentBase@presentationTimeOffset` SHALL NOT change.
+* The value or presence of `Period@duration` SHALL NOT change except under the following conditions:
+	* The value MAY decrease if the new period end point remains after `now + MPD@minimumUpdatePeriod` on the [=MPD timeline=].
+	* The attribute MAY be added to a [=period=] that previously lacked it, as long as the period end point remains after `now + MPD@minimumUpdatePeriod` on the [=MPD timeline=].
+* Periods SHALL NOT be removed unless the period start point of the removed period was after `now + MPD@minimumUpdatePeriod` on the [=MPD timeline=].
+
+Note: The restrictions on period shortening and removal exist to ensure that segment references already in use by clients do not get invalidated.
 
 Issue: Review synchronization with 4.4.3.3 - lots of clauses in there, possible that something got lost in translation.
 
-Additional restrictions can be defined by other parts of this document.
+Additional restrictions might be defined by other parts of this document.
 
 Clients SHOULD use `Period@id` to track [=period=] identity across [=MPD=] updates.
 
-The presence of `MPD@minimumUpdatePeriod` SHALL be used to signal that the [=MPD=] is expected to change. The value of this field indicates the frequency at which a client is expected to poll for [=MPD=] updates.
+The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used to signal whether the [=MPD=] might be updated (with presence indicating potential for future updates). The value of this field indicates the maximum duration between [=MPD=] refreshes by the client. In other words, this is the validity duration of the present state of the [=MPD=].
 
-Note: In other words, `MPD@minimumUpdatePeriod` is the maximum expected delay between an update being made to the [=MPD=] on the service side and this update becoming available to a client. For practical considerations, you should add on top of this the time spent on acquiring and processing the updated [=MPD=].
+Note: In practice, clients will also require some time to download and process an MPD update - a service should not assume perfect update timing. Conversely, a client should not assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
 
-If `MPD@minimumUpdatePeriod` is absent then `MPD@mediaPresentationDuration` SHALL be present. Both attributes MAY be present simultaneously to signal that the [=MPD=] might still receive updates but these updates will not introduce new [=media segment=] references.
+If `MPD@minimumUpdatePeriod` is absent then `MPD@mediaPresentationDuration` SHALL be present. Both attributes MAY be present simultaneously to signal that the [=MPD=] might still receive updates but these updates will not introduce new [=periods=].
 
 In addition to signaling that clients are expected to poll for regular [=MPD=] updates, a service MAY publish in-band events to schedule [=MPD=] updates at moments of its choosing.
 
@@ -660,6 +693,8 @@ The mechanism that enables [=period=] splitting in the middle of a segment is th
 * a representation that is [=period-connected=] with a representation in a previous period [[#timing-connectivity|is marked with the period connectivity descriptor]].
 * clients are expected to deduplicate boundary-overlapping [=media segments=] for [=representations=] on which [[#timing-connectivity|period connectivity]] is signaled, if necessary for seamless playback (implementation-specific).
 * clients are expected to present only the samples that are within the bounds of the current [=period=] (may be limited by client platform capabilities).
+
+Note: [=Simple addressing=] has significant limitations on alignment at [=period=] start, making it unsuitable for many multi-period scenarios. See [[#timing-addressing-simple-alignment]].
 
 After splitting the example presentation, we arrive at the following structure.
 
