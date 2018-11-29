@@ -320,7 +320,7 @@ The values of the fields SHALL be as follows:
 
 Issue: BMFF mentions edit lists when talking of this box, whereas IOP does not. Do we need to mention edit lists? Are they intentionally omitted from IOP?
 
-#### Moving the period start point #### {#timing-addressing-indexed-startpoint}
+#### Moving the period start point (indexed addressing) #### {#timing-addressing-indexed-startpoint}
 
 When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
 
@@ -415,21 +415,25 @@ The example defines a sequence of 11 [=media segments=] starting at position 120
 Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
 </div>
 
-#### Moving the period start point #### {#timing-addressing-explicit-startpoint}
+#### Moving the period start point (explicit addressing) #### {#timing-addressing-explicit-startpoint}
 
 When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
 
 For [=representations=] that use [=explicit addressing=], perform the following adjustments to set a new [=period=] start point:
 
+<div class="algorithm">
+
 1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
 1. Remove any segment references (`SegmentTimeline/S`) that reference [=media segments=] that end before the new [=period=] start point.
 1. Update `Period@duration` to match the new duration.
+
+</div>
 
 ### Simple addressing ### {#timing-addressing-simple}
 
 A representation that uses <dfn>simple addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the [=MPD=], with the nominal time span covered by each [=media segment=] described in the MPD.
 
-The MPD defines the nominal timing of each [=media segment=], used only for referencing purposes. The true time span covered by the samples within the [=media segment=] can be slightly different. This chapter defines addressing based on the nominal timing parameters, with details on the allowed inaccuracy provided by the subchapter [[#timing-addressing-inaccuracy]].
+Advisement: Simple addressing defines the nominal time span of each [=media segment=] in the MPD. The time span covered by samples within the [=media segment=] can be slightly different than the nominal time span. See [[#timing-addressing-inaccuracy]].
 
 Clauses in section only apply to [=representations=] that use simple addressing.
 
@@ -438,7 +442,7 @@ Clauses in section only apply to [=representations=] that use simple addressing.
 	<figcaption>Simple addressing uses a segment template that is combined with approximate first [=media segment=] timing information and an average [=media segment=] duration in order to reference [=media segments=].</figcaption>
 </figure>
 
-The `SegmentTemplate@duration` attribute SHALL define the average duration of a [=media segment=] in `SegmentTemplate@timescale` units.
+The `SegmentTemplate@duration` attribute SHALL define the average true duration of a [=media segment=] in `SegmentTemplate@timescale` units. The nominal duration of a [=media segment=] is considered to always match the average true duration.
 
 The nominal [=media segment=] time spans SHALL consist of the first [=media segment=] starting exactly at the [=period=] start time and all other [=media segments=] following in a consecutive series of equal time spans, ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
 
@@ -501,7 +505,7 @@ Near [=period=] boundaries, all the constraints of timing and addressing must st
 If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because of the requirement in [[#timing-mediasegment]] that the first [=media segment=] contain a media sample that starts at or overlaps the [=period=] start point.
 </div>
 
-#### Moving the period start point #### {#timing-addressing-simple-startpoint}
+#### Moving the period start point (simple addressing) #### {#timing-addressing-simple-startpoint}
 
 When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
 
@@ -518,15 +522,21 @@ Note: If you are splitting a period, also keep in mind [[#timing-mediasegment|th
 
 Having ensured conformance to the above requirements for the new period start point, perform the following adjustments:
 
+<div class="algorithm">
+
 1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
 1. Increment `SegmentTemplate@startNumber` by the number of skipped [=media segments=].
 1. Update `Period@duration` to match the new duration.
 
-#### Converting to explicit addressing #### {#timing-addressing-simple-to-explicit}
+</div>
 
-[=Simple addressing=] allows for inaccuracy in [=media segment=] timing. No inaccuracy is allowed by [=explicit addressing=]. The mechanism of conversion described here only applies when there is no inaccuracy. If inaccuracy exists, you SHOULD re-package the content from scratch using [=explicit addressing=], instead of converting after the fact.
+#### Converting simple addressing to explicit addressing #### {#timing-addressing-simple-to-explicit}
+
+Advisement: [=Simple addressing=] allows for inaccuracy in [=media segment=] timing. No inaccuracy is allowed by [=explicit addressing=]. The mechanism of conversion described here only applies when there is no inaccuracy. If the nominal time spans in original the MPD differ from the true time spans of the [=media segments=], re-package the content from scratch using [=explicit addressing=] instead of converting after the fact.
 
 To perform the conversion, execute the following steps:
+
+<div class="algorithm">
 
 1. Calculate the number of [=media segments=] in the representation as `SegmentCount = Ceil(AsSeconds(Period@duration) / ( SegmentTemplate@duration / SegmentTemplate@timescale))`.
 1. Assign a zero-based `SegmentIndex` value to each [=media segment=] in the representation, incrementing by one per segment.
@@ -541,6 +551,8 @@ To perform the conversion, execute the following steps:
 	1. Set `S@d` to equal `SegmentTemplate@duration`.
 	1. Remove `SegmentTemplate@duration`.
 	1. Set `S@r` to `SegmentCount - 1`.
+
+</div>
 
 <div class="example">
 Below is an example of a [=simple addressing=] [=representation=] before conversion.
@@ -805,8 +817,6 @@ The mechanism that enables [=period=] splitting in the middle of a segment is th
 * clients are expected to deduplicate boundary-overlapping [=media segments=] for [=representations=] on which [[#timing-connectivity|period connectivity]] is signaled, if necessary for seamless playback (implementation-specific).
 * clients are expected to present only the samples that are within the bounds of the current [=period=] (may be limited by client platform capabilities).
 
-Note: [=Simple addressing=] has significant limitations on alignment at [=period=] start, making it unsuitable for many multi-period scenarios. See [[#timing-addressing-simple-startpoint]].
-
 After splitting the example presentation, we arrive at the following structure.
 
 <figure>
@@ -815,6 +825,8 @@ After splitting the example presentation, we arrive at the following structure.
 </figure>
 
 If [=indexed addressing=] is used, both periods will reference all segments as both periods will use the same unmodified index segment. Clients are expected to ignore [=media segments=] that fall outside the [=period=] bounds.
+
+Advisement: [=Simple addressing=] has significant limitations on alignment at [=period=] start, making it unsuitable for some multi-period scenarios. See [[#timing-addressing-simple-startpoint]].
 
 Other [=periods=] (e.g. ads) may be inserted between the two [=periods=] resulting from the split. This does not affect the addressing and timing of the two [=periods=].
 
