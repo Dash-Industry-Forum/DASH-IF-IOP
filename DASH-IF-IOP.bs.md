@@ -162,6 +162,8 @@ The presentation time offset or PTO indicates a point on the sample timeline whi
 
 PTO is defined by `SegmentTemplate@presentationTimeOffset` or `SegmentBase@presentationTimeOffset`, depending on the [[#timing-addressing|addressing mode]], and has a default value of 0 `@timescale` units.
 
+Note: To transform a [=sample timeline=] position `SampleTime` to an [=MPD timeline=] position, use the formula `MpdTime = Period@start + (SampleTime - @presentationTimeOffset) / @timescale`.
+
 `@presentationTimeOffset` SHALL NOT change between updates of a dynamic MPD.
 
 If [=indexed addressing=] is used, `@presentationTimeOffset` SHALL be a point within or at the start of any [=media segment=] referenced by the [=period=].
