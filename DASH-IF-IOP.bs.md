@@ -186,13 +186,17 @@ This section defines the <dfn title="addressing mode">addressing modes</dfn> tha
 
 Addressing modes not defined in this chapter SHALL NOT be used by DASH services. Clients SHOULD support all addressing modes defined in this chapter.
 
-The choice of addressing mode depends on the implementation details of a particular content processing flow. Some addressing modes may set constraints on data alignment that limit their usefulness in certain situations.
+You SHOULD choose the addressing mode based on the nature of the content:
 
-A [=representation=] that is entirely pre-generated in advance of publishing SHOULD use either [=indexed addressing=] or [=explicit addressing=].
+<dl class="switch">
 
-A [=representation=] that is generated on the fly SHOULD use [=explicit addressing=].
+: Content generated on the fly
+:: Use [=explicit addressing=].
 
-Note: If you offer both on-demand and live services, you may wish to use [=explicit addressing=] for both types of services simply to use the same addressing mode for all content, thereby reducing the scope of packager and client implementations that are exercised and reducing the likelyhood of being affected by software defects or differences in implementation behavior.
+: Content generated in advance of publishing
+:: Use [=explicit addressing=] or [=indexed addressing=].
+
+</dl>
 
 [=Simple addressing=] enables the packager logic to be very simple but this comes at a cost of reduced interoperability in multi-period scenarios and additional client complexity. You MAY use [=simple addressing=] in any situation where you are not affected by its limitations.
 
@@ -481,13 +485,13 @@ When using [=simple addressing=], the samples contained in a [=media segment=] M
 
 The allowed deviation is defined as the maximum offset between the edges of the nominal time span (as defined by the segment reference in the [=MPD=]) and the edges of the true time span (as defined by the contents of the [=media segment=]). The deviation is evaluated separately for each edge.
 
+Advisement: This allowed deviation does not relax any requirements that do not explicitly define an exception. For example, [=periods=] must still be covered with samples for their entire duration, which constrains the flexibility allowed for the first and last [=media segment=].
+
 The deviation SHALL be no more than 50% of the nominal segment duration and MAY be in either direction.
 
 Note: This results in a maximum true duration of 200% (+50% outward extension on both edges) and a minimum segment duration of 1 sample (-50% inward from both edges would result in 0 but empty segments are not allowed).
 
-This allowed deviation does not relax any requirements that do not explicitly define an exception. For example, [=periods=] must still be covered with samples for their entire duration, which constrains the flexibility allowed for the first and last [=media segment=].
-
-Note: Allowing inaccurate timing is intended to enable reasoning on the [=MPD timeline=] using average values for [=media segment=] timing. If the addressing data says that a [=media segment=] contains 4 seconds of data on average, a client can predict with reasonable accuracy which samples are found in which segments, while at the same time the packager is not required to emit per-segment timing data in the [=MPD=]. It is expected that the content is packaged with this contraint in mind (i.e. **every** segment cannot be inaccurate in the same direction - a shorter segment now implies a longer segment in the future to make up for it).
+Allowing inaccurate timing is intended to enable reasoning on the [=MPD timeline=] using average values for [=media segment=] timing. If the addressing data says that a [=media segment=] contains 4 seconds of data on average, a client can predict with reasonable accuracy which samples are found in which segments, while at the same time the packager is not required to emit per-segment timing data in the [=MPD=]. It is expected that the content is packaged with this contraint in mind (i.e. **every** segment cannot be inaccurate in the same direction - a shorter segment now implies a longer segment in the future to make up for it).
 
 <div class="example">
 Consider a [=media segment=] with a nominal start time of 10 seconds from period start and a nominal duration of 4 seconds, within a [=period=] of unlimited duration.
