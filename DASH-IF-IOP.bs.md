@@ -178,11 +178,7 @@ A <dfn>media segment</dfn> is an HTTP-addressable data structure that contains o
 
 [=Media segments=] SHALL contain the media samples that exactly match the time span on the [=sample timeline=] that is mapped to the segment's associated time span on the [=MPD timeline=], except when using [=simple addressing=] in which case a certain amount of inaccuracy MAY be present as defined in [[#timing-addressing-inaccuracy]].
 
-The [=media segment=] that starts at or overlaps the [=period=] start point on the [=MPD timeline=] SHALL contain a media sample that starts at or overlaps the [=period=] start point.
-
-The [=media segment=] that ends at or overlaps the [=period=] end point on the [=MPD timeline=] SHALL contain a media sample that ends at or overlaps the [=period=] end point.
-
-Note: The requirements on providing samples for the [=period=] start/end point in the first/last [=media segment=] apply even when [=simple addressing=] is used with [[#timing-addressing-inaccuracy|inaccurate media segment timing]].
+Even when using [=simple addressing=], the [=media segment=] that starts at or overlaps the [=period=] start point on the [=MPD timeline=] SHALL contain a media sample that starts at or overlaps the [=period=] start point and the [=media segment=] that ends at or overlaps the [=period=] end point on the [=MPD timeline=] SHALL contain a media sample that ends at or overlaps the [=period=] end point.
 
 ## Segment addressing modes ## {#timing-addressing}
 
@@ -234,7 +230,7 @@ The `SegmentBase/Initialization@range` attribute SHALL reference the byte range 
 <div class="example">
 Below is an example of common usage of the indexed addressing mode.
 
-The example defines a timescale of 48000 units per second, with the period starting at position 8100 on the [=sample timeline=]. The client can use the index segment referenced by `indexRange` to determine where the [=media segment=] containing position 8100 (and all other [=media segments=]) can be found. The byte range of the [=initialization segment=] is also referenced here.
+The example defines a timescale of 48000 units per second, with the period starting at position 8100 (or 0.16875 seconds) on the [=sample timeline=]. The client can use the index segment referenced by `indexRange` to determine where the [=media segment=] containing position 8100 (and all other [=media segments=]) can be found. The byte range of the [=initialization segment=] is also referenced.
 
 <xmp highlight="xml">
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
@@ -242,8 +238,7 @@ The example defines a timescale of 48000 units per second, with the period start
 		<AdaptationSet subsegmentStartsWithSAP="1">
 			<Representation>
 				<BaseURL>showreel_audio_dashinit.mp4</BaseURL>
-				<SegmentBase timescale="48000" presentationTimeOffset="8100"
-						indexRangeExact="true" indexRange="848-999">
+				<SegmentBase timescale="48000" presentationTimeOffset="8100" indexRange="848-999">
 					<Initialization range="0-847"/>
 				</SegmentBase>
 			</Representation>
@@ -325,6 +320,15 @@ The values of the fields SHALL be as follows:
 
 Issue: BMFF mentions edit lists when talking of this box, whereas IOP does not. Do we need to mention edit lists? Are they intentionally omitted from IOP?
 
+#### Moving the period start point #### {#timing-addressing-indexed-startpoint}
+
+When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
+
+For [=representations=] that use [=indexed addressing=], perform the following adjustments to set a new [=period=] start point:
+
+1. Update `SegmentBase@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
+1. Update `Period@duration` to match the new duration.
+
 ### Explicit addressing ### {#timing-addressing-explicit}
 
 A representation that uses <dfn>explicit addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the [=MPD=], with the exact time span covered by each [=media segment=] described in the MPD.
@@ -354,6 +358,31 @@ The `SegmentTemplate@media` attribute SHALL contain the URL template for referen
 
 <div class="example">
 Below is an example of common usage of the explicit addressing mode.
+
+The example defines 225 [=media segments=] starting at position 900 on the [=sample timeline=] and lasting for a total of 900.225 seconds. The period ends at 900 seconds, so the last 0.225 seconds of content is clipped (out of bounds samples may also simply be omitted from the last [=media segment=]). The [=period=] starts at position 900 which matches the start position of the first [=media segment=] found at the relative URL `video/900.m4s`.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
+	<Period duration="PT900S">
+		<AdaptationSet>
+			<Representation>
+				<SegmentTemplate timescale="1000" presentationTimeOffset="900"
+						media="video/$Time$.m4s" initialization="video/init.mp4">
+					<SegmentTimeline>
+						<S t="900" d="4001" r="224" />
+					</SegmentTimeline>
+				</SegmentTemplate>
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+</xmp>
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
+</div>
+
+<div class="example">
+Below is an example of the explicit addressing mode used in a scenario where different [=media segments=] have different durations (e.g. due to encoder limitations).
 
 The example defines a sequence of 11 [=media segments=] starting at position 120 on the [=sample timeline=] and lasting for a total of 95520 units at a timescale of 1000 units per second (which results in 95.52 seconds of data). The [=period=] starts at position 810, which is within the first [=media segment=], found at the relative URL `video/120.m4s`. The fifth [=media segment=] repeats once, resulting in a sixth [=media segment=] with the same duration.
 
@@ -385,6 +414,16 @@ The example defines a sequence of 11 [=media segments=] starting at position 120
 
 Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
 </div>
+
+#### Moving the period start point #### {#timing-addressing-explicit-startpoint}
+
+When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
+
+For [=representations=] that use [=explicit addressing=], perform the following adjustments to set a new [=period=] start point:
+
+1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
+1. Remove any segment references (`SegmentTimeline/S`) that reference [=media segments=] that end before the new [=period=] start point.
+1. Update `Period@duration` to match the new duration.
 
 ### Simple addressing ### {#timing-addressing-simple}
 
@@ -462,15 +501,87 @@ Near [=period=] boundaries, all the constraints of timing and addressing must st
 If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because of the requirement in [[#timing-mediasegment]] that the first [=media segment=] contain a media sample that starts at or overlaps the [=period=] start point.
 </div>
 
-#### Requirements on segment alignment at period start when using simple addressing #### {#timing-addressing-simple-alignment}
+#### Moving the period start point #### {#timing-addressing-simple-startpoint}
 
-When using [=simple addressing=], the first [=media segment=] will always start at the [=period=] start point. This matches the point the [=sample timeline=] indicated by `SegmentTemplate@presentationTimeOffset`.
+When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
 
-This means that it is not possible to start a [=period=] in the middle of a [=media segment=], such as when cutting an existing [=period=] in two (e.g. to insert an ad) at an arbitrary point (which might be in the middle of a [=media segment=]). Therefore, a [=period=] can only be started at a point where all its [=representations=] that use [=simple addressing=] have a segment boundary. Consider also that [=representations=] in different [=adaptation sets=] may have segment boundaries in different places on the timeline.
+[=Simple addressing=] is challenging to use in such scenarios. You SHOULD convert [=simple addressing=] representations to use [=explicit addressing=] before adjusting the period start point or end point.
 
-This severely limits the usefulness of this addressing mode in multi-period services. Therefore, you SHOULD NOT use [=simple addressing=] in multi-period scenarios. While it might work if everything aligns properly, such occasions will be the exception and not the rule.
+The rest of this chapter provides instructions for situations where you choose not to convert to [=explicit addressing=].
 
-Note: If you have existing content that uses [=simple addressing=] and you wish to use it in a multi-period scenario, it will generally be fairly easy to convert it to [=explicit addressing=]. Beware that the latter does not allow timing inaccuracy in media segments.
+To move the period start point, for [=representations=] that use [=simple addressing=]:
+
+* Every [=simple addressing=] [=representation=] in the [=period=] must contain a [=media segment=] that starts at the new period start point.
+* [=Media segments=] starting at the new period start point must contain a sample that starts at or overlaps the new period start point.
+
+Note: If you are splitting a period, also keep in mind [[#timing-mediasegment|the requirements on period end point sample alignment]] for the first half of the split.
+
+Having ensured conformance to the above requirements for the new period start point, perform the following adjustments:
+
+1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
+1. Increment `SegmentTemplate@startNumber` by the number of skipped [=media segments=].
+1. Update `Period@duration` to match the new duration.
+
+#### Converting to explicit addressing #### {#timing-addressing-simple-to-explicit}
+
+[=Simple addressing=] allows for inaccuracy in [=media segment=] timing. No inaccuracy is allowed by [=explicit addressing=]. The mechanism of conversion described here only applies when there is no inaccuracy. If inaccuracy exists, you SHOULD re-package the content from scratch using [=explicit addressing=], instead of converting after the fact.
+
+To perform the conversion, execute the following steps:
+
+1. Calculate the number of [=media segments=] in the representation as `SegmentCount = Ceil(AsSeconds(Period@duration) / ( SegmentTemplate@duration / SegmentTemplate@timescale))`.
+1. Assign a zero-based `SegmentIndex` value to each [=media segment=] in the representation, incrementing by one per segment.
+1. If using `$Number$` placeholders in `SegmentTemplate@media`:
+	1. Replace `$Number$` placeholders with equivalent `$Time$` placeholders.
+	1. Rename segment files to match new template. Calculate the value for `$Time$` as `SegmentStartTime = SegmentTemplate@presentationTimeOffset + SegmentIndex * SegmentTemplate@duration`.
+1. Update the MPD.
+	1. Remove `SegmentTemplate@startNumber` if present.
+	1. Add a single `SegmentTemplate/SegmentTimeline` element.
+	1. Add a single `SegmentTimeline/S` element.
+	1. Set `S@t` to equal `SegmentTemplate@presentationTimeOffset`.
+	1. Set `S@d` to equal `SegmentTemplate@duration`.
+	1. Remove `SegmentTemplate@duration`.
+	1. Set `S@r` to `SegmentCount - 1`.
+
+<div class="example">
+Below is an example of a [=simple addressing=] [=representation=] before conversion.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
+	<Period duration="PT900S">
+		<AdaptationSet>
+			<Representation>
+				<SegmentTemplate timescale="1000" presentationTimeOffset="900"
+						media="video/$Number$.m4s" initialization="video/init.mp4"
+						duration="4001" startNumber="800" />
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+</xmp>
+
+As part of the conversion, we calculate `SegmentCount = Ceil(900 / (4001 / 1000)) = 225`. We also rename files to time-based addressing, with the first segment file `800.m4s` getting the value `SegmentStartTime = 900 + 0 * 4001 = 900` which will later be resolved to the path `video/900.m4s` by clients.
+
+After conversion, we arrive at the following result.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
+	<Period duration="PT900S">
+		<AdaptationSet>
+			<Representation>
+				<SegmentTemplate timescale="1000" presentationTimeOffset="900"
+						media="video/$Time$.m4s" initialization="video/init.mp4">
+					<SegmentTimeline>
+						<S t="900" d="4001" r="224" />
+					</SegmentTimeline>
+				</SegmentTemplate>
+			</Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+</xmp>
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - the above are not fully functional MPD files.
+</div>
 
 ## Resolving URLs and performing HTTP requests ## {#timing-urls-and-http}
 
@@ -694,7 +805,7 @@ The mechanism that enables [=period=] splitting in the middle of a segment is th
 * clients are expected to deduplicate boundary-overlapping [=media segments=] for [=representations=] on which [[#timing-connectivity|period connectivity]] is signaled, if necessary for seamless playback (implementation-specific).
 * clients are expected to present only the samples that are within the bounds of the current [=period=] (may be limited by client platform capabilities).
 
-Note: [=Simple addressing=] has significant limitations on alignment at [=period=] start, making it unsuitable for many multi-period scenarios. See [[#timing-addressing-simple-alignment]].
+Note: [=Simple addressing=] has significant limitations on alignment at [=period=] start, making it unsuitable for many multi-period scenarios. See [[#timing-addressing-simple-startpoint]].
 
 After splitting the example presentation, we arrive at the following structure.
 
