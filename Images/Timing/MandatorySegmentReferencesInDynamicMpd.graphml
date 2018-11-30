@@ -149,7 +149,7 @@
     <node id="n12">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="451.0" x="585.0" y="494.0"/>
+          <y:Geometry height="30.0" width="451.0" x="591.0" y="685.0"/>
           <y:Fill color="#DFA9FE" transparent="false"/>
           <y:BorderStyle color="#C765FF" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#7900BF" verticalTextPosition="bottom" visible="true" width="99.361328125" x="175.8193359375" xml:space="preserve" y="5.6494140625">Time shift window<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
@@ -157,47 +157,20 @@
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n13">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="30.0" width="61.166666666666515" x="1036.0" y="444.1808"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#D8D8D8" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="tl" textColor="#A8A8A8" verticalTextPosition="bottom" visible="true" width="36.35546875" x="4.0" xml:space="preserve" y="4.0">t=now</y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n14">
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="30.0" width="160.16666666666652" x="585.0" y="441.5"/>
-          <y:Fill hasColor="false" transparent="false"/>
-          <y:BorderStyle color="#D8D8D8" raised="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="tl" textColor="#A8A8A8" verticalTextPosition="bottom" visible="true" width="151.0703125" x="4.0" xml:space="preserve" y="4.0">t=now-timeShiftBufferDepth</y:NodeLabel>
-          <y:Shape type="rectangle"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <edge id="e0" source="n13" target="n12">
+    <edge id="e0" source="n12" target="n10">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="224.0" ty="0.0">
-            <y:Point x="1034.5" y="459.1808"/>
-          </y:Path>
+          <y:Path sx="222.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#8F8F8F" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e1" source="n14" target="n12">
+    <edge id="e1" source="n12" target="n4">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-80.08333333333319" sy="0.0" tx="-225.5" ty="-15.0">
-            <y:Point x="585.0000000000001" y="475.25"/>
-            <y:Point x="585.0" y="475.25"/>
-          </y:Path>
+          <y:Path sx="-225.0" sy="0.0" tx="-13.0" ty="0.0"/>
           <y:LineStyle color="#8F8F8F" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
