@@ -498,15 +498,15 @@ Note: This results in a maximum true duration of 200% (+50% outward extension on
 Allowing inaccurate timing is intended to enable reasoning on the [=sample timeline=] using average values for [=media segment=] timing. If the addressing data says that a [=media segment=] contains 4 seconds of data on average, a client can predict with reasonable accuracy which samples are found in which [=media segments=], while at the same time the service is not required to publish per-segment timing data in the MPD. It is expected that the content is packaged with this contraint in mind (i.e. **every** segment cannot be inaccurate in the same direction - a shorter segment now implies a longer segment in the future to make up for it).
 
 <div class="example">
-Consider a [=media segment=] with a nominal start time of 10 seconds from period start and a nominal duration of 4 seconds, within a [=period=] of unlimited duration.
+Consider a [=media segment=] with a nominal start time of 8 seconds from period start and a nominal duration of 4 seconds, within a [=period=] of unlimited duration.
 
 The following are all valid contents for such a [=media segment=]:
 
-* samples from 10 to 14 seconds (perfect accuracy)
-* samples from 8 to 16 seconds (maximally large segment allowed by drift tolerance, 50% increase from both ends)
-* samples from 11.9 to 12 seconds (near-minimally small segment; while drift tolerance allows 50% decrease from both ends, resulting in zero duration, every segment must still contain at least one sample)
-* samples from 8 to 12 seconds (maximal drift toward zero point at both ends)
-* samples from 12 to 16 seconds (maximal drift away from zero point at both ends)
+* samples from 8 to 12 seconds (perfect accuracy)
+* samples from 6 to 14 seconds (maximally large segment allowed by drift tolerance, 50% increase from both ends)
+* samples from 9.9 to 10 seconds (near-minimally small segment; while drift tolerance allows 50% decrease from both ends, resulting in zero duration, every segment must still contain at least one sample)
+* samples from 6 to 10 seconds (maximal drift toward zero point at both ends)
+* samples from 10 to 14 seconds (maximal drift away from zero point at both ends)
 
 Near [=period=] boundaries, all the constraints of timing and addressing must still be respected. Consider a [=media segment=] with a nominal start time of 0 seconds from [=period=] start and a nominal duration of 4 seconds.
 
