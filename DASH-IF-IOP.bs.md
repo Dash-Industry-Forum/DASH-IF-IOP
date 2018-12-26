@@ -833,8 +833,6 @@ Note: As each [=representation=] has its own [=availability window=], so does ea
 
 An MPD update removing content MAY remove any [=segment references=] to [=media segments=] that start after `EarliestRemovalPoint` at the time the update is published but SHALL NOT remove any other [=segment references=].
 
-An MPD update removing content SHALL NOT leave `EarliestRemovalPoint` outside the time span of all [=periods=] unless this point is beyond the end of a fixed-duration MPD.
-
 The following mechanisms exist removing content:
 
 * The last [=period=] MAY change from unlimited duration to fixed duration.
