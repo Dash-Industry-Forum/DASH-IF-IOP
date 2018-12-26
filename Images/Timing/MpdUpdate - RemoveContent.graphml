@@ -85,7 +85,7 @@
         <y:ShapeNode>
           <y:Geometry height="30.0" width="277.0" x="527.5" y="397.5"/>
           <y:Fill color="#BDD7EE" transparent="false"/>
-          <y:BorderStyle color="#9CC3E5" raised="false" type="line" width="1.0"/>
+          <y:BorderStyle color="#FF0000" raised="false" type="line" width="2.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#2E75B5" verticalTextPosition="bottom" visible="true" width="71.037109375" x="102.9814453125" xml:space="preserve" y="5.6494140625">Period N + 1<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:LabelModel><y:ModelParameter><y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/></y:ModelParameter></y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>

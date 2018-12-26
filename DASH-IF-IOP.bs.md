@@ -152,20 +152,22 @@ The samples within a [=representation=] exist on a linear <dfn>sample timeline</
 
 Note: A sample timeline is linear - encoders are expected to use an appropriate timescale and sufficiently large timestamp fields to avoid any wrap-around. If wrap-around does occur, a new [=period=] must be started in order to establish a new sample timeline.
 
+The sample timeline is formed after applying any edit lists in the content.
+
 A sample timeline SHALL be shared by all [=representations=] in the same [=adaptation set=]. [=Representations=] in different [=adaptation sets=] MAY use different sample timelines.
 
 The sample timeline is measured in <dfn>timescale units</dfn> defined as a number of units per second. This value SHALL be present in the MPD as `SegmentTemplate@timescale` or `SegmentBase@timescale` (depending on the [=addressing mode=]).
+
+Note: While optional in [[!MPEGDASH]], the presence of the `@timescale` attribute is required by the interoperable timing model because the default value of 1 is unlikely to match any real-world content and is far more likely to indicate an unintentional content authoring error.
 
 <figure>
 	<img src="Images/Timing/PresentationTimeOffset.png" />
 	<figcaption>`@presentationTimeOffset` is the key component in establishing the relationship between the [=MPD timeline=] and a sample timeline.</figcaption>
 </figure>
 
-`@presentationTimeOffset` is a point on a sample timeline which SHALL be considered equivalent to the [=period=] start point on the [=MPD timeline=]. The value is provided by `SegmentTemplate@presentationTimeOffset` or `SegmentBase@presentationTimeOffset`, depending on the [=addressing mode=], and has a default value of 0 `@timescale` units.
+The point on the sample timeline indicated by `@presentationTimeOffset` SHALL be equivalent to the [=period=] start point on the [=MPD timeline=]. The value is provided by `SegmentTemplate@presentationTimeOffset` or `SegmentBase@presentationTimeOffset`, depending on the [=addressing mode=], and has a default value of 0 timescale units.
 
-The relationship between a sample timeline and the [=MPD timeline=] is fully described by the combination of `@presentationTimeOffset`, `@timescale` and `Period@start`.
-
-Note: To transform a [=sample timeline=] position `SampleTime` to an [=MPD timeline=] position, use the formula `MpdTime = Period@start + (SampleTime - @presentationTimeOffset) / @timescale`.
+Note: To transform a sample timeline position `SampleTime` to an [=MPD timeline=] position, use the formula `MpdTime = Period@start + (SampleTime - @presentationTimeOffset) / @timescale`.
 
 `@presentationTimeOffset` SHALL NOT change between updates of a dynamic MPD.
 
@@ -321,8 +323,6 @@ The values of the fields SHALL be as follows:
 : `SAP_delta_time`
 :: `0`
 
-Issue: BMFF mentions edit lists when talking of this box, whereas IOP does not. Do we need to mention edit lists? Are they intentionally omitted from IOP?
-
 #### Moving the period start point (indexed addressing) #### {#timing-addressing-indexed-startpoint}
 
 When splitting periods in two or performing other types of editorial timing adjustments, a service might want to start a period at a point after the "natural" start point of the [=representations=] within.
@@ -353,7 +353,7 @@ The start time of a [=media segment=] SHALL be calculated from the start time an
 
 The value of `S@r` SHALL be nonnegative, except for the last `S` element which MAY have a negative value in `S@r`, indicating that the repeated references continue indefinitely up to a [=media segment=] that either ends at or overlaps the period end point.
 
-[[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
+[[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements, add the `S@t` attribute to the first `S` element or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
 
 The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
 
@@ -433,6 +433,8 @@ For [=representations=] that use [=explicit addressing=], perform the following 
 Note: See [[#timing-representation]] and [[#timing-mpd-updates-remove-content]] to understand the constraints that apply to [=segment reference=] removal.
 
 ### Simple addressing ### {#timing-addressing-simple}
+
+Issue: Once we have a specific `@earliestPresentationTime` proposal submitted to MPEG we need to update this section to match. See [#245](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/245).
 
 A representation that uses <dfn>simple addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the MPD, with the nominal time span covered by each [=media segment=] described in the MPD.
 
@@ -530,12 +532,14 @@ Having ensured conformance to the above requirements for the new period start po
 <div class="algorithm">
 
 1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
-1. Increment `SegmentTemplate@startNumber` by the number of [=media segments=] between the old and new start point.
+1. If present, increment `SegmentTemplate@startNumber` by the number of [=media segments=] removed from the beginning of the [=representation=].
 1. Update `Period@duration` to match the new duration.
 
 </div>
 
 #### Converting simple addressing to explicit addressing #### {#timing-addressing-simple-to-explicit}
+
+It may sometimes be desirable to convert a presentation from [=simple addressing=] to [=explicit addressing=]. This chapter provides an algorithm to do this.
 
 Advisement: [=Simple addressing=] allows for inaccuracy in [=media segment=] timing. No inaccuracy is allowed by [=explicit addressing=]. The mechanism of conversion described here only applies when there is no inaccuracy. If the nominal time spans in original the MPD differ from the true time spans of the [=media segments=], re-package the content from scratch using [=explicit addressing=] instead of converting.
 
@@ -672,11 +676,13 @@ This section only applies to dynamic MPDs.
 
 Advisement: A dynamic MPD must conform to the constraints in this document not only at its moment of initial publishing but through the entire validity duration of the MPD (as defined by `MPD@minimumUpdatePeriod`).
 
-## Real time clock synchronization ## {#timing-sync}
+### Real time clock synchronization ### {#timing-sync}
 
 A dynamic MPD SHALL include at least one `UTCTiming` element that defines a clock synchronization mechanism.
 
-A client presenting a dynamic MPD SHALL synchronize its local clock according to the `UTCTiming` elements in the MPD and SHALL emit a warning or error to application developers when clock synchronization fails or `UTCTiming` elements are not available. A client SHALL NOT assume that clocks are synchronized using some default mechanism.
+A client presenting a dynamic MPD SHALL synchronize its local clock according to the `UTCTiming` elements in the MPD and SHALL emit a warning or error to application developers when clock synchronization fails, no `UTCTiming` are defined or none of the referenced clock synchronization mechanisms are supported by the client.
+
+Note: The use of a "default time source" is not compatible with the interoperable timing model. The mechanism of time synchronization must always be explicitly defined. Interoperable clients cannot fall back to a default mechanism.
 
 Issue: Describe the relevant mechanisms.
 
@@ -684,17 +690,15 @@ Issue: Describe the relevant mechanisms.
 
 A segment is <dfn>available</dfn> if an HTTP request to acquire it can be successfully performed to completion by a client. In a dynamic MPD, new [=media segments=] continuously become available and stop being available with the passage of time.
 
-The <dfn>availability window</dfn> is the time span on a [=sample timeline=] that determines which [=media segments=] are available. Each [=sample timeline=] has its own availability window.
+An <dfn>availability window</dfn> is a time span on the [=MPD timeline=] that determines which [=media segments=] are available. Each [=representation=] has its own availability window.
 
 The availability window is calculated as follows:
 
 <div class="algorithm">
 
-1. Let <var>now</var> be the current time according to [[#timing-sync|the synchronized clock]].
-1. Let <var>TotalAvailabilityTimeOffset</var> be the sum of all `@availabilityTimeOffset` values that apply to the [=representation=] (those on the relevant `Representation` element and any of its ancestors).
-1. Let <var>AvailabilityWindowStart</var> be <var>now</var> - `MPD@timeShiftBufferDepth`.
-1. Let <var>AvailabilityWindowEnd</var> be <var>now</var> + <var>TotalAvailabilityTimeOffset</var>.
-1. The availability window is the time span from <var>AvailabilityWindowStart</var> to <var>AvailabilityWindowEnd</var>.
+1. Let `now` be the current time according to [[#timing-sync|the synchronized clock]].
+1. Let `TotalAvailabilityTimeOffset` be the sum of all `@availabilityTimeOffset` values that apply to the [=representation=] (those directly on the `Representation` element and any of its ancestors).
+1. The availability window is the time span from `now - MPD@timeShiftBufferDepth` to `now + TotalAvailabilityTimeOffset`.
 
 </div>
 
@@ -703,7 +707,7 @@ The availability window is calculated as follows:
 	<figcaption>The availability window determines which [=media segments=] are available, based on where their end point lies.</figcaption>
 </figure>
 
-A service SHALL ensure that all [=media segments=] that have an <em>end point</em> inside or at the end of the availability window are available.
+A service SHALL ensure that all [=media segments=] that have their end point inside or at the end of the availability window are available.
 
 Advisement: It is the responsibility of the service to ensure that [=media segments=] are available to clients when they are described as available by the MPD. To define proper availability timing, one must consider the entire publishing flow through the CDN, not only when the origin server makes data available to the CDN.
 
@@ -711,28 +715,42 @@ Clients MAY attempt to acquire any available [=media segment=]. Clients SHALL NO
 
 Clients SHOULD NOT assume that [=media segments=] described by the MPD as available are always available at the correct moment in time and SHOULD implement appropriate retry behavior.
 
-## Time shift window ## {#timing-timeshift}
+### Time shift window ### {#timing-timeshift}
 
-Due to various delays and processes required to create and publish [=media segments=], it will often be the case that [=media segments=] become [=available=] with some delay, both with regard to the expected scheduling and with regard to differences between [=representations=]. The mechanism for signaling the expected delay is `MPD@suggestedPresentationDelay`.
+The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time.
 
-Note: The most obvious delay is that a [=media segment=] only becomes available once its end point enters the [=availability window=]. [=Representations=] with different [=media segment=] durations are going to have different delays due to this factor. `@availabilityTimeOffset` counters this factor, signaling availability ahead of schedule.
+Note: In other words, this is the minimum and maximum time shift of the client's wall clock time relative to the MPD timeline (mapped to wall clock time).
 
-The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that indicates content that a client may present at the current moment in time.
+The following additional factors further constrain the range of [=media segments=] that can be presented at the current time:
 
-Let <var>now</var> be the current time according to [[#timing-sync|the synchronized clock]]. The time shift window starts at <var>now</var> - `MPD@timeShiftBufferDepth` and ends at <var>now</var> - `MPD@suggestedPresentationDelay`.
+1. [[#timing-availability]] - not every [=media segment=] in the time shift window is guaranteed to be [=available=].
+1. [[#timing-delay]] - the service may require a delay that forbids the use of a section of the time shift window.
 
-Note: The start point of the [=availability window=] and time shift window are always equal. The end points are equal if there is no `@availabiltiyTimeOffset` or `MPD@suggestedPresentationDelay`.
+The time shift window extends from `now - MPD@timeShiftBufferDepth` to `now`.
 
 <figure>
 	<img src="Images/Timing/TimeShiftWindow.png" />
-	<figcaption>Samples overlapping the time shift window may be presented by a client.</figcaption>
+	<figcaption>[=Media segments=] overlapping the time shift window may potentially be presented by a client, if other constraints do not forbid it.</figcaption>
 </figure>
 
-Services SHALL provide a suitable value for `MPD@suggestedPresentationDelay` to ensure that [=media segments=] that overlap the [=time shift window=] are [=available=].
+Clients MAY present samples from [=media segments=] that overlap the time shift window, assuming no other constraints forbid it. Clients SHALL NOT present samples from [=media segments=] that are entirely outside the time shift window (whether in the past or the future).
 
-Note: If this value is zero, the service needs to signal a sufficiently extended [=availability window=] using `@availabilityTimeOffset` to ensure that all [=media segments=] are [=available=] when they overlap with the [=time shift window=].
+### Presentation delay ### {#timing-delay}
 
-Clients MAY present any samples that are entirely inside the time shift window. Clients SHALL NOT present any samples that are entirely outside the time shift window (whether in the past or the future).
+There is a natural conflict between the [=availability window=] and the [=time shift window=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift window=], yet such [=media segments=] might not yet be [=available=] when this happens.
+
+Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may change over time if a [=representation=] does not use a constant segment duration.
+
+<figure>
+	<img src="Images/Timing/WindowInteractions.png" />
+	<figcaption>[=Media segments=] that overlap the effective time shift window are the ones that may be presented at time `now`. This is the time span that defines the allowed minimum and maximum allowed time shift.</figcaption>
+</figure>
+
+The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect. The <dfn>effective time shift window</dfn> spans from `now - MPD@timeShiftBufferDepth` to `now - MPD@suggestedPresentationDelay`.
+
+Services SHALL provide a suitable value for `MPD@suggestedPresentationDelay` to ensure that [=media segments=] that overlap the [=effective time shift window=] are [=available=].
+
+Clients SHALL constrain seeking to the [=effective time shift window=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift window=].
 
 ### MPD updates ### {#timing-mpd-updates}
 
@@ -766,9 +784,13 @@ Advisement: Additional restrictions on MPD updates are defined by other parts of
 
 Clients SHOULD use `@id` to track [=period=], [=adaptation set=] and [=representation=] identity across MPD updates.
 
-The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the maximum duration between MPD refreshes by the client. In other words, this is the validity duration of the present state of the MPD.
+The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the validity duration of the present text of the MPD.
 
-Note: In practice, clients will also require some time to download and process an MPD update - a service should not assume perfect update timing. Conversely, a client should not assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
+Clients SHALL process state changes that occur during the MPD validity duration. For example new [=media segments=] will become [=available=] over time if they are referenced by the MPD and old ones become unavailable, even without an MPD update.
+
+Note: `MPD@minimumUpdatePeriod=0` is not the same as a missing attribute. The value 0 indicates that the MPD has no validity beyond the moment it is downloaded. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
+
+In practice, clients will also require some time to download and process an MPD update - a service SHOULD NOT assume perfect update timing. Conversely, a client SHOULD NOT assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
 
 In addition to signaling that clients are expected to poll for regular MPD updates, a service MAY publish in-band events to schedule MPD updates at moments of its choosing.
 
@@ -798,16 +820,20 @@ An MPD update that adds content MAY be combined [[#timing-mpd-updates-remove-con
 
 Removal of content is only allowed if the content to be removed is not yet [=available=] to clients and will not become [=available=] until clients receive the MPD update. See [[#timing-availability]].
 
-Let <var>EarliestRemovalPoint</var> be <var>AvailabilityWindowEnd</var> + `MPD@minimumUpdatePeriod`. [=Media segments=] that overlap or end before <var>EarliestRemovalPoint</var> might be considered by clients to be [=available=] at the time the MPD update is processed.
+Let `EarliestRemovalPoint` be `availability window end + MPD@minimumUpdatePeriod`.
+
+Note: As each [=representation=] has its own [=availability window=], so does each [=representation=] have its own `EarliestRemovalPoint`.
+
+[=Media segments=] that overlap or end before `EarliestRemovalPoint` might be considered by clients to be [=available=] at the time the MPD update is processed and therefore cannot be removed.
 
 <figure>
 	<img src="Images/Timing/MpdUpdate - RemoveContent.png" />
 	<figcaption>MPD updates can remove both [=segment references=] and [=periods=] (removals highlighted in red).</figcaption>
 </figure>
 
-An MPD update removing content MAY remove any [=segment references=] to [=media segments=] that start after <var>EarliestRemovalPoint</var> at the time the update is published but SHALL NOT remove any other [=segment references=].
+An MPD update removing content MAY remove any [=segment references=] to [=media segments=] that start after `EarliestRemovalPoint` at the time the update is published but SHALL NOT remove any other [=segment references=].
 
-An MPD update removing content SHALL NOT leave <var>EarliestRemovalPoint</var> outside the time span of all [=periods=] unless this point is beyond the end of a fixed-duration MPD (`MPD@availabilityStartTime + MPD duration`).
+An MPD update removing content SHALL NOT leave `EarliestRemovalPoint` outside the time span of all [=periods=] unless this point is beyond the end of a fixed-duration MPD.
 
 The following mechanisms exist removing content:
 
