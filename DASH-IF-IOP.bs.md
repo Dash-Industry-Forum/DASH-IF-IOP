@@ -201,7 +201,7 @@ You SHOULD choose the addressing mode based on the nature of the content:
 
 A service MAY use [=simple addressing=] which enables the packager logic to be very simple. This simplicity comes at a cost of reduced applicability to multi-period scenarios and reduced client compatibility.
 
-All [=representations=] in the same [=adaptation set=] SHALL use the same addressing mode. [=Representations=] in different [=adaptation sets=] MAY use different addressing modes.
+All [=representations=] in the same [=adaptation set=] SHALL use the same addressing mode. [=Representations=] in different [=adaptation sets=] MAY use different addressing modes. [[#timing-connectivity|Period-connected representations]] SHALL use the same addressing mode in every [=period=].
 
 ### Indexed addressing ### {#timing-addressing-indexed}
 
@@ -355,7 +355,7 @@ The value of `S@r` SHALL be nonnegative, except for the last `S` element which M
 
 [[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements, add the `S@t` attribute to the first `S` element or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
 
 <div class="example">
 Below is an example of common usage of the explicit addressing mode.
@@ -444,14 +444,14 @@ Clauses in section only apply to [=representations=] that use simple addressing.
 
 <figure>
 	<img src="Images/Timing/SimpleAddressing.png" />
-	<figcaption>Simple addressing uses a segment template that is combined with approximate first [=media segment=] timing information and an average [=media segment=] duration in order to reference [=media segments=].</figcaption>
+	<figcaption>Simple addressing uses a segment template that is combined with approximate first [=media segment=] timing information and an average [=media segment=] duration in order to reference [=media segments=], either by start time or by sequence number.</figcaption>
 </figure>
 
 The `SegmentTemplate@duration` attribute SHALL define the nominal duration of a [=media segment=] in [=timescale units=]. The average true duration of [=media segments=] SHALL match the nominal duration.
 
 The set of [=segment references=] SHALL consist of the first [=media segment=] starting exactly at the [=period=] start point and all other [=media segments=] following in a consecutive series of equal time spans of `SegmentTemplate@duration` [=timescale units=], ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using either the `$Time$` or `$Number$` template variable to uniquely identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
 
 <div class="example">
 Below is an example of common usage of the simple addressing mode.
