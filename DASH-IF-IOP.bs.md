@@ -112,7 +112,7 @@ Note: Enough segment references must exist to cover the entire [=time shift wind
 	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required segment references. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
 </figure>
 
-Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend by the MPD validity duration defined by `MPD@minimumUpdatePeriod`.
+Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `MPD@publishTime + MPD@minimumUpdatePeriod`.
 
 An unnecessary segment reference is one that is not defined as required by this chapter.
 
@@ -784,7 +784,7 @@ Advisement: Additional restrictions on MPD updates are defined by other parts of
 
 Clients SHOULD use `@id` to track [=period=], [=adaptation set=] and [=representation=] identity across MPD updates.
 
-The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the validity duration of the present text of the MPD.
+The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the validity duration of the present text of the MPD, starting from `MPD@publishTime`.
 
 Clients SHALL process state changes that occur during the MPD validity duration. For example new [=media segments=] will become [=available=] over time if they are referenced by the MPD and old ones become unavailable, even without an MPD update.
 
