@@ -39,11 +39,11 @@ The chapters below explore these relationships in detail.
 
 ## Periods ## {#timing-period}
 
-An MPD SHALL define an ordered list of one or more <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
+An MPD SHALL define an ordered list of one or more consecutive <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
 
 <figure>
 	<img src="Images/Timing/PeriodsMakeTheMpd.png" />
-	<figcaption>An MPD is a collection of periods, starting from a zero point and with a total duration (which may be unlimited for live services).</figcaption>
+	<figcaption>An MPD is a collection of consecutive periods.</figcaption>
 </figure>
 
 Common reasons for defining multiple periods are:
@@ -82,14 +82,9 @@ In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MP
 
 Note: In a dynamic MPD, a period with an unlimited duration may be converted to fixed-duration by an MPD update. Periods in a dynamic MPD may also be shortened or removed entirely under certain conditions. See [[#timing-mpd-updates]].
 
-In a static MPD, `MPD@mediaPresentationDuration` SHALL be present.
+`MPD@mediaPresentationDuration` SHALL NOT be present. Clients SHALL calculate the total duration of a static MPD by adding up the durations of each [=period=].
 
-In a dynamic MPD, `MPD@mediaPresentationDuration` SHALL be present if the following conditions are true and SHALL NOT be present otherwise:
-
-1. The last period has a `Period@duration`.
-1. No new periods will be added to the MPD in the future.
-
-When present, `MPD@mediaPresentationDuration` SHALL accurately indicate the duration between the zero point on the [=MPD timeline=] and the end of the last [=period=].
+Note: This calculation is necessary because the durations of xlink periods can only be known after the xlink is resolved. Therefore it is impossible to always determine the total MPD duration on the service side as only the client is guaranteed to have access to all the required knowledge.
 
 ## Representations ## {#timing-representation}
 
@@ -750,7 +745,6 @@ Some common reasons to make changes in dynamic MPDs:
 * Converting unlimited-duration [=periods=] to fixed-duration [=periods=] by adding `Period@duration`.
 * Removing [=segment references=] and/or [=periods=] that have fallen out of the [=time shift window=].
 * Shortening an existing [=period=] when changes in content scheduling take place.
-* Adding `MPD@mediaPresentationDuration` to signal that the timeline of the MPD will no longer be extended with new [=periods=].
 * Removing `MPD@minimumUpdatePeriod` to signal that MPD will no longer be updated (even though it may remain a dynamic MPD).
 * Converting the MPD to a static MPD to signal that a live service has become available on-demand as a recording.
 
@@ -775,8 +769,6 @@ Clients SHOULD use `@id` to track [=period=], [=adaptation set=] and [=represent
 The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the maximum duration between MPD refreshes by the client. In other words, this is the validity duration of the present state of the MPD.
 
 Note: In practice, clients will also require some time to download and process an MPD update - a service should not assume perfect update timing. Conversely, a client should not assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
-
-If `MPD@minimumUpdatePeriod` is absent then `MPD@mediaPresentationDuration` SHALL be present. Both attributes MAY be present simultaneously to signal that the MPD might still receive updates but these updates will not introduce new [=periods=].
 
 In addition to signaling that clients are expected to poll for regular MPD updates, a service MAY publish in-band events to schedule MPD updates at moments of its choosing.
 
@@ -815,7 +807,7 @@ Let <var>EarliestRemovalPoint</var> be <var>AvailabilityWindowEnd</var> + `MPD@m
 
 An MPD update removing content MAY remove any [=segment references=] to [=media segments=] that start after <var>EarliestRemovalPoint</var> at the time the update is published but SHALL NOT remove any other [=segment references=].
 
-An MPD update removing content SHALL NOT leave <var>EarliestRemovalPoint</var> outside the time span of all [=periods=] unless this point is beyond the end of a fixed-duration MPD (`MPD@availabilityStartTime + MPD@mediaPresentationDuration`).
+An MPD update removing content SHALL NOT leave <var>EarliestRemovalPoint</var> outside the time span of all [=periods=] unless this point is beyond the end of a fixed-duration MPD (`MPD@availabilityStartTime + MPD duration`).
 
 The following mechanisms exist removing content:
 
