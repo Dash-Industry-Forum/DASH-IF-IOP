@@ -851,7 +851,7 @@ In addition to editorial removal from the end of the MPD, content naturally expi
 
 * Explicitly defined [=segment references=] (`S` elements) SHALL be removed when they have expired (i.e. the [=media segment=] end point has fallen out of the [=time shift window=]).
 	* A repeating explicit [=segment reference=] (`S` element with `@r != 0`) SHALL NOT be removed until all repetitions have expired.
-* Expired periods (i.e. those with no remaining [=segment references=]) SHALL be removed.
+* Periods with their end points before the time shift window SHALL be removed.
 
 Note: When using [=indexed addressing=] or [=simple addressing=], removal of [=segment references=] only requires changing `Period@duration`.
 
