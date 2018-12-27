@@ -112,7 +112,7 @@ Note: [=Media segments=] only become [=available=] when their end point is withi
 	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required segment references in each representation. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
 </figure>
 
-Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `MPD@publishTime + MPD@minimumUpdatePeriod`.
+Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `now + MPD@minimumUpdatePeriod`.
 
 An unnecessary segment reference is one that is not defined as required by this chapter.
 
@@ -674,6 +674,11 @@ Clients MAY take advantage of any platform-specific optimizations for seamless p
 
 This section only applies to dynamic MPDs.
 
+Dynamic MPDs have two main factors that differentiate them from static MPDs:
+
+1. Dynamic MPDs may change over time, with clients retrieving new snapshots of the MPD when the validity duration of the previous snapshot expires.
+1. Playback of a dynamic MPD is synchronized to a real time clock (with some amount of client-chosen time shift allowed).
+
 Advisement: A dynamic MPD must conform to the constraints in this document not only at its moment of initial publishing but through the entire validity duration of the MPD (as defined by `MPD@minimumUpdatePeriod`).
 
 ### Real time clock synchronization ### {#timing-sync}
@@ -717,14 +722,12 @@ Clients SHOULD NOT assume that [=media segments=] described by the MPD as availa
 
 ### Time shift window ### {#timing-timeshift}
 
-The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time.
+The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time (`now`).
 
-Note: In other words, this is the minimum and maximum time shift of the client's wall clock time relative to the MPD timeline (mapped to wall clock time).
-
-The following additional factors further constrain the range of [=media segments=] that can be presented at the current time:
+The following additional factors further constrain the set of [=media segments=] that can be presented at the current time:
 
 1. [[#timing-availability]] - not every [=media segment=] in the time shift window is guaranteed to be [=available=].
-1. [[#timing-delay]] - the service may require a delay that forbids the use of a section of the time shift window.
+1. [[#timing-delay]] - the service may define a delay that forbids the use of a section of the time shift window.
 
 The time shift window extends from `now - MPD@timeShiftBufferDepth` to `now`.
 
@@ -734,6 +737,8 @@ The time shift window extends from `now - MPD@timeShiftBufferDepth` to `now`.
 </figure>
 
 Clients MAY present samples from [=media segments=] that overlap the time shift window, assuming no other constraints forbid it. Clients SHALL NOT present samples from [=media segments=] that are entirely outside the time shift window (whether in the past or the future).
+
+A dynamic MPD SHALL contain a [=period=] that ends at or overlaps `now`, except when reaching [[#timing-mpd-updates-theend|the end of content]] in which case the last [=period=] MAY end before `now`.
 
 ### Presentation delay ### {#timing-delay}
 
@@ -786,11 +791,11 @@ Advisement: Additional restrictions on MPD updates are defined by other parts of
 
 Clients SHOULD use `@id` to track [=period=], [=adaptation set=] and [=representation=] identity across MPD updates.
 
-The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the validity duration of the present text of the MPD, starting from `MPD@publishTime`.
+The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the validity duration of the present snapshot of the MPD, starting from the moment it was retrieved.
 
 Clients SHALL process state changes that occur during the MPD validity duration. For example new [=media segments=] will become [=available=] over time if they are referenced by the MPD and old ones become unavailable, even without an MPD update.
 
-Note: A missing `MPD@minimumUpdatePeriod` attribute indicates an infinite validinity period (the MPD will never be updated). The value 0 indicates that the MPD has no validity beyond `MPD@publishTime`. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
+Note: A missing `MPD@minimumUpdatePeriod` attribute indicates an infinite validinity period (the MPD will never be updated). The value 0 indicates that the MPD has no validity after the moment it was retrieved. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
 
 In practice, clients will also require some time to download and process an MPD update - a service SHOULD NOT assume perfect update timing. Conversely, a client SHOULD NOT assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
 
@@ -860,6 +865,12 @@ An MPD update that removes content MAY be combined [[#timing-mpd-updates-add-con
 #### In-band events #### {#timing-mpd-updates-inband}
 
 Issue: Determine appropriate content for this section.
+
+#### End of live content #### {#timing-mpd-updates-theend}
+
+Live services can reach a point where no more content will be produced - existing content will be played back by clients and once they reach the end, playback will cease.
+
+Services SHALL define a fixed duration for the last [=period=], remove the `MPD@minimumUpdatePeriod` attribute and cease performing MPD updates to signal that no more content will be added to the MPD. The `MPD@type` MAY be changed to `static` at this point or later if the service is to be converted to a static MPD for on-demand viewing.
 
 ## XLink ## {#timing-xlink}
 
