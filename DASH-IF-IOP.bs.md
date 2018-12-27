@@ -872,10 +872,6 @@ Live services can reach a point where no more content will be produced - existin
 
 Services SHALL define a fixed duration for the last [=period=], remove the `MPD@minimumUpdatePeriod` attribute and cease performing MPD updates to signal that no more content will be added to the MPD. The `MPD@type` MAY be changed to `static` at this point or later if the service is to be converted to a static MPD for on-demand viewing.
 
-## XLink ## {#timing-xlink}
-
-Issue: Determine appropriate content for this section.
-
 ## Leap seconds ## {#timing-leapseconds}
 
 This section is intentionally left blank to indicate that the leap seconds topic is out of scope of this proposal.
