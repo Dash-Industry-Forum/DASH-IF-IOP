@@ -788,7 +788,7 @@ The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service 
 
 Clients SHALL process state changes that occur during the MPD validity duration. For example new [=media segments=] will become [=available=] over time if they are referenced by the MPD and old ones become unavailable, even without an MPD update.
 
-Note: `MPD@minimumUpdatePeriod=0` is not the same as a missing attribute. The value 0 indicates that the MPD has no validity beyond the moment it is downloaded. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
+Note: A missing `MPD@minimumUpdatePeriod` attribute indicates an infinite validinity period (the MPD will never be updated). The value 0 indicates that the MPD has no validity beyond the moment it is downloaded. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
 
 In practice, clients will also require some time to download and process an MPD update - a service SHOULD NOT assume perfect update timing. Conversely, a client SHOULD NOT assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
 
