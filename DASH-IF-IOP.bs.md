@@ -862,9 +862,36 @@ Note: When using [=indexed addressing=] or [=simple addressing=], removal of [=s
 
 An MPD update that removes content MAY be combined [[#timing-mpd-updates-add-content|with an MPD update that adds content]].
 
-#### In-band events #### {#timing-mpd-updates-inband}
+#### Update signaling via in-band events #### {#timing-mpd-updates-inband}
 
-Issue: Determine appropriate content for this section.
+Services MAY signal the MPD validity duration by embedding in-band messages into [=representations=] instead of specifying a fixed validity duration in the MPD. This allows services to trigger MPD refreshes at exactly the desired time.
+
+The rest of this chapter only applies to services and clients that make use of in-band MPD validity signaling.
+
+Services SHALL define `MPD@minimumUpdatePeriod=0` and add an in-band event stream to every audio [=representation=] or, if no audio [=representations=] are present, to every video [=representation=]. Optionally, the in-band event stream MAY be added to other [=representations=], as well. The in-band event stream SHALL be identical in every [=representation=] where it is present.
+
+The in-band event stream SHALL be signaled on the [=adaptation set=] level by an `InbandEventStream` element with `@scheme_id_uri="urn:mpeg:dash:event:2012"` and a `@value` of 1 or 3, where:
+
+* A value of 1 indicates that in-band events only extend the MPD validity duration.
+* A value of 3 indicates that in-band events also contain the updated MPD snapshot when updates occur.
+
+Note: For a detailed definition of the mechanism and the event message data structures, see [[!MPEGDASH]]. This chapter is merely a high level summary of the most important aspects relevant to interoperability.
+
+<figure>
+	<img src="Images/Timing/EmsgUpdates.png" />
+	<figcaption>Illustration of MPD expiration signaling using in-band events.</figcaption>
+</figure>
+
+Services SHALL emit in-band events as [[!MPEGDASH]] `emsg` boxes to signal the validity duration using the following logic:
+
+* Lack of an in-band MPD validity event in a [=media segment=] indicates that an MPD that was valid at the start of the [=media segment=] remains valid up to the end of the [=media segment=] (mapped to wall clock time).
+* The presence of an in-band MPD validity event in a [=media segment=] indicates that the MPD with `MPD@publishTime` equal to the event's `publish_time` field remains valid up to the event start time (mapped to wall clock time).
+
+The in-band events used for signaling MPD validity duration SHALL have `scheme_id_uri` and `value` matching the `InbandEventStream` element.
+
+In-band events with `value=3` SHALL provide an updated MPD in the event's `mpd` field as UTF-8 encoded text without a byte order mark.
+
+Multiple [=media segments=] MAY signal the same validity update event (identified by matching `id` field on event), enabling the signal to be delivered several segments in advance of the MPD expiration.
 
 #### End of live content #### {#timing-mpd-updates-theend}
 
