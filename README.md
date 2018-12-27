@@ -10,6 +10,8 @@ Join **#iop** on Slack for live chat: [![Slack Status](https://dashif-slack.azur
 
 # Links to automated build outputs
 
+![Build status of master branch](https://dev.azure.com/dashif/Automation/_apis/build/status/DASH-IF-IOP?branchName=master)
+
 Most recent output from the **master** branch:
 
 * [HTML document](https://dashif-documents.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.html)
