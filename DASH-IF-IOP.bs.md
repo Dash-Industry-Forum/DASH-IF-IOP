@@ -105,11 +105,11 @@ In a static MPD, a representation SHALL contain enough [=segment references=] to
 
 In a dynamic MPD, a representation SHALL contain enough segment references to cover the time span of the [=period=] that intersects with the [=time shift window=].
 
-Note: Enough segment references must exist to cover the entire [=time shift window=]. Meanwhile, [=media segments=] become [=available=] when their end point is within the [=availability window=]. It is a valid situation that a [=media segment=] is required to be referenced but is not yet [=available=].
+Note: [=Media segments=] only become [=available=] when their end point is within the [=availability window=]. It is a valid situation that a [=media segment=] is required to be referenced but is not yet [=available=].
 
 <figure>
 	<img src="Images/Timing/MandatorySegmentReferencesInDynamicMpd.png" />
-	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required segment references. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
+	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required segment references in each representation. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
 </figure>
 
 Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `MPD@publishTime + MPD@minimumUpdatePeriod`.
@@ -152,7 +152,7 @@ The samples within a [=representation=] exist on a linear <dfn>sample timeline</
 
 Note: A sample timeline is linear - encoders are expected to use an appropriate timescale and sufficiently large timestamp fields to avoid any wrap-around. If wrap-around does occur, a new [=period=] must be started in order to establish a new sample timeline.
 
-The sample timeline is formed after applying any edit lists in the content.
+The sample timeline is formed after applying any [[!ISOBMFF]] edit lists.
 
 A sample timeline SHALL be shared by all [=representations=] in the same [=adaptation set=]. [=Representations=] in different [=adaptation sets=] MAY use different sample timelines.
 
@@ -205,7 +205,7 @@ All [=representations=] in the same [=adaptation set=] SHALL use the same addres
 
 ### Indexed addressing ### {#timing-addressing-indexed}
 
-A representation that uses <dfn>indexed addressing</dfn> consists of an [=ISO BMFF=] track file containing an index segment, an [=initialization segment=] and a sequence of [=media segments=].
+A representation that uses <dfn>indexed addressing</dfn> consists of an [[!ISOBMFF]] track file containing an index segment, an [=initialization segment=] and a sequence of [=media segments=].
 
 Clauses in section only apply to [=representations=] that use indexed addressing.
 
@@ -737,20 +737,22 @@ Clients MAY present samples from [=media segments=] that overlap the time shift 
 
 ### Presentation delay ### {#timing-delay}
 
-There is a natural conflict between the [=availability window=] and the [=time shift window=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift window=], yet such [=media segments=] might not yet be [=available=] when this happens.
+There is a natural conflict between the [=availability window=] and the [=time shift window=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift window=], yet such [=media segments=] might not yet be [=available=].
 
-Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may change over time if a [=representation=] does not use a constant segment duration.
+Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may also change over time if a [=representation=] does not use a constant segment duration.
+
+The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect and define a range that is safe for seeking and within which [=media segments=] can be expected to be available.
+
+The <dfn>effective time shift window</dfn> is the time span from `now - MPD@timeShiftBufferDepth` to `now - MPD@suggestedPresentationDelay`.
 
 <figure>
 	<img src="Images/Timing/WindowInteractions.png" />
-	<figcaption>[=Media segments=] that overlap the effective time shift window are the ones that may be presented at time `now`. This is the time span that defines the allowed minimum and maximum allowed time shift.</figcaption>
+	<figcaption>[=Media segments=] that overlap the effective time shift window are the ones that may be presented at time `now`. Two [=representations=] with different segment lengths are shown.</figcaption>
 </figure>
 
-The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect. The <dfn>effective time shift window</dfn> spans from `now - MPD@timeShiftBufferDepth` to `now - MPD@suggestedPresentationDelay`.
+Clients SHALL constrain seeking to the [=effective time shift window=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift window=].
 
 Services SHALL provide a suitable value for `MPD@suggestedPresentationDelay` to ensure that [=media segments=] that overlap the [=effective time shift window=] are [=available=].
-
-Clients SHALL constrain seeking to the [=effective time shift window=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift window=].
 
 ### MPD updates ### {#timing-mpd-updates}
 
@@ -788,7 +790,7 @@ The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service 
 
 Clients SHALL process state changes that occur during the MPD validity duration. For example new [=media segments=] will become [=available=] over time if they are referenced by the MPD and old ones become unavailable, even without an MPD update.
 
-Note: A missing `MPD@minimumUpdatePeriod` attribute indicates an infinite validinity period (the MPD will never be updated). The value 0 indicates that the MPD has no validity beyond the moment it is downloaded. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
+Note: A missing `MPD@minimumUpdatePeriod` attribute indicates an infinite validinity period (the MPD will never be updated). The value 0 indicates that the MPD has no validity beyond `MPD@publishTime`. In such a situation, the client will have to acquire a new MPD whenever it wants to make new [=media segments=] available (no "natural" state changes will occur).
 
 In practice, clients will also require some time to download and process an MPD update - a service SHOULD NOT assume perfect update timing. Conversely, a client SHOULD NOT assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
 
@@ -981,7 +983,6 @@ This chapter contains a set of terms that will exist in the IOP document but tha
 
 * <dfn>adaptation set</dfn>
 * <dfn>initialization segment</dfn>
-* <dfn>ISO BMFF</dfn>
 
 ## Editorial notes ## {#editorial-notes}
 
