@@ -82,7 +82,7 @@ In a static MPD, the last period SHALL have a `Period@duration`. In a dynamic MP
 
 Note: In a dynamic MPD, a period with an unlimited duration may be converted to fixed-duration by an MPD update. Periods in a dynamic MPD may also be shortened or removed entirely under certain conditions. See [[#timing-mpd-updates]].
 
-`MPD@mediaPresentationDuration` MAY be present. If present, it SHALL accurately match the duration between the zero point ont he MPD timeline and the end of the last period. Clients SHALL calculate the total duration of a static MPD by adding up the durations of each [=period=] and SHALL NOT rely on the presence of `MPD@mediaPresentationDuration`.
+`MPD@mediaPresentationDuration` MAY be present. If present, it SHALL accurately match the duration between the zero point on the MPD timeline and the end of the last period. Clients SHALL calculate the total duration of a static MPD by adding up the durations of each [=period=] and SHALL NOT rely on the presence of `MPD@mediaPresentationDuration`.
 
 Note: This calculation is necessary because the durations of xlink periods can only be known after the xlink is resolved. Therefore it is impossible to always determine the total MPD duration on the service side as only the client is guaranteed to have access to all the required knowledge.
 
