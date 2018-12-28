@@ -747,7 +747,11 @@ The time shift window extends from `now - MPD@timeShiftBufferDepth` to `now`.
 
 Clients MAY present samples from [=media segments=] that overlap the time shift window, assuming no other constraints forbid it. Clients SHALL NOT present samples from [=media segments=] that are entirely outside the time shift window (whether in the past or the future).
 
-A dynamic MPD SHALL contain a [=period=] that ends at or overlaps `now`, except when reaching [[#timing-mpd-updates-theend|the end of content]] in which case the last [=period=] MAY end before `now`.
+The start of the time shift window MAY be before the start of the first [=period=].
+
+A dynamic MPD SHALL contain a [=period=] that ends at or overlaps the end point of the time shift window, except when reaching [[#timing-mpd-updates-theend|the end of live content]] in which case the last [=period=] MAY end before the end of the time shift window.
+
+Clients SHALL NOT allow seeking into regions of the time shift window that are not covered by [=periods=].
 
 ### Presentation delay ### {#timing-delay}
 
