@@ -759,13 +759,13 @@ There is a natural conflict between the [=availability window=] and the [=time s
 
 Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may also change over time if a [=representation=] does not use a constant segment duration.
 
-The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect and define a range that is safe for seeking and within which [=media segments=] can be expected to be available.
+The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect and defines the <dfn>effective time shift window</dfn> - a range of the [=time shift window=] within which [=media segments=] can be expected to be available.
 
-The <dfn>effective time shift window</dfn> is the time span from `now - MPD@timeShiftBufferDepth` to `now - MPD@suggestedPresentationDelay`.
+The effective time shift window is the time span from `now - MPD@timeShiftBufferDepth` to `now - MPD@suggestedPresentationDelay`.
 
 <figure>
 	<img src="Images/Timing/WindowInteractions.png" />
-	<figcaption>[=Media segments=] that overlap the effective time shift window are the ones that may be presented at time `now`. Two [=representations=] with different segment lengths are shown.</figcaption>
+	<figcaption>[=Media segments=] that overlap the effective time shift window are the ones that may be presented at time `now`. Two [=representations=] with different segment lengths are shown. Diagram assumes `@availabiltiyTimeOffset=0`.</figcaption>
 </figure>
 
 Clients SHALL constrain seeking to the [=effective time shift window=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift window=].
