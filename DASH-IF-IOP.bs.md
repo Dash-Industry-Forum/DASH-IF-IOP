@@ -812,7 +812,7 @@ Note: A missing `MPD@minimumUpdatePeriod` attribute indicates an infinite validi
 
 In practice, clients will also require some time to download and process an MPD update - a service SHOULD NOT assume perfect update timing. Conversely, a client SHOULD NOT assume that it can get all updates in time (it may already be attempting to buffer some [=media segments=] that were removed by an MPD update).
 
-In addition to signaling that clients are expected to poll for regular MPD updates, a service MAY publish in-band events to schedule MPD updates at moments of its choosing.
+In addition to signaling that clients are expected to poll for regular MPD updates, a service MAY publish [[#timing-mpd-updates-inband|in-band events to schedule MPD updates]] at moments of its choosing.
 
 #### Adding content to the MPD #### {#timing-mpd-updates-add-content}
 
@@ -877,11 +877,11 @@ An MPD update that removes content MAY be combined [[#timing-mpd-updates-add-con
 
 #### Update signaling via in-band events #### {#timing-mpd-updates-inband}
 
-Services MAY signal the MPD validity duration by embedding in-band messages into [=representations=] instead of specifying a fixed validity duration in the MPD. This allows services to trigger MPD refreshes at exactly the desired time.
+Services MAY signal the MPD validity duration by embedding in-band messages into [=representations=] instead of specifying a fixed validity duration in the MPD. This allows services to trigger MPD refreshes at exactly the desired time and to avoid needless MPD refreshes.
 
-The rest of this chapter only applies to services and clients that make use of in-band MPD validity signaling.
+The rest of this chapter only applies to services and clients that use in-band MPD validity signaling.
 
-Services SHALL define `MPD@minimumUpdatePeriod=0` and add an in-band event stream to every audio [=representation=] or, if no audio [=representations=] are present, to every video [=representation=]. Optionally, the in-band event stream MAY be added to other [=representations=], as well. The in-band event stream SHALL be identical in every [=representation=] where it is present.
+Services SHALL define `MPD@minimumUpdatePeriod=0` and add an in-band event stream to every audio [=representation=] or, if no audio [=representations=] are present, to every video [=representation=]. The in-band event stream MAY also be added to other [=representations=]. The in-band event stream SHALL be identical in every [=representation=] where it is present.
 
 The in-band event stream SHALL be signaled on the [=adaptation set=] level by an `InbandEventStream` element with `@scheme_id_uri="urn:mpeg:dash:event:2012"` and a `@value` of 1 or 3, where:
 
@@ -911,10 +911,6 @@ Multiple [=media segments=] MAY signal the same validity update event (identifie
 Live services can reach a point where no more content will be produced - existing content will be played back by clients and once they reach the end, playback will cease.
 
 Services SHALL define a fixed duration for the last [=period=], remove the `MPD@minimumUpdatePeriod` attribute and cease performing MPD updates to signal that no more content will be added to the MPD. The `MPD@type` MAY be changed to `static` at this point or later if the service is to be converted to a static MPD for on-demand viewing.
-
-## Leap seconds ## {#timing-leapseconds}
-
-This section is intentionally left blank to indicate that the leap seconds topic is out of scope of this proposal.
 
 ## Forbidden techniques ## {#timing-nonos}
 
@@ -1019,7 +1015,7 @@ Issue: What about period connectivity? [#238](https://github.com/Dash-Industry-F
 
 <figure>
 	<img src="Images/Timing/KID change.png" />
-	<figcaption>A change in `default_KID` starts a new [=period=]. Orange indicates audio and purple video [=representation=].</figcaption>
+	<figcaption>A change in `default_KID` starts a new [=period=]. Orange indicates audio and yellow video [=representation=].</figcaption>
 </figure>
 
 The same pattern can also be applied to other changes in [=representation=] configuration.
