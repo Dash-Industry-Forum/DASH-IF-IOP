@@ -685,7 +685,7 @@ Advisement: A dynamic MPD must conform to the constraints in this document not o
 
 It is critical for dynamic MPDs to synchronize the clocks of the service and the client. The time indicated by the clock does not necessarily need to match some universal standard as long as the two are mutually synchronized.
 
-A dynamic MPD SHALL include at least one `UTCTiming` element that defines a clock synchronization mechanism.
+A dynamic MPD SHALL include at least one `UTCTiming` element that defines a clock synchronization mechanism. If multiple `UTCTiming` elements are listed, their order determines the order of preference.
 
 A client presenting a dynamic MPD SHALL synchronize its local clock according to the `UTCTiming` elements in the MPD and SHALL emit a warning or error to application developers when clock synchronization fails, no `UTCTiming` elements are defined or none of the referenced clock synchronization mechanisms are supported by the client.
 
@@ -716,6 +716,8 @@ The availability window is calculated as follows:
 
 </div>
 
+In the absence of `MPD@timeShiftBufferDepth` the start of the availability window is `MPD@availabilityStartTime`.
+
 <figure>
 	<img src="Images/Timing/AvailabilityWindow.png" />
 	<figcaption>The availability window determines which [=media segments=] are available, based on where their end point lies.</figcaption>
@@ -740,6 +742,8 @@ The following additional factors further constrain the set of [=media segments=]
 
 The time shift window extends from `now - MPD@timeShiftBufferDepth` to `now`.
 
+In the absence of `MPD@timeShiftBufferDepth` the start of the time shift window is `MPD@availabilityStartTime`.
+
 <figure>
 	<img src="Images/Timing/TimeShiftWindow.png" />
 	<figcaption>[=Media segments=] overlapping the time shift window may potentially be presented by a client, if other constraints do not forbid it.</figcaption>
@@ -761,7 +765,7 @@ Furthermore, the delay between [=media segments=] entering the [=time shift wind
 
 The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect and defines the <dfn>effective time shift window</dfn> - a range of the [=time shift window=] within which [=media segments=] can be expected to be available.
 
-The effective time shift window is the time span from `now - MPD@timeShiftBufferDepth` to `now - MPD@suggestedPresentationDelay`.
+The effective time shift window is the time span from the start of the time shift window to `now - MPD@suggestedPresentationDelay`.
 
 <figure>
 	<img src="Images/Timing/WindowInteractions.png" />
@@ -900,7 +904,7 @@ Services SHALL emit in-band events as [[!MPEGDASH]] `emsg` boxes to signal the v
 * Lack of an in-band MPD validity event in a [=media segment=] indicates that an MPD that was valid at the start of the [=media segment=] remains valid up to the end of the [=media segment=] (mapped to wall clock time).
 * The presence of an in-band MPD validity event in a [=media segment=] indicates that the MPD with `MPD@publishTime` equal to the event's `publish_time` field remains valid up to the event start time (mapped to wall clock time).
 
-The in-band events used for signaling MPD validity duration SHALL have `scheme_id_uri` and `value` matching the `InbandEventStream` element.
+The in-band events used for signaling MPD validity duration SHALL have `scheme_id_uri` and `value` matching the `InbandEventStream` element. Clients SHALL NOT use in-band events for MPD validity update signaling if these fields on the events do not match the `InbandEventStream` element or if the `InbandEventStream` element is not present.
 
 In-band events with `value=3` SHALL provide an updated MPD in the event's `mpd` field as UTF-8 encoded text without a byte order mark.
 
@@ -1034,39 +1038,55 @@ Notes on merging IOP v4.3 content into this chapter:
 * 1 - not relevant
 * 2 - not relevant
 * 3.1 - not relevant
-* 3.2.1 - potentially merged, needs a 2nd pass later to be sure
+* 3.2.1 - merged
 * 3.2.2 - not relevant (some overlap with relevant chapters, nothing unique)
 * 3.2.3 - merged
 * 3.2.4 - not relevant
 * 3.2.5 - not relevant
 * 3.2.6 - not relevant
-* 3.2.7 - partially merged/superseded
-	* This PR currently misses the "availability" aspect of timing, describing only the "when to play what" aspect.
-* 3.2.7.2 - TODO ("availability" aspect)
-* 3.2.7.3 - TODO ("availability" aspect)
-* 3.2.7.4 - not relevant (?), make a 2nd pass later to verify where to put this - sounds like a "MPD format" thing rather than "timing" but maybe timing chapter is nearest fit
+* 3.2.7 - merged
+* 3.2.7.2 - merged
+* 3.2.7.3 - merged
+* 3.2.7.4 - not relevant
 * 3.2.8 - not relevant
 * 3.2.9 - not relevant
 * 3.2.10 - not relevant
 * 3.2.11 - not relevant
 	* this seems more "file format" level text; while timing-related, it seems very specific to BMFF internals to have a place in the timing chapter (where the general situation seems already sufficiently well described); review this after we have restructured the rest of the document, see where the best home for this information (or whatever part of this information we keep) is
-* 3.2.12 Content Offering With Periods - merged
-	* There is some implied period-continuity logic. This is excessive combinatorics to expect the player to do. Just signal it on the service with the descriptor. Omitted.
-	* AssetIdentifier has some implied connectivity logic that seems needless. Omitted. See https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/215
+* 3.2.12 - merged
 * 3.2.13 - not relevant
 * 3.2.14 - not relevant
 * 3.2.15 - TODO (addressing and base URLs)
-
-Needs review:
-* 4.8 Robust Operation - needs review
-
-General comments:
-
-* Chapter 3 in v4.3 is largely a random pile of constraints. Some that were timing-relevant are merged here. Others were not. Needs thorough review to ensure that nothing got unexpectedly missed or duplicated.
-* Some terms "defined" in the timing chapter should probably be defined elsewhere once we have more content migrated.
-* Where does minBufferTime go? It needs a home and some nice illustrations.
-* Where do we define the `lmsg` mechanism?
-* "@subsegmentStartsWithSAP" is related to timing in some sense but in another sense it is just a question of segment/sample structure. Not sure if it fits into this chapter.
+* 3.3 - not relevant
+* 3.4 - not relevant (there is some there that byte-range should work but this is obvious)
+* 3.5 - merged
+* 3.6 - empty chapter
+* 3.7 - empty chapter
+* 3.8 - not relevant
+* 3.9 - not relevant
+* 3.10 - merged
+* 4.1 - not relevant
+* 4.2 - merged
+* 4.3 - merged partially
+	* 4.3.2.2.8 TODO (URL templating)
+* 4.4 - merged
+	* is lmsg of any relevance here? timing chapter does not talk about lmsg; I don't see any point to lmsg in general - MPD defines the timeline, not the segments; services need to provide proper MPD updates and that's all there is to it
+* 4.5 - merged partially
+	* in-band events merged
+	* service timeline logic not merged (not sure what to do with it)
+* 4.6 - merged
+* 4.7 - merged
+* 4.8 - merged
+* 4.9 - not relevant
+* 4.10 - not relevant
+* 4.11 - merged
+* 5 - merged
+* 6 - not relevant
+* 7 - not relevant
+* 8 - not relevant
+* 9 - not relevant
+* 10 - not relevant
+* 11 - not relevant
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
 
