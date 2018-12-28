@@ -220,7 +220,7 @@ The MPD defines the byte range of the track file that contains the index segment
 
 Multiple representations SHALL NOT be stored in the same track file.
 
-At least one `Representation/BaseURL` element SHALL be present in the MPD and SHALL contain a reference to the track file. See [[#timing-urls-and-http]] for details on URL handling.
+At least one `Representation/BaseURL` element SHALL be present in the MPD and SHALL contain a reference to the track file.
 
 The `SegmentBase@indexRange` attribute SHALL be present in the MPD and SHALL reference the byte range of the segment index in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes.
 
@@ -355,7 +355,7 @@ The value of `S@r` SHALL be nonnegative, except for the last `S` element which M
 
 [[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements, add the `S@t` attribute to the first `S` element or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments. URL construction rules are defined in [[#timing-urls-and-http]].
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments.
 
 <div class="example">
 Below is an example of common usage of the explicit addressing mode.
@@ -451,7 +451,7 @@ The `SegmentTemplate@duration` attribute SHALL define the nominal duration of a 
 
 The set of [=segment references=] SHALL consist of the first [=media segment=] starting exactly at the [=period=] start point and all other [=media segments=] following in a consecutive series of equal time spans of `SegmentTemplate@duration` [=timescale units=], ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using either the `$Time$` or `$Number$` template variable to uniquely identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments. URL construction rules are defined in [[#timing-urls-and-http]].
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using either the `$Time$` or `$Number$` template variable to uniquely identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments.
 
 <div class="example">
 Below is an example of common usage of the simple addressing mode.
@@ -604,9 +604,13 @@ After conversion, we arrive at the following result.
 Parts of the MPD structure that are not relevant for this chapter have been omitted - the above are not fully functional MPD files.
 </div>
 
-## Resolving URLs and performing HTTP requests ## {#timing-urls-and-http}
+#### Expanding URL template variables #### {#timing-template-variables}
 
-Issue: Determine appropriate content for this section.
+Expansion rules for URL template variables such as `$Time$` and `$Number` are defined by [[!MPEGDASH]].
+
+The set of string formatting suffixes used SHALL be restricted to `%0[width]d`.
+
+Note: The string format suffixes are not intended for general-purpose string formatting. Restricting it to only this single suffix enables the functionality to be implemented without a string formatting library.
 
 ## Segment alignment ## {#timing-segmentalignment}
 
@@ -1060,8 +1064,7 @@ Notes on merging IOP v4.3 content into this chapter:
 * 3.10 - merged
 * 4.1 - not relevant
 * 4.2 - merged
-* 4.3 - merged partially
-	* 4.3.2.2.8 TODO (URL templating)
+* 4.3 - merged
 * 4.4 - merged
 	* is lmsg of any relevance here? timing chapter does not talk about lmsg; I don't see any point to lmsg in general - MPD defines the timeline, not the segments; services need to provide proper MPD updates and that's all there is to it
 * 4.5 - merged partially
