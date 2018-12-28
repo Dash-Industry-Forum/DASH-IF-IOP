@@ -604,7 +604,7 @@ After conversion, we arrive at the following result.
 Parts of the MPD structure that are not relevant for this chapter have been omitted - the above are not fully functional MPD files.
 </div>
 
-#### Expanding URL template variables #### {#timing-template-variables}
+### Expanding URL template variables ### {#timing-template-variables}
 
 Expansion rules for URL template variables such as `$Time$` and `$Number` are defined by [[!MPEGDASH]].
 
