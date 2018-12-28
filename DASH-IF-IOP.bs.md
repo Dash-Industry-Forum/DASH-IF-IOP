@@ -683,13 +683,22 @@ Advisement: A dynamic MPD must conform to the constraints in this document not o
 
 ### Real time clock synchronization ### {#timing-sync}
 
+It is critical for dynamic MPDs to synchronize the clocks of the service and the client. The time indicated by the clock does not necessarily need to match some universal standard as long as the two are mutually synchronized.
+
 A dynamic MPD SHALL include at least one `UTCTiming` element that defines a clock synchronization mechanism.
 
-A client presenting a dynamic MPD SHALL synchronize its local clock according to the `UTCTiming` elements in the MPD and SHALL emit a warning or error to application developers when clock synchronization fails, no `UTCTiming` are defined or none of the referenced clock synchronization mechanisms are supported by the client.
+A client presenting a dynamic MPD SHALL synchronize its local clock according to the `UTCTiming` elements in the MPD and SHALL emit a warning or error to application developers when clock synchronization fails, no `UTCTiming` elements are defined or none of the referenced clock synchronization mechanisms are supported by the client.
 
-Note: The use of a "default time source" is not compatible with the interoperable timing model. The mechanism of time synchronization must always be explicitly defined. Interoperable clients cannot fall back to a default mechanism.
+Note: The use of a "default time source" is not compatible with the interoperable timing model. The mechanism of time synchronization must always be explicitly defined in the MPD by every service and interoperable clients cannot assume a default time source.
 
-Issue: Describe the relevant mechanisms.
+The set of time synchronization mechanisms SHALL be restricted to the following schemes defined in [[!MPEGDASH]]:
+
+* urn:mpeg:dash:utc:http-xsdate:2014
+* urn:mpeg:dash:utc:http-iso:2014
+* urn:mpeg:dash:utc:http-ntp:2014
+* urn:mpeg:dash:utc:ntp:2014
+* urn:mpeg:dash:utc:http-head:2014
+* urn:mpeg:dash:utc:direct:2014
 
 ### Availability ### {#timing-availability}
 
