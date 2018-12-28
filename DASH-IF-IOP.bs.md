@@ -28,7 +28,7 @@ The ultimate purpose of the MPD is to enable the client to obtain media samples 
 
 1. The MPD consists of consecutive [=periods=] which map data onto the MPD timeline.
 1. Each period contains of one or more [=representations=], each of which provides media samples inside a sequence of [=media segments=].
-1. Representations within a period are grouped in [=adaptation sets=], which associate related representations and decorate them with metadata.
+1. Representations within a period are grouped in adaptation sets, which associate related representations and decorate them with metadata.
 
 <figure>
 	<img src="Images/Timing/BasicMpdElements.png" />
@@ -88,13 +88,13 @@ Note: This calculation is necessary because the durations of xlink periods can o
 
 ## Representations ## {#timing-representation}
 
-A <dfn>representation</dfn> is a sequence of <dfn>segment references</dfn> and a description of the samples within the referenced [=media segments=]. Each representation belongs to exactly one [=adaptation set=] and to exactly one [=period=], although [[#timing-connectivity|a representation may be connected with a representation in another period]].
+A <dfn>representation</dfn> is a sequence of <dfn>segment references</dfn> and a description of the samples within the referenced [=media segments=]. Each representation belongs to exactly one adaptation set and to exactly one [=period=], although [[#timing-connectivity|a representation may be connected with a representation in another period]].
 
 Each segment reference addresses a [=media segment=] that corresponds to a specific time span on the [=sample timeline=]. Each [=media segment=] contains samples for a specific time span on the [=sample timeline=].
 
 Note: [=Simple addressing=] allows the actual time span of samples within a [=media segment=] to deviate from the nominal time span described in the MPD. All timing-related clauses in this document refer to the nominal timing described in the MPD unless otherwise noted.
 
-The exact mechanism used to define segment references depends on the [=addressing mode=] used by the representation. All representations in the same [=adaptation set=] SHALL use the same [=addressing mode=].
+The exact mechanism used to define segment references depends on the [=addressing mode=] used by the representation. All representations in the same adaptation set SHALL use the same [=addressing mode=].
 
 In a static MPD, a representation SHALL contain enough [=segment references=] to cover the entire time span of the [=period=].
 
@@ -154,7 +154,7 @@ Note: A sample timeline is linear - encoders are expected to use an appropriate 
 
 The sample timeline is formed after applying any [[!ISOBMFF]] edit lists.
 
-A sample timeline SHALL be shared by all [=representations=] in the same [=adaptation set=]. [=Representations=] in different [=adaptation sets=] MAY use different sample timelines.
+A sample timeline SHALL be shared by all [=representations=] in the same adaptation set. [=Representations=] in different adaptation sets MAY use different sample timelines.
 
 The sample timeline is measured in <dfn>timescale units</dfn> defined as a number of units per second. This value SHALL be present in the MPD as `SegmentTemplate@timescale` or `SegmentBase@timescale` (depending on the [=addressing mode=]).
 
@@ -183,7 +183,7 @@ Advisement: Even when using [=simple addressing=], the [=media segment=] that st
 
 ## Segment addressing modes ## {#timing-addressing}
 
-This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] and [=initialization segments=] in interopreable DASH presentations.
+This section defines the <dfn title="addressing mode">addressing modes</dfn> that can be used for referencing [=media segments=] and initialization segments in interopreable DASH presentations.
 
 Addressing modes not defined in this chapter SHALL NOT be used by DASH services. Clients SHOULD support all addressing modes defined in this chapter.
 
@@ -201,11 +201,11 @@ You SHOULD choose the addressing mode based on the nature of the content:
 
 A service MAY use [=simple addressing=] which enables the packager logic to be very simple. This simplicity comes at a cost of reduced applicability to multi-period scenarios and reduced client compatibility.
 
-All [=representations=] in the same [=adaptation set=] SHALL use the same addressing mode. [=Representations=] in different [=adaptation sets=] MAY use different addressing modes. [[#timing-connectivity|Period-connected representations]] SHALL use the same addressing mode in every [=period=].
+All [=representations=] in the same adaptation set SHALL use the same addressing mode. [=Representations=] in different adaptation sets MAY use different addressing modes. [[#timing-connectivity|Period-connected representations]] SHALL use the same addressing mode in every [=period=].
 
 ### Indexed addressing ### {#timing-addressing-indexed}
 
-A representation that uses <dfn>indexed addressing</dfn> consists of an [[!ISOBMFF]] track file containing an index segment, an [=initialization segment=] and a sequence of [=media segments=].
+A representation that uses <dfn>indexed addressing</dfn> consists of an [[!ISOBMFF]] track file containing an index segment, an initialization segment and a sequence of [=media segments=].
 
 Clauses in section only apply to [=representations=] that use indexed addressing.
 
@@ -230,12 +230,12 @@ The `AdaptationSet@subsegmentStartsWithSAP` attribute SHALL be present in the MP
 
 Issue: We need to clarify how to determine the right value. [#235](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/235)
 
-The `SegmentBase/Initialization@range` attribute SHALL reference the byte range of the [=initialization segment=] in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
+The `SegmentBase/Initialization@range` attribute SHALL reference the byte range of the initialization segment in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
 
 <div class="example">
 Below is an example of common usage of the indexed addressing mode.
 
-The example defines a timescale of 48000 units per second, with the period starting at position 8100 (or 0.16875 seconds) on the [=sample timeline=]. The client can use the index segment referenced by `indexRange` to determine where the [=media segment=] containing position 8100 (and all other [=media segments=]) can be found. The byte range of the [=initialization segment=] is also referenced.
+The example defines a timescale of 48000 units per second, with the period starting at position 8100 (or 0.16875 seconds) on the [=sample timeline=]. The client can use the index segment referenced by `indexRange` to determine where the [=media segment=] containing position 8100 (and all other [=media segments=]) can be found. The byte range of the initialization segment is also referenced.
 
 <xmp highlight="xml">
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011">
@@ -355,7 +355,7 @@ The value of `S@r` SHALL be nonnegative, except for the last `S` element which M
 
 [[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements, add the `S@t` attribute to the first `S` element or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments. URL construction rules are defined in [[#timing-urls-and-http]].
 
 <div class="example">
 Below is an example of common usage of the explicit addressing mode.
@@ -451,7 +451,7 @@ The `SegmentTemplate@duration` attribute SHALL define the nominal duration of a 
 
 The set of [=segment references=] SHALL consist of the first [=media segment=] starting exactly at the [=period=] start point and all other [=media segments=] following in a consecutive series of equal time spans of `SegmentTemplate@duration` [=timescale units=], ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using either the `$Time$` or `$Number$` template variable to uniquely identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing [=initialization segments=]. URL construction rules are defined in [[#timing-urls-and-http]].
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using either the `$Time$` or `$Number$` template variable to uniquely identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments. URL construction rules are defined in [[#timing-urls-and-http]].
 
 <div class="example">
 Below is an example of common usage of the simple addressing mode.
@@ -610,7 +610,7 @@ Issue: Determine appropriate content for this section.
 
 ## Segment alignment ## {#timing-segmentalignment}
 
-[=Media segments=] are said to be aligned if the start/end points of all [=media segments=] on the [=sample timeline=] are equal in all [=representations=] that belong to the same [=adaptation set=].
+[=Media segments=] are said to be aligned if the start/end points of all [=media segments=] on the [=sample timeline=] are equal in all [=representations=] that belong to the same adaptation set.
 
 [=Media segments=] SHALL be aligned. When using [=simple addressing=] or [=explicit addressing=], this means `AdaptationSet@segmentAlignment=true` in the MPD. When using [=indexed addressing=], this means `AdaptationSet@subsegmentAlignment=true` in the MPD.
 
@@ -620,9 +620,9 @@ Equivalent aligned [=media segments=] in different [=representations=] SHALL con
 
 In certain circumstances content may be offered such that a [=representation=] is technically compatible with the content of a [=representation=] in a previous [=period=]. Such [=representations=] are <dfn>period-connected</dfn>.
 
-[=Initialization segments=] of period-connected [=representations=] SHALL be functionally equivalent (i.e. the [=initialization segment=] from any period-connected [=representation=] can be used to initialize playback of any period-connected [=representation=]).
+Initialization segments of period-connected [=representations=] SHALL be functionally equivalent (i.e. the initialization segment from any period-connected [=representation=] can be used to initialize playback of any period-connected [=representation=]).
 
-Note: Connectivity is generally achieved by using the same encoder to encode the content of multiple [=periods=] using the same settings. Keep in mind, however, that decryption is also a part of the client media pipeline - it is not only the codec parameters that are configured by the [=initialization segment=].
+Note: Connectivity is generally achieved by using the same encoder to encode the content of multiple [=periods=] using the same settings. Keep in mind, however, that decryption is also a part of the client media pipeline - it is not only the codec parameters that are configured by the initialization segment.
 
 Such content SHOULD be signaled in the MPD as period-connected. This is expected to help clients ensure seamless playback across [=period=] transitions. Any subset of the [=representations=] in a [=period=] MAY be period-connected with their counterparts in a future or past [=period=]. Period connectivity MAY be chained across any number of [=periods=].
 
@@ -639,11 +639,11 @@ The following signaling SHALL be used to identify period-connected [=representat
 
 * `Representation@id` is equal.
 * `AdaptationSet@id` is equal.
-* The [=adaptation set=] in the second [=period=] has a supplemental property with:
+* The adaptation set in the second [=period=] has a supplemental property with:
 	* `@shemeIdUri` set to `urn:mpeg:dash:period-connectivity:2015`.
 	* `@value` set to the `Period@id` of the first period.
 
-Note: Not all [=representations=] in an [=adaptation set=] need to be period-connected. For example, if a new [=period=] is introduced to add a [=representation=] that contains a new video quality level, all other [=representations=] will likely be connected but not the one that was added.
+Note: Not all [=representations=] in an adaptation set need to be period-connected. For example, if a new [=period=] is introduced to add a [=representation=] that contains a new video quality level, all other [=representations=] will likely be connected but not the one that was added.
 
 <figure>
 	<img src="Images/Timing/SegmentOverlapOnPeriodConnectivity.png" />
@@ -797,16 +797,16 @@ The following basic restrictions are defined here for MPD updates:
 * `Period@id` SHALL NOT change.
 * `Period@start` SHALL NOT change.
 * `Period@duration` SHALL NOT change except when explicitly allowed by other statements in this document.
-* The [=adaptation sets=] present in a [=period=] (i.e. the set of `AdaptationSet@id` values) SHALL NOT change.
-* The [=representations=] present in an [=adaptation set=] (i.e. the set of `Representation@id` values) SHALL NOT change.
-* The functional behavior of a [=representation=] (identified by a matching `Representation@id` value) SHALL NOT change, neither in terms of metadata-driven behavior (including metadata inherited from [=adaptation set=] level) nor in terms of [=media segment=] timing. In particular:
+* The adaptation sets present in a [=period=] (i.e. the set of `AdaptationSet@id` values) SHALL NOT change.
+* The [=representations=] present in an adaptation set (i.e. the set of `Representation@id` values) SHALL NOT change.
+* The functional behavior of a [=representation=] (identified by a matching `Representation@id` value) SHALL NOT change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of [=media segment=] timing. In particular:
 	* `SegmentTemplate@presentationTimeOffset` SHALL NOT change.
 	* `SegmentTemplate@startNumber` SHALL NOT change.
 	* `SegmentBase@presentationTimeOffset` SHALL NOT change.
 
 Advisement: Additional restrictions on MPD updates are defined by other parts of this document.
 
-Clients SHOULD use `@id` to track [=period=], [=adaptation set=] and [=representation=] identity across MPD updates.
+Clients SHOULD use `@id` to track [=period=], adaptation set and [=representation=] identity across MPD updates.
 
 The presence or absence of `MPD@minimumUpdatePeriod` SHALL be used by a service to signal whether the MPD might be updated (with presence indicating potential for future updates). The value of this field indicates the validity duration of the present snapshot of the MPD, starting from the moment it was retrieved.
 
@@ -887,7 +887,7 @@ The rest of this chapter only applies to services and clients that use in-band M
 
 Services SHALL define `MPD@minimumUpdatePeriod=0` and add an in-band event stream to every audio [=representation=] or, if no audio [=representations=] are present, to every video [=representation=]. The in-band event stream MAY also be added to other [=representations=]. The in-band event stream SHALL be identical in every [=representation=] where it is present.
 
-The in-band event stream SHALL be signaled on the [=adaptation set=] level by an `InbandEventStream` element with `@scheme_id_uri="urn:mpeg:dash:event:2012"` and a `@value` of 1 or 3, where:
+The in-band event stream SHALL be signaled on the adaptation set level by an `InbandEventStream` element with `@scheme_id_uri="urn:mpeg:dash:event:2012"` and a `@value` of 1 or 3, where:
 
 * A value of 1 indicates that in-band events only extend the MPD validity duration.
 * A value of 3 indicates that in-band events also contain the updated MPD snapshot when updates occur.
@@ -972,8 +972,8 @@ Some clients are known to fail when transitioning from a period with audio and v
 There exist scenarios where you would wish to split a [=period=] in two. Common reasons would be:
 
 * to insert an ad [=period=] in the middle of an existing [=period=].
-* parameters of one [=adaptation set=] change (e.g. KID or display aspect ratio), requiring a new [=period=] to update signaling.
-* some [=adaptation sets=] become available or unavailable (e.g. different languages).
+* parameters of one adaptation set change (e.g. KID or display aspect ratio), requiring a new [=period=] to update signaling.
+* some adaptation sets become available or unavailable (e.g. different languages).
 
 This example shows how an existing [=period=] can be split in a way that clients capable of [[#timing-connectivity|seamless period-connected playback]] do not experience interruptions in playback among [=representations=] that are present both before and after the split.
 
@@ -1023,13 +1023,6 @@ Issue: What about period connectivity? [#238](https://github.com/Dash-Industry-F
 </figure>
 
 The same pattern can also be applied to other changes in [=representation=] configuration.
-
-## Placeholder chapter ## {#placeholder-for-temporary-terms}
-
-This chapter contains a set of terms that will exist in the IOP document but that do not exist in it yet. By defining these terms here, we enable references to be already inserted in existing text, simplifying the editing process.
-
-* <dfn>adaptation set</dfn>
-* <dfn>initialization segment</dfn>
 
 ## Editorial notes ## {#editorial-notes}
 
