@@ -112,7 +112,7 @@ Note: [=Media segments=] only become [=available=] when their end point is withi
 	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required segment references in each representation. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
 </figure>
 
-Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `now + MPD@minimumUpdatePeriod`.
+Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `now + MPD@minimumUpdatePeriod`, where `now` is the current time according to [[#timing-sync|the synchronized clock]].
 
 An unnecessary segment reference is one that is not defined as required by this chapter.
 
@@ -737,7 +737,7 @@ Clients SHOULD NOT assume that [=media segments=] described by the MPD as availa
 
 ### Time shift window ### {#timing-timeshift}
 
-The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time (`now`).
+The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time according to [[#timing-sync|the synchronized clock]] (`now`).
 
 The following additional factors further constrain the set of [=media segments=] that can be presented at the current time:
 
