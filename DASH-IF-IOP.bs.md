@@ -1051,62 +1051,6 @@ Issue: What about period connectivity? [#238](https://github.com/Dash-Industry-F
 
 The same pattern can also be applied to other changes in [=representation=] configuration.
 
-## Editorial notes ## {#editorial-notes}
-
-Notes on merging IOP v4.3 content into this chapter:
-
-* 1 - not relevant
-* 2 - not relevant
-* 3.1 - not relevant
-* 3.2.1 - merged
-* 3.2.2 - not relevant (some overlap with relevant chapters, nothing unique)
-* 3.2.3 - merged
-* 3.2.4 - not relevant
-* 3.2.5 - not relevant
-* 3.2.6 - not relevant
-* 3.2.7 - merged
-* 3.2.7.2 - merged
-* 3.2.7.3 - merged
-* 3.2.7.4 - not relevant
-* 3.2.8 - not relevant
-* 3.2.9 - not relevant
-* 3.2.10 - not relevant
-* 3.2.11 - not relevant
-	* this seems more "file format" level text; while timing-related, it seems very specific to BMFF internals to have a place in the timing chapter (where the general situation seems already sufficiently well described); review this after we have restructured the rest of the document, see where the best home for this information (or whatever part of this information we keep) is
-* 3.2.12 - merged
-* 3.2.13 - not relevant
-* 3.2.14 - not relevant
-* 3.2.15 - TODO (addressing and base URLs)
-* 3.3 - not relevant
-* 3.4 - not relevant (there is some there that byte-range should work but this is obvious)
-* 3.5 - merged
-* 3.6 - empty chapter
-* 3.7 - empty chapter
-* 3.8 - not relevant
-* 3.9 - not relevant
-* 3.10 - merged
-* 4.1 - not relevant
-* 4.2 - merged
-* 4.3 - merged
-* 4.4 - merged
-	* is lmsg of any relevance here? timing chapter does not talk about lmsg; I don't see any point to lmsg in general - MPD defines the timeline, not the segments; services need to provide proper MPD updates and that's all there is to it
-* 4.5 - merged partially
-	* in-band events merged
-	* service timeline logic not merged (not sure what to do with it)
-* 4.6 - merged
-* 4.7 - merged
-* 4.8 - merged
-* 4.9 - not relevant
-* 4.10 - not relevant
-* 4.11 - merged
-* 5 - merged
-* 6 - not relevant
-* 7 - not relevant
-* 8 - not relevant
-* 9 - not relevant
-* 10 - not relevant
-* 11 - not relevant
-
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
 
 <pre class="metadata">
