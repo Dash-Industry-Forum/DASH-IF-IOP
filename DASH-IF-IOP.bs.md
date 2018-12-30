@@ -118,10 +118,11 @@ An unnecessary segment reference is one that is not defined as required by this 
 
 In a static MPD, a representation SHALL NOT contain unnecessary segment references, except when using [=indexed addressing=] in which case such segment references MAY be present.
 
-In a dynamic MPD, a representation SHALL NOT contain unnecessary segment references, except when any of the following applies to a segment reference:
+In a dynamic MPD, a representation SHALL NOT contain unnecessary segment references except when any of the following applies, in which case an unnecessary segment reference MAY be present:
 
 1. The segment reference is for future content and will eventually become necessary.
 1. The segment reference is defined via [=indexed addressing=].
+1. The segment reference is defined by an `<S>` element that defines multiple references using `S@r`, some of which are necessary.
 1. Removal of the segment reference is not allowed by [[#timing-mpd-updates-remove-content|content removal constraints]].
 
 There SHALL NOT be gaps or overlapping [=media segments=] in a representation.
@@ -343,7 +344,7 @@ Clauses in section only apply to [=representations=] that use explicit addressin
 	<figcaption>Explicit addressing uses a segment template that is combined with explicitly defined time spans for each [=media segment=] in order to reference [=media segments=].</figcaption>
 </figure>
 
-The MPD SHALL contain a `SegmentTemplate/SegmentTimeline` element that contains a set of [=segment references=] which satisfies the requirements defined in this document. The references exist as a sequence of `S` elements, each of which references one or more [=media segments=] with start time `S@t` and duration `S@d` in `SegmentTemplate@timescale` units on the [=sample timeline=]. The `SegmentTemplate@duration` attribute SHALL NOT be present.
+The MPD SHALL contain a `SegmentTemplate/SegmentTimeline` element that contains a set of [=segment references=] which satisfies the requirements defined in this document. The references exist as a sequence of `S` elements, each of which references one or more [=media segments=] with start time `S@t` and duration `S@d` [=timescale units=] on the [=sample timeline=]. The `SegmentTemplate@duration` attribute SHALL NOT be present.
 
 To enable concise reference definitions, an `S` element may be a repeating [=segment reference=] that indicates a number of repeated consecutive [=media segments=] with the same duration. The value of `S@r` SHALL indicate the number of additional consecutive [=media segments=] that exist.
 
