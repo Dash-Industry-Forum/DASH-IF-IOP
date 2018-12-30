@@ -354,9 +354,11 @@ The start time of a [=media segment=] SHALL be calculated from the start time an
 
 The value of `S@r` SHALL be nonnegative, except for the last `S` element which MAY have a negative value in `S@r`, indicating that the repeated references continue indefinitely up to a [=media segment=] that either ends at or overlaps the period end point.
 
-[[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements, add the `S@t` attribute to the first `S` element or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
+[[#timing-mpd-updates|Updates to a dynamic MPD]] MAY add more `S` elements, remove expired `S` elements, increment `SegmentTemplate@startNumber`, add the `S@t` attribute to the first `S` element or increase the value of `S@r` on the last `S` element but SHALL NOT otherwise modify existing `S` elements.
 
-The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments.
+The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using the `$Time$` or `$Number$` template variable to unique identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments.
+
+If using `$Number$` addressing, the number of the first segment reference SHALL be defined by `SegmentTemplate@startNumber` (default value 1). The `S@n` attribute SHALL NOT be used - segment numbers form a continuous sequence starting with `SegmentTemplate@startNumber`.
 
 <div class="example">
 Below is an example of common usage of the explicit addressing mode.
@@ -428,6 +430,7 @@ For [=representations=] that use [=explicit addressing=], perform the following 
 1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
 1. Update `Period@duration` to match the new duration.
 1. Remove any unnecessary segment references.
+1. If using the `$Number$` template variable, increment `SegmentTemplate@startNumber` by the number of [=media segments=] removed from the beginning of the [=representation=].
 
 </div>
 
@@ -453,6 +456,8 @@ The `SegmentTemplate@duration` attribute SHALL define the nominal duration of a 
 The set of [=segment references=] SHALL consist of the first [=media segment=] starting exactly at the [=period=] start point and all other [=media segments=] following in a consecutive series of equal time spans of `SegmentTemplate@duration` [=timescale units=], ending with a [=media segment=] that ends at or overlaps the [=period=] end time.
 
 The `SegmentTemplate@media` attribute SHALL contain the URL template for referencing [=media segments=], using either the `$Time$` or `$Number$` template variable to uniquely identify [=media segments=]. The `SegmentTemplate@initialization` attribute SHALL contain the URL template for referencing initialization segments.
+
+If using `$Number$` addressing, the number of the first segment reference SHALL be defined by `SegmentTemplate@startNumber` (default value 1).
 
 <div class="example">
 Below is an example of common usage of the simple addressing mode.
@@ -533,7 +538,7 @@ Having ensured conformance to the above requirements for the new period start po
 <div class="algorithm">
 
 1. Update `SegmentTemplate@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
-1. If present, increment `SegmentTemplate@startNumber` by the number of [=media segments=] removed from the beginning of the [=representation=].
+1. If using the `$Number$` template variable, increment `SegmentTemplate@startNumber` by the number of [=media segments=] removed from the beginning of the [=representation=].
 1. Update `Period@duration` to match the new duration.
 
 </div>
@@ -549,12 +554,7 @@ To perform the conversion, execute the following steps:
 <div class="algorithm">
 
 1. Calculate the number of [=media segments=] in the representation as `SegmentCount = Ceil(AsSeconds(Period@duration) / ( SegmentTemplate@duration / SegmentTemplate@timescale))`.
-1. Assign a zero-based `SegmentIndex` value to each [=media segment=] in the representation, incrementing by one per segment.
-1. If using `$Number$` placeholders in `SegmentTemplate@media`:
-	1. Replace `$Number$` placeholders with equivalent `$Time$` placeholders.
-	1. Rename segment files to match new template. Calculate the value for `$Time$` as `SegmentStartTime = SegmentTemplate@presentationTimeOffset + SegmentIndex * SegmentTemplate@duration`.
 1. Update the MPD.
-	1. Remove `SegmentTemplate@startNumber` if present.
 	1. Add a single `SegmentTemplate/SegmentTimeline` element.
 	1. Add a single `SegmentTimeline/S` element.
 	1. Set `S@t` to equal `SegmentTemplate@presentationTimeOffset`.
@@ -581,7 +581,7 @@ Below is an example of a [=simple addressing=] [=representation=] before convers
 </MPD>
 </xmp>
 
-As part of the conversion, we calculate `SegmentCount = Ceil(900 / (4001 / 1000)) = 225`. We also rename files to time-based addressing, with the first segment file `800.m4s` getting the value `SegmentStartTime = 900 + 0 * 4001 = 900` which will later be resolved to the path `video/900.m4s` by clients.
+As part of the conversion, we calculate `SegmentCount = Ceil(900 / (4001 / 1000)) = 225`.
 
 After conversion, we arrive at the following result.
 
@@ -591,7 +591,8 @@ After conversion, we arrive at the following result.
 		<AdaptationSet>
 			<Representation>
 				<SegmentTemplate timescale="1000" presentationTimeOffset="900"
-						media="video/$Time$.m4s" initialization="video/init.mp4">
+						media="video/$Number$.m4s" initialization="video/init.mp4"
+						startNumber="800">
 					<SegmentTimeline>
 						<S t="900" d="4001" r="224" />
 					</SegmentTimeline>
