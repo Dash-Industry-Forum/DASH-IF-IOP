@@ -60,10 +60,10 @@ All periods SHALL be consecutive and non-overlapping. A period MAY have a durati
 Note: A period with a duration of zero might, for example, be the result of ad-insertion logic deciding not to insert any ad.
 
 <div class="example">
-The below MPD example consists of two 20-second periods. The duration of the first period is calculated using the start point of the second period. The total duration is also listed, as it is required for static MPDs.
+The below MPD example consists of two 20-second periods. The duration of the first period is calculated using the start point of the second period. The total duration is 40 seconds.
 
 <xmp highlight="xml">
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" type="static" mediaPresentationDuration="PT40S">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" type="static">
 	<Period>
 		...
 	</Period>
