@@ -829,7 +829,6 @@ The following basic restrictions are defined here for MPD updates:
 * The [=representations=] present in an adaptation set (i.e. the set of `Representation@id` values) SHALL NOT change.
 * The functional behavior of a [=representation=] (identified by a matching `Representation@id` value) SHALL NOT change, neither in terms of metadata-driven behavior (including metadata inherited from adaptation set level) nor in terms of [=media segment=] timing. In particular:
 	* `SegmentTemplate@presentationTimeOffset` SHALL NOT change.
-	* `SegmentTemplate@startNumber` SHALL NOT change.
 	* `SegmentBase@presentationTimeOffset` SHALL NOT change.
 
 Advisement: Additional restrictions on MPD updates are defined by other parts of this document.
