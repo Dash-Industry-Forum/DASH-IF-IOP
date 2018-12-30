@@ -902,7 +902,7 @@ In addition to editorial removal from the end of the MPD, content naturally expi
 	* A repeating explicit [=segment reference=] (`S` element with `@r != 0`) SHALL NOT be removed until all repetitions have expired.
 * Periods with their end points before the time shift window SHALL be removed.
 
-Note: When using [=indexed addressing=] or [=simple addressing=], removal of [=segment references=] only requires changing `Period@duration`.
+Note: When using [=indexed addressing=] or [=simple addressing=], removal of [=segment references=] from the end of the period only requires changing `Period@duration`.
 
 An MPD update that removes content MAY be combined [[#timing-mpd-updates-add-content|with an MPD update that adds content]].
 
