@@ -86,6 +86,28 @@ Note: In a dynamic MPD, a period with an unlimited duration may be converted to 
 
 Note: This calculation is necessary because the durations of xlink periods can only be known after the xlink is resolved. Therefore it is impossible to always determine the total MPD duration on the service side as only the client is guaranteed to have access to all the required knowledge.
 
+<div class="example">
+The below MPD example contains an xlink period. The real duration of the xlink period will only become known once the xlink is resolved by the client and the xlink element replaced with real content.
+
+The first period has an explicit duration defined because the xlink resolver has no knowledge of the MPD and is unlikely to know the appropriate value to define for the second period's `Period@start` (unless this data is provided in the xlink URL as a parameter).
+
+The explicitly defined duration of the second period will only be used as a fallback if the xlink resolver decides not to define a period. In this case the existing element in the MPD is preserved.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xlink="http://www.w3.org/1999/xlink" type="static">
+	<Period duration="PT30S">
+		...
+	</Period>
+	<Period duration="PT0S" xlink:href="https://example.com/256479/clips/53473/as_period">
+	</Period>
+</MPD>
+</xmp>
+
+After xlink resolving, the entire `<Period>` element will be replaced, except when the xlink result is empty, in which case the client preserves the existing element (which in this case is a period with zero duration, ignored by clients).
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
+</div>
+
 ## Representations ## {#timing-representation}
 
 A <dfn>representation</dfn> is a sequence of <dfn>segment references</dfn> and a description of the samples within the referenced [=media segments=]. Each representation belongs to exactly one adaptation set and to exactly one [=period=], although [[#timing-connectivity|a representation may be connected with a representation in another period]].
