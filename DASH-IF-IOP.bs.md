@@ -363,7 +363,7 @@ Clauses in section only apply to [=representations=] that use explicit addressin
 
 <figure>
 	<img src="Images/Timing/ExplicitAddressing.png" />
-	<figcaption>Explicit addressing uses a segment template that is combined with explicitly defined time spans for each [=media segment=] in order to reference [=media segments=].</figcaption>
+	<figcaption>Explicit addressing uses a segment template that is combined with explicitly defined time spans for each [=media segment=] in order to reference [=media segments=], either by start time or by sequence number.</figcaption>
 </figure>
 
 The MPD SHALL contain a `SegmentTemplate/SegmentTimeline` element that contains a set of [=segment references=] which satisfies the requirements defined in this document. The references exist as a sequence of `S` elements, each of which references one or more [=media segments=] with start time `S@t` and duration `S@d` [=timescale units=] on the [=sample timeline=]. The `SegmentTemplate@duration` attribute SHALL NOT be present.
