@@ -84,29 +84,7 @@ Note: In a dynamic MPD, a period with an unlimited duration may be converted to 
 
 `MPD@mediaPresentationDuration` MAY be present. If present, it SHALL accurately match the duration between the zero point on the MPD timeline and the end of the last period. Clients SHALL calculate the total duration of a static MPD by adding up the durations of each [=period=] and SHALL NOT rely on the presence of `MPD@mediaPresentationDuration`.
 
-Note: This calculation is necessary because the durations of xlink periods can only be known after the xlink is resolved. Therefore it is impossible to always determine the total MPD duration on the service side as only the client is guaranteed to have access to all the required knowledge.
-
-<div class="example">
-The below MPD example contains an xlink period. The real duration of the xlink period will only become known once the xlink is resolved by the client and the xlink element replaced with real content.
-
-The first period has an explicit duration defined because the xlink resolver has no knowledge of the MPD and is unlikely to know the appropriate value to define for the second period's `Period@start` (unless this data is provided in the xlink URL as a parameter).
-
-The explicitly defined duration of the second period will only be used as a fallback if the xlink resolver decides not to define a period. In this case the existing element in the MPD is preserved.
-
-<xmp highlight="xml">
-<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xlink="http://www.w3.org/1999/xlink" type="static">
-	<Period duration="PT30S">
-		...
-	</Period>
-	<Period duration="PT0S" xlink:href="https://example.com/256479/clips/53473/as_period">
-	</Period>
-</MPD>
-</xmp>
-
-After xlink resolving, the entire `<Period>` element will be replaced, except when the xlink result is empty, in which case the client preserves the existing element (which in this case is a period with zero duration, ignored by clients).
-
-Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
-</div>
+Note: This calculation is necessary because the durations of [[#timing-xlink|XLink periods]] can only be known after the XLink is resolved. Therefore it is impossible to always determine the total MPD duration on the service side as only the client is guaranteed to have access to all the required knowledge.
 
 ## Representations ## {#timing-representation}
 
@@ -942,6 +920,50 @@ Multiple [=media segments=] MAY signal the same validity update event (identifie
 Live services can reach a point where no more content will be produced - existing content will be played back by clients and once they reach the end, playback will cease.
 
 Services SHALL define a fixed duration for the last [=period=], remove the `MPD@minimumUpdatePeriod` attribute and cease performing MPD updates to signal that no more content will be added to the MPD. The `MPD@type` MAY be changed to `static` at this point or later if the service is to be converted to a static MPD for on-demand viewing.
+
+## XLink elements ## {#timing-xlink}
+
+Some XML elements in an MPD may be external to the MPD itself, delay-loaded by clients based on different triggers. This mechanism is called XLink and it enables client-side MPD composition from different sources. For the purposes of timing and addressing, it is important to ensure that the duration of each [=period=] can be accurately determined both before and after XLink resolution.
+
+Note: XLink functionality in DASH is defined by [[!MPEGDASH]] and [[!XLINK]]. This document provides a high level summary of the behavior and defines interoperability requirements.
+
+XLink elements are those in the MPD that carry the `xlink:href` attribute. When XLink resolution is triggered (usually at MPD load time), the client will query the URL referenced by this attribute. What happens next depends on the result of this query:
+
+<dl class="switch">
+
+: Non-empty result
+:: The entire XLink element is replaced with the query result. A single XLink element MAY be replaced with multiple elements of the same type.
+
+: Empty result or query failure
+:: The XLink element remains as-is.
+
+</dl>
+
+Recursive XLink elements SHALL NOT be used by services. Clients SHALL ignore any XLink attributes that exist in content after XLink resolution.
+
+Services SHALL publish MPDs that conform to the requirements in this document even before XLink resolution. This is necessary because the behavior in case of XLink resolution failure is to retain the element as-is.
+
+<div class="example">
+The below MPD example contains an XLink period. The real duration of the XLink period will only become known once the XLink is resolved by the client and the XLink element replaced with real content.
+
+The first period has an explicit duration defined because the XLink resolver has no knowledge of the MPD and is unlikely to know the appropriate value to define for the second period's `Period@start` (unless this data is provided in the XLink URL as a parameter).
+
+The explicitly defined duration of the second period will only be used as a fallback if the XLink resolver decides not to define a period. In this case the existing element in the MPD is preserved.
+
+<xmp highlight="xml">
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xlink="http://www.w3.org/1999/xlink" type="static">
+	<Period duration="PT30S">
+		...
+	</Period>
+	<Period duration="PT0S" xlink:href="https://example.com/256479/clips/53473/as_period">
+	</Period>
+</MPD>
+</xmp>
+
+After XLink resolving, the entire `<Period>` element will be replaced, except when the XLink result is empty, in which case the client preserves the existing element (which in this case is a period with zero duration, ignored by clients).
+
+Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
+</div>
 
 ## Forbidden techniques ## {#timing-nonos}
 
