@@ -8,7 +8,7 @@ Live discussion in #document-authoring on Slack.
 
 # Chapter 1 # {#chapter1-the-real-intro}
 
-Placeholder text. This document will eventually contain IOP v5.
+Placeholder text. This document will eventually contain DASH-IF Interoperability Points v5.
 
 
 
