@@ -765,15 +765,17 @@ Clients SHALL NOT allow seeking into regions of the time shift window that are n
 
 ### Presentation delay ### {#timing-delay}
 
-Issue: This needs more work.
-
 There is a natural conflict between the [=availability window=] and the [=time shift window=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift window=], yet such [=media segments=] might not yet be [=available=].
 
 Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may also change over time if a [=representation=] does not use a constant segment duration.
 
-The `MPD@suggestedPresentationDelay` attribute pushes the effective end point of the [=time shift window=] into the past to account for this effect and defines the <dfn>effective time shift window</dfn> - a range of the [=time shift window=] within which [=media segments=] can be expected to be available.
+Clients SHALL calculate a suitable presentation delay to ensure that the [=media segments=] it schedules for playback are [=available=] and that there is sufficient time to download them once they become [=available=]. In essence, the presentation delay decreases the [=time shift window=], creating an <dfn>effective time shift window</dfn> with a reduced duration.
 
-The effective time shift window is the time span from the start of the time shift window to `now - MPD@suggestedPresentationDelay`.
+Services MAY define the `MPD@suggestedPresentationDelay` attribute to provide a suggested presentation delay. Clients SHOULD use `MPD@suggestedPresentationDelay` when provided, ignoring the calculated value.
+
+Note: As different clients might use different algorithms for calculating the presentation delay, providing `MPD@suggestedPresentationDelay` enables services to roughly synchronize the playback start position of clients.
+
+The effective time shift window is the time span from the start of the time shift window to `now - PresentationDelay`.
 
 <figure>
 	<img src="Images/Timing/WindowInteractions.png" />
@@ -781,8 +783,6 @@ The effective time shift window is the time span from the start of the time shif
 </figure>
 
 Clients SHALL constrain seeking to the [=effective time shift window=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift window=].
-
-Services SHALL provide a suitable value for `MPD@suggestedPresentationDelay` to ensure that [=media segments=] that overlap the [=effective time shift window=] are [=available=].
 
 ### MPD updates ### {#timing-mpd-updates}
 
