@@ -929,19 +929,19 @@ Some XML elements in an MPD may be external to the MPD itself, delay-loaded by c
 
 Note: XLink functionality in DASH is defined by [[!MPEGDASH]] and [[!XLINK]]. This document provides a high level summary of the behavior and defines interoperability requirements.
 
-XLink elements are those in the MPD that carry the `xlink:href` attribute. When XLink resolution is triggered (usually at MPD load time), the client will query the URL referenced by this attribute. What happens next depends on the result of this query:
+XLink elements are those in the MPD that carry the `xlink:href` attribute. When XLink resolution is triggered, the client will query the URL referenced by this attribute. What happens next depends on the result of this query:
 
 <dl class="switch">
 
-: Non-empty result
+: Non-empty result containing a valid XML fragment
 :: The entire XLink element is replaced with the query result. A single XLink element MAY be replaced with multiple elements of the same type.
 
 : Empty result or query failure
-:: The XLink element remains as-is.
+:: The XLink element remains as-is with the XLink attributes removed.
 
 </dl>
 
-Recursive XLink elements SHALL NOT be used by services. Clients SHALL ignore any XLink attributes that exist in content after XLink resolution.
+When XLink resolution is triggered depends on the value of the `xlink:actuate` attribute. A value of `onLoad` indicates resolution at MPD load-time, whereas a value of `onRequest` indicates resolution on-demand at the time the client wishes to use the element. The default value is `onRequest`.
 
 Services SHALL publish MPDs that conform to the requirements in this document even before XLink resolution. This is necessary because the behavior in case of XLink resolution failure is to retain the element as-is.
 
