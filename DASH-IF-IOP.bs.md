@@ -765,6 +765,8 @@ Clients SHALL NOT allow seeking into regions of the time shift window that are n
 
 ### Presentation delay ### {#timing-delay}
 
+Issue: This needs more work.
+
 There is a natural conflict between the [=availability window=] and the [=time shift window=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift window=], yet such [=media segments=] might not yet be [=available=].
 
 Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may also change over time if a [=representation=] does not use a constant segment duration.
