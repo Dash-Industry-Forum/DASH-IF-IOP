@@ -17,8 +17,6 @@ See v4.3 references
 
 # Conventions, Context, Terms and Definitions # {#chapter-conventions-context-terms-defn}
 
-what
-
 ## Relation to MPEG-DASH ## {#relation-to-MPEG-DASH}
 ## Conventions ## {#conventions}
 * usage of keywords
