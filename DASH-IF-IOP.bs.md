@@ -6,12 +6,158 @@ Example document repository: https://dashif.org/DocumentAuthoring/
 
 Live discussion in #document-authoring on Slack.
 
-# Chapter 1 # {#chapter1-the-real-intro}
+Scope
+Disclaimer
 
-Placeholder text. This document will eventually contain IOP v5.
+# Introduction # {#chapter-introduction}
 
+# References # {#chapter-references}
 
+See v4.3 references
 
+# Conventions, Context, Terms and Definitions # {#chapter-conventions-context-terms-defn}
+
+what
+
+## Relation to MPEG-DASH ## {#relation-to-MPEG-DASH}
+## Conventions ## {#conventions}
+* usage of keywords
+* Formats
+
+see v4.3 and bug filed by Sander
+
+## Abbreviations ## {#abbreviations}
+see v4.3
+
+## Terms and Definitions ## {#terms-and-definitions}
+see v4.3 (may be hotlinked in bikeshed, auto generated)
+
+# General DASH Features # {#general-DASH-features}
+
+## Architecture ## {#architecture}
+* High-level end-to-end streaming architecture
+* ABR Encoder
+* Encryption
+* File Format Architecture
+* DASH Packager and MPD Generator
+* Origin Server
+* CDN
+* DASH Client
+    * DASH access client
+        * Selection
+        * Download
+    * Media Pipeline
+
+Reference other DASH activities (Ingest, CPIX, SAND, etc.)
+
+(re-use low-latency architecture)
+
+## Formats ## {#formats}
+(new clause with some usage from clause 3.2.1)
+
+### MPD ### {#mpd}
+* General high-level requirements
+
+### Segments ### {#segments}
+* Segment Formats in DASH
+* Requirements
+* Connect to CMAF and cmf2
+
+### Segment Addressing Schemes ### {#segment-addressing-schemes}
+* SegmentTemplate
+    *  $Number$ and $Time$
+* Self-Initializing
+    * Single Segment with Segment Index
+* Explain why we use different addressing
+* Follows clause 3.5 of https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-addressing
+
+## Protocol Considerations ## {#protocol-considerations}
+See clause 3.4 in v4.3
+
+## Location and Reference Resolution ## {#location-and-reference-resolution}
+See clause 3.2.15 in v4.3
+
+## Client-Server Synchronization ## {#client-server-synchronization}
+See clause 3.5 and 4.7 in v4.3
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-sync
+
+## Client Reference Model ## {#client-reference-model}
+Refer to dash.js and MSE
+
+(new clause) point to CTA WAVE Device Playback
+
+## Media Presentation Data Model ## {#media-presentation-data-model}
+### Timing Model ### {#timing-model}
+* Features
+* Content Offering Requirements and Recommendations
+* Client Requirements and Recommendations
+
+See 3.2.7 and document from Sander
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-period
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-representation
+
+### Content Annotation and Selection  ### {#content-annotation-and-selection}
+* Features
+* Content Offering Requirements and Recommendations
+* Client Requirements and Recommendations
+
+See 3.9 and document from Sander
+
+### Adaptive Switching ### {#adaptive-switching}
+* Features
+* Content Offering Requirements and Recommendations
+* Client Requirements and Recommendations
+
+(Adaptation Set, segment and subsegment alignment)
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-segmentalignment
+
+### Segment Timing ### {#segment-timing}
+See clause 4.3 as well as document from Sander 3.5-3.5.4
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-sampletimeline
+
+* @duration
+* Segment Timeline
+* Segment Index
+
+## Bandwidth Signaling ## {#bandwidth-signaling}
+* Minbuffertime
+* @bandwidth
+* Segment Index
+
+See clause 3.2.8
+
+## Service Types ## {#service-types}
+See clause 3.6
+
+On-Demand Services
+* On-Demand Services
+    * MPD Signaling
+    * Reference to clause X
+* Live Services
+    * Content availability, time shift window and presentation delay concepts (Sander’s 3.8-3.9.4)
+    * MPD Signaling
+    * MPD updates (Sanders 3.8.5)
+    * Reference to clause X
+
+## Media in DASH ## {#media-in-dash}
+(new clause)
+
+### Media in one Period ### {#media-in-one-period}
+* Features
+* Content Offering Requirements and Recommendations
+* Client Requirements and Recommendations
+* Text from Sander 3.6
+
+### Media Across Periods ### {#media-across-periods}
+* Features
+* Content Offering Requirements and Recommendations
+* Client Requirements and Recommendations
+* Text from Sander 3.7
 
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
