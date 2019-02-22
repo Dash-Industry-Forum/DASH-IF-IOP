@@ -157,6 +157,52 @@ On-Demand Services
 * Client Requirements and Recommendations
 * Text from Sander 3.7
 
+### Requirements and Recommendation for Media Codecs in DASH ### {#req-rec-media-codecs}
+* General Statements on how to add
+* Capabilities
+* Requirements on what needs to be defined (CMAF relation)
+
+## Events ## {#events}
+(new clause)
+
+## Remote Elements ## {#remote-elements}
+(new clause)
+
+Text from Sander 3.9
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-xlink
+
+## Profiles and Interop ## {#profiles-and-interop}
+Clause 2.4
+
+## Examples ## {#examples}
+Clause 2.4
+
+# On-Demand Services # {#on-demand-services}
+Clause 3.10
+
+# Live Services # {#live-services}
+Clause 4, but reduced as some issues are moved to general clause
+
+https://dashif-documents.azurewebsites.net//DASH-IF-IOP/pull/210/DASH-IF-IOP.html#timing-dynamic
+
+# Content Replacement and Ad Insertion # {#content-replacements-and-ad-insertion}
+Newly developed in Ad Insertion TF
+    - Content conditioning and splicing
+
+# Content Protection and Security # {#content-protection-and-security}
+Based on Clause
+
+# Video in DASH # {#video-in-dash}
+(new clause adding all codecs in IOP)
+
+(focusses on very specific issues following the general requirements from clause 4)
+
+## General ## {#general}
+
+### MPD and Adaptation Set Signaling ### {#mpd-and-adaptationSet-signaling}
+
+### Segment Formats ### {#segment-formats}
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
 
