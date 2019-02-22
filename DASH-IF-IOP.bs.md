@@ -198,11 +198,65 @@ Based on Clause
 
 (focusses on very specific issues following the general requirements from clause 4)
 
-## General ## {#general}
+## General ## {#general3}
 
 ### MPD and Adaptation Set Signaling ### {#mpd-and-adaptationSet-signaling}
 
 ### Segment Formats ### {#segment-formats}
+
+## H.264/AVC ## {#H264-AVC}
+(add a table with media profiles and reference CMAF)
+(create a clause with specific issues)
+
+## H.265/HEVC ## {#H265-HEVC}
+(add a table with media profiles and reference CMAF)
+(create a clause with specific issues)
+
+## VP9 ## {#VP9}
+
+# Audio in DASH # {#audio-in-DASH}
+(new clause adding all codecs in IOP)
+(focusses on very specific issues following the general requirements from clause 4)
+
+## General ## {#general1}
+
+### MPD and Adaptation Set Signaling ### {#mpd-and-adaptation-set-signaling}
+
+### Segment Formats ### {#segment-formats2}
+
+## (Codec 1) ## {#codec-1}
+(add a table with media profiles and reference CMAF)
+(create a clause with specific issues)
+
+## (Codec 2) ## {#codec-2}
+(add a table with media profiles and reference CMAF)
+(create a clause with specific issues)
+
+# Subtitles in DASH # {#subtitles-in-DASH}
+(new clause adding all codecs in IOP)
+(focusses on very specific issues following the general requirements from clause 4)
+
+## General ## {#genera2}
+
+### MPD and Adaptation Set Signaling ### {#MPD-and-adaptation-set-signaling}
+
+### Segment Formats ### {#segment-formats3}
+
+## (Codec 1) ## {#codec-1x}
+
+(add a table with media profiles and reference CMAF)
+(create a clause with specific issues)
+
+## (Codec 2) ## {#codec-2x}
+(add a table with media profiles and reference CMAF)
+(create a clause with specific issues)
+
+# Other DASH Features # {#other-DASH-features}
+## Seek Preview and Thumbnail Navigation ## {#seek-preview-and-thumbnail-navigation}
+
+# Annex Exclusions from MPEG-DASH # {#annex-exclusions-from-MPEG-DASH}
+This section list the exclusions and forbidden options of MPEG-DASH.
+Sanders 3.10 Forbidden techniques goes here
 
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
 
