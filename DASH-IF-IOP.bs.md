@@ -1,3 +1,16 @@
+<style>
+body{
+    counter-reset: tables;
+}
+table {
+  counter-increment: tables;
+}
+table caption::before {
+  font-weight: bold;
+  content: "Table " counter(tables) ": ";
+}
+</style>
+
 # Document editing notes # {#introduction-editing}
 
 Documentation: https://dashif.org/DocumentAuthoring/
@@ -10,6 +23,79 @@ Scope
 Disclaimer
 
 # Introduction # {#chapter-introduction}
+This document defines DASH-IF's InterOperability Points (IOPs). The document includes IOPs for only this version of the document. For earlier versions, please refer to version 1 [1] and version 2 [2] of this document. DASH-IF recommends to deprecate the IOPs in previous versions and deploy using one of the IOPs and extensions in this document.
+
+As a historical note, the scope of the initial DASH-AVC/264 IOP, issued with version 1 of this document [1] was the basic support high-quality video distribution over the top. Both live and on-demand services are supported.
+
+In the second version of this document [2], HD video (up to 1080p) extensions and several mul-tichannel audio extensions are defined.
+
+In this third version of the DASH-IF IOP document, two new DASH-264/AVC IOPs are defined. Detailed refinements and improvements for DASH-IF live services and for ad insertion were added in these IOPs. One of these IOP is the superset of the simpler one. Additionally, two cor-responding IOPs are defined to also support HEVC [19]. In both cases, AVC and HEVC, the more advanced IOP adds additional requirements on the DASH client to support segment pars-ing to achieve enhancement of live services. This structuring separates the Media Profiles from DASH features.
+
+In the fourth version, beyond minor improvements, corrections and alignment with MPEG-DASH third edition, the key additions are extensions for next generation audio and UHD/HDR video.
+
+This document defines the IOPs in Table 1 and Extensions in Table 2. The Implementation Guideline’s version in which each IOP or Extension was added is also provided in the tables.
+
+Note that all version 1 IOPs are also defined in version 2 and therefore referencing version [2] is sufficient.
+
+<table class="def">
+  <caption>DASH-IF Interoperability Points</caption>
+	<tr><th>DASH-IF Interoperability Point<th>Identifier<th>Version<th>Reference
+	<tr><td>DASH-AVC/264<td>http://dashif.org/guidelines/dash264<td>1.0<td>[2], 6.3
+  <tr><td>DASH-AVC/264 SD<td>http://dashif.org/guidelines/dash264#sd<td>1.0<td>[2], 7.3
+  <tr><td>DASH-AVC/264 HD<td>http://dashif.org/guidelines/dash264#hd<td>2.0<td>[2], 8.3
+  <tr><td>DASH-AVC/264 main<td>http://dashif.org/guidelines/dash264main<td>3.0<td>8.2
+  <tr><td>DASH-AVC/264 high<td>http://dashif.org/guidelines/dash264high<td>3.0<td>8.3
+  <tr><td>DASH-IF IOP simple<td>http://dashif.org/guidelines/dash-if-simple<td>3.0<td>8.4
+  <tr><td>DASH-IF IOP main<td>http://dashif.org/guidelines/dash-if-main<td>3.0<td>8.5
+  <tr><td>DASH-IF IOP on-demand<td>http://dashif.org/guidelines/dash-if-ondemand<td>4.3<td>3.10.3
+  <tr><td>DASH-IF IOP mixed on-demand<td>http://dashif.org/guidelines/dash-if-mixed<td>4.3<td>3.10.4
+</table>
+
+Note that all extensions defined in version 2 of this document are carried over into version 3 without any modifications. In order to maintain a single document, referencing in Table 2 is restricted to this document.
+
+<table class="def">
+    <caption>DASH-IF Interoperability Point Extensions</caption>
+    <tr><th>Extension<th>Identifier<th>Version<th>Section
+    <tr><td>DASH-IF multichannel audio extension with Enhanced AC-3<td>http://dashif.org/guidelines/dashif#ec-3<td>2.0<td>9.4.2.3
+    <tr><td>DASH-IF multichannel extension with Dolby TrueHD<td>http://dashif.org/guidelines/dashif#mlpa<td>2.0<td>9.4.2.3
+    <tr><td>DASH-IF multichannel extension with AC-4<td>http://dashif.org/guidelines/dashif#ac-4<td>3.1<td>9.4.2.3
+    <tr><td>DASH-IF multichannel audio extension with DTS Digital Surround<td>http://dashif.org/guidelines/dashif#dtsc<td>2.0<td>9.4.3.3
+    <tr><td>DASH-IF multichannel audio extension with DTS-HD High Resolu-tion and DTS-HD Mas-ter Audio<td>http://dashif.org/guidelines/dashif#dtsh<td>2.0<td>9.4.3.3
+    <tr><td>DASH-IF multichannel audio extension with DTS Express<td>http://dashif.org/guidelines/dashif#dtse<td>2.0<td>9.4.3.3
+    <tr><td>DASH-IF multichannel extension with DTS-HD Lossless (no core)<td>http://dashif.org/guidelines/dashif#dtsl<td>2.0<td>9.4.3.3
+    <tr><td>DASH-IF multichannel audio extension with MPEG Surround<td>http://dashif.org/guidelines/dashif#mps<td>2.0<td>9.4.4.3
+    <tr><td>DASH-IF multichannel audio extension with HE-AACv2 level 4<td>http://dashif.org/guidelines/dashif#heaac-mc51<td>2.0<td>9.4.5.3
+    <tr><td>DASH-IF multichannel audio extension with HE-AACv2 level 6<td>http://dashif.org/guidelines/dashif#heaac-mc71<td>2.0<td>9.4.5.3
+    <tr><td>DASH-IF multichannel audio extension with MPEG-H 3D Audio<td>http://dashif.org/guidelines/dashif#mpeg-h-3da<td>4.2<td>9.4.6.3
+    <tr><td>DASH-IF audio exten-sion with USAC<td>http://dashif.org/guidelines/dashif#cxha<td>4.3<td>9.4.7.3
+    <tr><td>DASH-IF UHD HEVC 4k<td>http://dashif.org/guidelines/dash-if-uhd#4k<td>4.0<td>10.2
+    <tr><td>DASH-IF HEVC HDR PQ10<td>http://dashif.org/guidelines/dash-if-uhd#hdr-pq10<td>4.0<td>10.3
+    <tr><td>DASH-IF UHD Dual-Stream (Dolby Vision)<td>http://dashif.org/guidelines/dash-if-uhd#hdr-pq10<td>4.1<td>10.4
+    <tr><td>DASH-IF VP9 HD<td>http://dashif.org/guide-lines/dashif#vp9<td>4.1<td>11.3.1
+    <tr><td>DASH-IF VP9 UHD<td>http://dashif.org/guidelines/dash-if-uhd#vp9<td>4.1<td>11.3.2
+    <tr><td>DASH-IF VP9 HDR<td>http://dashif.org/guide-lines/dashif#vp9-hdr \n http://dashif.org/guidelines/dash-if-uhd#vp9-hdr<td>4.1<td>11.3.3
+</table>
+
+In addition to the Interoperability points in Table 1 and extensions in Table 2, this document also defines several other identifiers and other interoperability values for functional purposes as documented in Table 3.
+
+<table class="def">
+    <caption>Identifiers and other interoperability values defined in this Document</caption>
+    <tr><th>Identifier<th>Semantics<th>Type<th>Section
+    <tr><td>http://dashif.org/identifiers/vast30<td>Defines an event for signalling events of VAST3.0<td>Event<td>5.6
+    <tr><td>http://dashif.org/guidelines/trickmode<td>Defines a trick mode Adaptation Set.<td>Functionality<td>3.2.9
+    <tr><td>http://dashif.org/guidelines/clearKey<td>Defines name space for the Laurl element in W3C<td>Namespace<td>7.6.2.4
+    <tr><td>e2719d58-a985-b3c9-781a-b030af78d30e<td>UUID for W3C Clear Key with DASH<td>Content Protection<td>7.6.2.4
+    <tr><td>http://dashif.org/guidelines/last-segment-number<td>Signaling last segment number<td>Functionality<td>4.4.3.6
+    <tr><td>http://dashif.org/guidelines/thumbnail_tile<td>Signalling the availability of the thumbnail tile adaptation set<td>Functionality<td>6.2.6
+</table>
+
+DASH-IF supports these guidelines with test and conformance tools:
+* DASH-IF conformance software is available for use online at http://dashif.org/conformance.html [32]. The software is based on an open-source code. The frontend source code and documentation is available at: https://github.com/Dash-Industry-Forum/Conformance-Software. The backend source code is available at: https://github.com/Dash-Industry-Forum/Conformance-and-reference-source.
+* DASH-IF test assets (features, test cases, test vectors) along with the documentation are available at http://testassets.dashif.org [31]. 
+* DASH Identifiers for different categories can be found at http://dashif.org/identifiers/ [33]. DASH-IF supporters are encouraged that external identifiers are submitted for doc-umentation there as well. Note also that DASH-IF typically tries to avoid defining iden-tifiers. Identifiers in italics are subject to discussion with other organizations and may be deprecated in a later version. 
+
+Technologies included in this document and for which no test and conformance material is provided, are only published as a candidate technology and may be removed if no test material is provided before releasing a new version of this guidelines document.
+
 
 # References # {#chapter-references}
 
