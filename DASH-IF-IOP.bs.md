@@ -23,7 +23,7 @@ Scope
 Disclaimer
 
 # Introduction # {#chapter-introduction}
-This document defines DASH-IF's InterOperability Points (IOPs). The document includes IOPs for only this version of the document. For earlier versions, please refer to version 1 [1] and version 2 [2] of this document. DASH-IF recommends to deprecate the IOPs in previous versions and deploy using one of the IOPs and extensions in this document.
+This document defines DASH-IF's InterOperability Points (IOPs). The document includes IOPs for only this version of the document. For earlier versions, please refer to version 1 [[DASH-IF-IOP1]] and version 2 [2] of this document. DASH-IF recommends to deprecate the IOPs in previous versions and deploy using one of the IOPs and extensions in this document.
 
 As a historical note, the scope of the initial DASH-AVC/264 IOP, issued with version 1 of this document [1] was the basic support high-quality video distribution over the top. Both live and on-demand services are supported.
 
@@ -369,6 +369,15 @@ Abstract: None
 <!-- Example of custom bibliography entries. Prefer adding your document to SpecRef over maintaining a custom definition. -->
 <pre class="biblio">
 {
+    "DASH-IF-IOP1": {
+        "authors": [
+            "DASH-IF"
+        ],
+        "href": "http://dashif.org/w/2013/06/DASH-AVC-264-base-v1.03.pdf",
+        "title": "DASH-264/AVC Interoperability Points",
+        "status": "version 1.0",
+        "publisher": "DASH-IF"
+    }
 }
 </pre>
 
