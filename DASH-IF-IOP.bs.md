@@ -24,7 +24,7 @@ See v4.3 references
 ## Conventions ## {#conventions}
 ## Conventions ## {#conventions}
 ### Background
-DASH-IF provides and documents guidelines for implementers to refer to interoperability descriptions. In doing so, the DASH-IF agreed to use key words in order to support readers of the DASH-IF documents to understand better how to interpret the language. The usage of key words in this document is provided below.
+DASH-IF guidelines and documents use a set of specific keywords to precisely express the requirements for features to achieve conformance to documents and interoperability with other compliant implementations. The implementer must carefully follow and apply the keyword definitions when implementing the features. These keywords are outlined and defined in the following two sections.
 ### Key Words
 The key word usage is aligned with the definitions in [[!rfc2119]], namely:
 * SHALL:   This word means that the definition is an absolute requirement of the specification.
