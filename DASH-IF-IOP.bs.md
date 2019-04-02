@@ -103,16 +103,16 @@ In a static MPD, a representation SHALL contain enough [=segment references=] to
 	<figcaption>In a static MPD, the entire period must be covered with [=media segments=].</figcaption>
 </figure>
 
-In a dynamic MPD, a representation SHALL contain enough segment references to cover the time span of the [=period=] that intersects with the [=time shift window=].
+In a dynamic MPD, a representation SHALL contain enough segment references to cover the time span of the [=period=] that intersects with the [=time shift buffer=].
 
 Note: [=Media segments=] only become [=available=] when their end point is within the [=availability window=]. It is a valid situation that a [=media segment=] is required to be referenced but is not yet [=available=].
 
 <figure>
 	<img src="Images/Timing/MandatorySegmentReferencesInDynamicMpd.png" />
-	<figcaption>In a dynamic MPD, the [=time shift window=] determines the set of required segment references in each representation. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift window=], despite falling within the bounds of a [=period=].</figcaption>
+	<figcaption>In a dynamic MPD, the [=time shift buffer=] determines the set of required segment references in each representation. [=Media segments=] filled with gray need not be referenced due to falling outside the [=time shift buffer=], despite falling within the bounds of a [=period=].</figcaption>
 </figure>
 
-Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift window=] to extend to `now + MPD@minimumUpdatePeriod`, where `now` is the current time according to [[#timing-sync|the synchronized clock]].
+Advisement: A dynamic MPD must remain valid for its entire validity duration after publishing. In other words, a dynamic MPD SHALL supply enough segment references to allow the [=time shift buffer=] to extend to `now + MPD@minimumUpdatePeriod`, where `now` is the current time according to [[#timing-sync|the synchronized clock]].
 
 An unnecessary segment reference is one that is not defined as required by this chapter.
 
@@ -748,52 +748,52 @@ Clients MAY attempt to acquire any available [=media segment=]. Clients SHALL NO
 
 Clients SHOULD NOT assume that [=media segments=] described by the MPD as available are always available at the correct moment in time and SHOULD implement appropriate retry behavior.
 
-### Time shift window ### {#timing-timeshift}
+### Time shift buffer ### {#timing-timeshift}
 
-The <dfn>time shift window</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time according to [[#timing-sync|the synchronized clock]] (`now`).
+The <dfn>time shift buffer</dfn> is a time span on the [=MPD timeline=] that defines a baseline for content that a client can present at the current moment in time according to [[#timing-sync|the synchronized clock]] (`now`).
 
 The following additional factors further constrain the set of [=media segments=] that can be presented at the current time:
 
-1. [[#timing-availability]] - not every [=media segment=] in the time shift window is guaranteed to be [=available=].
-1. [[#timing-delay]] - the service may define a delay that forbids the use of a section of the time shift window.
+1. [[#timing-availability]] - not every [=media segment=] in the time shift buffer is guaranteed to be [=available=].
+1. [[#timing-delay]] - the service may define a delay that forbids the use of a section of the time shift buffer.
 
-The time shift window extends from `now - MPD@timeShiftBufferDepth` to `now`.
+The time shift buffer extends from `now - MPD@timeShiftBufferDepth` to `now`.
 
-In the absence of `MPD@timeShiftBufferDepth` the start of the time shift window is `MPD@availabilityStartTime`.
+In the absence of `MPD@timeShiftBufferDepth` the start of the time shift buffer is `MPD@availabilityStartTime`.
 
 <figure>
-	<img src="Images/Timing/TimeShiftWindow.png" />
-	<figcaption>[=Media segments=] overlapping the time shift window may potentially be presented by a client, if other constraints do not forbid it.</figcaption>
+	<img src="Images/Timing/TimeShiftBuffer.png" />
+	<figcaption>[=Media segments=] overlapping the time shift buffer may potentially be presented by a client, if other constraints do not forbid it.</figcaption>
 </figure>
 
-Clients MAY present samples from [=media segments=] that overlap the time shift window, assuming no other constraints forbid it. Clients SHALL NOT present samples from [=media segments=] that are entirely outside the time shift window (whether in the past or the future).
+Clients MAY present samples from [=media segments=] that overlap the time shift buffer, assuming no other constraints forbid it. Clients SHALL NOT present samples from [=media segments=] that are entirely outside the time shift buffer (whether in the past or the future).
 
-The start of the time shift window MAY be before the start of the first [=period=].
+The start of the time shift buffer MAY be before the start of the first [=period=].
 
-A dynamic MPD SHALL contain a [=period=] that ends at or overlaps the end point of the time shift window, except when reaching [[#timing-mpd-updates-theend|the end of live content]] in which case the last [=period=] MAY end before the end of the time shift window.
+A dynamic MPD SHALL contain a [=period=] that ends at or overlaps the end point of the time shift buffer, except when reaching [[#timing-mpd-updates-theend|the end of live content]] in which case the last [=period=] MAY end before the end of the time shift buffer.
 
-Clients SHALL NOT allow seeking into regions of the time shift window that are not covered by [=periods=].
+Clients SHALL NOT allow seeking into regions of the time shift buffer that are not covered by [=periods=].
 
 ### Presentation delay ### {#timing-delay}
 
-There is a natural conflict between the [=availability window=] and the [=time shift window=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift window=], yet such [=media segments=] might not yet be [=available=].
+There is a natural conflict between the [=availability window=] and the [=time shift buffer=]. It is legal for a client to present [=media segments=] as soon as they overlap the [=time shift buffer=], yet such [=media segments=] might not yet be [=available=].
 
-Furthermore, the delay between [=media segments=] entering the [=time shift window=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may also change over time if a [=representation=] does not use a constant segment duration.
+Furthermore, the delay between [=media segments=] entering the [=time shift buffer=] and becoming [=available=] might be different for different [=representations=] that use different segment durations. This difference may also change over time if a [=representation=] does not use a constant segment duration.
 
-Clients SHALL calculate a suitable presentation delay to ensure that the [=media segments=] it schedules for playback are [=available=] and that there is sufficient time to download them once they become [=available=]. In essence, the presentation delay decreases the [=time shift window=], creating an <dfn>effective time shift window</dfn> with a reduced duration.
+Clients SHALL calculate a suitable presentation delay to ensure that the [=media segments=] it schedules for playback are [=available=] and that there is sufficient time to download them once they become [=available=]. In essence, the presentation delay decreases the [=time shift buffer=], creating an <dfn>effective time shift buffer</dfn> with a reduced duration.
 
 Services MAY define the `MPD@suggestedPresentationDelay` attribute to provide a suggested presentation delay. Clients SHOULD use `MPD@suggestedPresentationDelay` when provided, ignoring the calculated value.
 
 Note: As different clients might use different algorithms for calculating the presentation delay, providing `MPD@suggestedPresentationDelay` enables services to roughly synchronize the playback start position of clients.
 
-The effective time shift window is the time span from the start of the time shift window to `now - PresentationDelay`.
+The effective time shift buffer is the time span from the start of the time shift buffer to `now - PresentationDelay`.
 
 <figure>
 	<img src="Images/Timing/WindowInteractions.png" />
-	<figcaption>[=Media segments=] that overlap the effective time shift window are the ones that may be presented at time `now`. Two [=representations=] with different segment lengths are shown. Diagram assumes `@availabiltiyTimeOffset=0`.</figcaption>
+	<figcaption>[=Media segments=] that overlap the effective time shift buffer are the ones that may be presented at time `now`. Two [=representations=] with different segment lengths are shown. Diagram assumes `@availabiltiyTimeOffset=0`.</figcaption>
 </figure>
 
-Clients SHALL constrain seeking to the [=effective time shift window=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift window=].
+Clients SHALL constrain seeking to the [=effective time shift buffer=]. Clients SHALL NOT attempt to present [=media segments=] that fall entirely outside the [=effective time shift buffer=].
 
 ### MPD updates ### {#timing-mpd-updates}
 
@@ -804,7 +804,7 @@ Some common reasons to make changes in dynamic MPDs:
 * Adding new [=segment references=] to an existing [=period=].
 * Adding new [=periods=].
 * Converting unlimited-duration [=periods=] to fixed-duration [=periods=] by adding `Period@duration`.
-* Removing [=segment references=] and/or [=periods=] that have fallen out of the [=time shift window=].
+* Removing [=segment references=] and/or [=periods=] that have fallen out of the [=time shift buffer=].
 * Shortening an existing [=period=] when changes in content scheduling take place.
 * Removing `MPD@minimumUpdatePeriod` to signal that MPD will no longer be updated (even though it may remain a dynamic MPD).
 * Converting the MPD to a static MPD to signal that a live service has become available on-demand as a recording.
@@ -889,9 +889,9 @@ Clients SHALL NOT fail catastrophically if an MPD update removes already buffere
 
 In addition to editorial removal from the end of the MPD, content naturally expires due to the passage of time. Expired content also needs to be removed:
 
-* Explicitly defined [=segment references=] (`S` elements) SHALL be removed when they have expired (i.e. the [=media segment=] end point has fallen out of the [=time shift window=]).
+* Explicitly defined [=segment references=] (`S` elements) SHALL be removed when they have expired (i.e. the [=media segment=] end point has fallen out of the [=time shift buffer=]).
 	* A repeating explicit [=segment reference=] (`S` element with `@r != 0`) SHALL NOT be removed until all repetitions have expired.
-* Periods with their end points before the time shift window SHALL be removed.
+* Periods with their end points before the time shift buffer SHALL be removed.
 
 Note: When using [=indexed addressing=] or [=simple addressing=], removal of [=segment references=] from the end of the period only requires changing `Period@duration`.
 
