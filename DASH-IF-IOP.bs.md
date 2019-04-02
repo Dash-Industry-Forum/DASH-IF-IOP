@@ -208,6 +208,8 @@ All [=representations=] in the same adaptation set SHALL use the same addressing
 
 A representation that uses <dfn>indexed addressing</dfn> consists of an [[!ISOBMFF]] track file containing an index segment, an initialization segment and a sequence of [=media segments=].
 
+Note: This addressing mode is sometimes called "SegmentBase" in other documents.
+
 Clauses in section only apply to [=representations=] that use indexed addressing.
 
 Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document does not make such a distinction and has no concept of subsegments. Usage here matches the definition of [[MPEGCMAF|CMAF Segment]].
@@ -342,6 +344,8 @@ For [=representations=] that use [=indexed addressing=], perform the following a
 
 A representation that uses <dfn>explicit addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the MPD, with the exact time span covered by each [=media segment=] described in the MPD.
 
+Note: This addressing mode is sometimes called "SegmentTemplate with SegmentTimeline" in other documents.
+
 Clauses in section only apply to [=representations=] that use explicit addressing.
 
 <figure>
@@ -448,6 +452,8 @@ Issue: Once we have a specific `@earliestPresentationTime` proposal submitted to
 A representation that uses <dfn>simple addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the MPD, with the nominal time span covered by each [=media segment=] described in the MPD.
 
 Advisement: Simple addressing defines the nominal time span of each [=media segment=] in the MPD. The true time span covered by samples within the [=media segment=] can be slightly different than the nominal time span. See [[#timing-addressing-inaccuracy]].
+
+Note: This addressing mode is sometimes called "SegmentTemplate without SegmentTimeline" in other documents.
 
 Clauses in section only apply to [=representations=] that use simple addressing.
 
