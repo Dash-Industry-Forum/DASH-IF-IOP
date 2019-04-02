@@ -20,7 +20,7 @@ The playback of a static MPD SHALL NOT depend on the mapping of the MPD timeline
 
 The MPD timeline of a dynamic MPD SHALL have a fixed mapping to real time, with each point on the timeline corresponding to a point in real time. Clients MAY introduce an additional offset with respect to real time [[#timing-timeshift|to the extent allowed by the time shift signaling in the MPD]].
 
-Note: In addition to mapping the content to real time, [[#timing-mpd-updates|a dynamic MPD can be updated during the presentation]]. Updates may add new periods and remove or modify existing ones, though some restrictions apply. See [[#timing-mpd-updates]].
+Note: In addition to mapping the content to real time, [[#timing-mpd-updates|a dynamic MPD can be updated during the presentation]]. Updates may add new [=periods=] and remove or modify existing ones, though some restrictions apply. See [[#timing-mpd-updates]].
 
 The zero point in the MPD timeline of a dynamic MPD SHALL be mapped to the point in real time indicated by `MPD@availabilityStartTime`. This value SHALL NOT change between MPD updates.
 
@@ -39,7 +39,7 @@ The chapters below explore these relationships in detail.
 
 ## Periods ## {#timing-period}
 
-An MPD SHALL define an ordered list of one or more consecutive <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during the period. Period timing is relative to the zero point of the [=MPD timeline=].
+An MPD SHALL define an ordered list of one or more consecutive <dfn title="period">periods</dfn>. A period is both a time span on the [=MPD timeline=] and a definition of the data to be presented during this time span. Period timing is relative to the zero point of the [=MPD timeline=].
 
 <figure>
 	<img src="Images/Timing/PeriodsMakeTheMpd.png" />
@@ -210,7 +210,7 @@ A representation that uses <dfn>indexed addressing</dfn> consists of an [[!ISOBM
 
 Clauses in section only apply to [=representations=] that use indexed addressing.
 
-Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document does not make such a distinction and has no concept of subsegments.
+Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entity) and "subsegment" (byte range of an HTTP-addressable entity). This document does not make such a distinction and has no concept of subsegments. Usage here matches the definition of [[MPEGCMAF|CMAF Segment]].
 
 <figure>
 	<img src="Images/Timing/IndexedAddressing.png" />
@@ -291,6 +291,9 @@ aligned(8) class SegmentIndexBox extends FullBox('sidx', version, 0) {
 
 The values of the fields SHALL be as follows:
 
+Note: This matches the definitiuon in [[!ISOBMFF]] but is simply re-worded into an
+[[!MPEGDASH]] context to better guide implementations in choosing the correct values.
+
 : `reference_ID`
 :: The `track_ID` of the track that contains the data of this [=representation=].
 
@@ -323,6 +326,8 @@ The values of the fields SHALL be as follows:
 
 : `SAP_delta_time`
 :: `0`
+
+Issue: We need to clarify how to determine the right value for `SAP_type`. [#235](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/235)
 
 #### Moving the period start point (indexed addressing) #### {#timing-addressing-indexed-startpoint}
 
