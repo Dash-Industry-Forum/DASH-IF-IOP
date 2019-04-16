@@ -57,7 +57,7 @@ Each [=adaptation set=] SHALL match exactly one category from among the followin
 * A <dfn>text adaptation set</dfn> contains visual overlay information to be rendered as auxiliary or accessibility information. Such an [=adaptation set=] is identified by one of:
 	* `@mimeType="application/mp4"` and a `@codecs` parameter of a text coding technology defined in [[#codecs]].
 	* `@mimeType="application/ttml+xml"` with no `@codecs` parameter.
-* A <dfn>metadata adaptation set</dfn> contains information that is not expected to be rendered by a specific media handler, but is interpreted by the application. Such an adaptation set is identified by `@mimeType="application/mp4"` and an appropriate sample entry identified by the `@codecs` parameter.
+* A metadata adaptation set contains information that is not expected to be rendered by a specific media handler, but is interpreted by the application. Such an adaptation set is identified by `@mimeType="application/mp4"` and an appropriate sample entry identified by the `@codecs` parameter.
 * A <dfn>thumbnail adaptation set</dfn> contains [[#thumbnails|thumbnail images for efficient display during seeking]]. Such an adaptation set is identified by `@mimeType="image/jpeg"` or `@mimeType="image/png"` in combination with an [=essential property descriptor=] with `@schemeIdUri="http://dashif.org/guidelines/thumbnail_tile"`.
 
 Issue: What exactly is metadata `@codecs` supposed to be? https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/290
