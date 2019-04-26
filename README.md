@@ -8,12 +8,12 @@ See [Document Authoring Kit](https://dashif.org/DocumentAuthoring/) for details 
 
 Join **#iop** on Slack for live chat: [![Slack Status](https://dashif-slack.azurewebsites.net/badge.svg)](https://dashif-slack.azurewebsites.net)
 
-# Links to automated build outputs
-
-![Build status of master branch](https://dev.azure.com/dashif/Automation/_apis/build/status/DASH-IF-IOP?branchName=master)
+# Output documents
 
 Most recent output from the **master** branch:
 
 * [HTML document](https://dashif-documents.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.html)
 * [PDF document](https://dashif-documents.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.pdf)
 * [Download PDF + HTML as archive](https://dashif-documents.azurewebsites.net/DASH-IF-IOP/master/DASH-IF-IOP.zip)
+
+![Build status of master branch](https://dev.azure.com/dashif/Automation/_apis/build/status/DASH-IF-IOP?branchName=master) [Build history](https://dev.azure.com/dashif/Automation/_build?definitionId=5)
