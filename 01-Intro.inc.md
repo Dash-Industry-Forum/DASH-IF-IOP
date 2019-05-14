@@ -75,7 +75,6 @@ There are strong parallels between [[!MPEGDASH]] and [[RFC8216|HLS]], both being
 				<th>[[!MPEGDASH]]
 				<th>[[!MPEGCMAF]]
 				<th>[[!ISOBMFF]]
-		</thead>
 		<tbody>
 			<tr>
 				<td>(media) segment, subsegment
@@ -89,9 +88,7 @@ There are strong parallels between [[!MPEGDASH]] and [[RFC8216|HLS]], both being
 				<td>index segment, segment index
 				<td>
 				<td>segment index box (`sidx`)
-		</tbody>
 	</table>
-
 	<figcaption>Quick reference of closely related terms in different standards.</figcaption>
 </figure>
 

@@ -29,7 +29,6 @@ Note: [=Supplemental property descriptors=] are intended for presentation optimi
 				<th>Attribute or element
 				<th>Use
 				<th>Usage requirements
-		</thead>
 		<tbody>
 			<tr>
 				<td>`@profiles`
@@ -81,7 +80,6 @@ Note: [=Supplemental property descriptors=] are intended for presentation optimi
 				If present then all [=adaptation sets=] of the same type SHALL carry this element with different values.
 
 				This element SHALL NOT be used as the sole differentiating element, as scenarios with no user interaction must still lead to umanbiguous selection.
-		</tbody>
 	</table>
 	<figcaption>Content selection annotations for any [=adaptation set=] type.</figcaption>
 </figure>
@@ -97,7 +95,6 @@ Issue: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/274
 				<th>Attribute or element
 				<th>Use
 				<th>Usage requirements specific to [=video adaptation sets=]
-		</thead>
 		<tbody>
 			<tr>
 				<td>`@codecs`
@@ -164,7 +161,6 @@ Issue: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/274
 				* `emergency`
 
 				Clients SHALL consider there to be an implicit Role descriptor with the "Role" scheme and the value `main` if no explicitly defined Role descriptor with the "Role" scheme is present.
-		</tbody>
 	</table>
 	<figcaption>Annotations for [=video adaptation sets=].</figcaption>
 </figure>
@@ -176,7 +172,6 @@ Issue: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/274
 				<th>Attribute or element
 				<th>Use
 				<th>Usage requirements specific to [=audio adaptation sets=]
-		</thead>
 		<tbody>
 			<tr>
 				<td>`@codecs`
@@ -245,7 +240,6 @@ Issue: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/274
 				<th>Attribute or element
 				<th>Use
 				<th>Usage requirements specific to [=text adaptation sets=]
-		</thead>
 		<tbody>
 			<tr>
 				<td>`@codecs`
@@ -287,7 +281,6 @@ Issue: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/274
 				* `emergency`
 
 				Clients SHALL consider there to be an implicit Role descriptor with the "Role" scheme and the value `main` if no explicitly defined Role descriptor with the "Role" scheme is present.
-		</tbody>
 	</table>
 	<figcaption>Annotations for [=text adaptation sets=].</figcaption>
 </figure>

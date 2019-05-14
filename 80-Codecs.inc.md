@@ -29,7 +29,6 @@ The below table lists examples of `@codecs` strings for H.264 (AVC) that match t
                 <th>Profile
                 <th>Level
                 <th>`@codecs`
-        </thead>
         <tbody>
             <tr>
                 <td rowspan="2">H.264 (AVC) Progressive High Profile
@@ -40,7 +39,6 @@ The below table lists examples of `@codecs` strings for H.264 (AVC) that match t
                 <td>4.0
                 <td>`avc1.64Y028`<br/>
                 `avc3.64Y028`
-        </tbody>
     </table>
     <figcaption>Example `@codecs` strings for H.264 (AVC)</figcaption>
 </figure>
@@ -76,7 +74,6 @@ The [[!ISOBMFF]] sync sample signaling and [[!MPEGDASH]] SAP type signaling SHAL
                 <th>NAL unit type
                 <th>[[!ISOBMFF]] sync sample flag
                 <th>[[!MPEGDASH]] SAP type
-        </thead>
         <tbody>
             <tr>
                 <td>IDR_N_LP
@@ -117,7 +114,6 @@ The [[!ISOBMFF]] sync sample signaling and [[!MPEGDASH]] SAP type signaling SHAL
                 <td>true
                 <td>1 (if the IRAP has no associated leading pictures)
             <tr>
-        </tbody>
     </table>
     <figcaption>Signaling dependent on HEVC IRAP pictures in [[!ISOBMFF]] and [[!MPEGDASH]].</figcaption>
 </figure>
@@ -135,7 +131,6 @@ The below table lists examples of `@codecs` strings for H.265 (HEVC) that match 
                 <th>Profile
                 <th>Level
                 <th>`@codecs`
-        </thead>
         <tbody>
             <tr>
                 <td rowspan="2">HEVC Main
@@ -151,7 +146,6 @@ The below table lists examples of `@codecs` strings for H.265 (HEVC) that match 
                 <td>4.1
                 <td>`hev1.2.4.L123.B0`<br/>
                 `hvc1.2.4.L123.B0`
-        </tbody>
     </table>
     <figcaption>Example `@codecs` strings for H.265 (HEVC)</figcaption>
 </figure>
@@ -262,7 +256,6 @@ SAP type SHALL be 1. The `@codecs` string SHALL have a value from the below tabl
             <tr>
                 <th>Profile
                 <th>`@codecs`
-        </thead>
         <tbody>
             <tr>
                 <td>MPEG-4 AAC Profile [11]
@@ -273,7 +266,6 @@ SAP type SHALL be 1. The `@codecs` string SHALL have a value from the below tabl
             <tr>
                 <td>MPEG-4 HE-AAC v2 Profile [11]
                 <td>`mp4a.40.29`
-        </tbody>
     </table>
     <figcaption>Permitted HE-AACv2 `@codecs` values.</figcaption>
 </figure>
@@ -358,7 +350,6 @@ The signaling in the [=MPD=] SHALL conform to the below table.
                 <th>Storage
                 <th>`@mimeType`
                 <th>`@codecs`
-        </thead>
         <tbody>
             <tr>
                 <td>IMSC1 Timed Text [61]
@@ -371,7 +362,6 @@ The signaling in the [=MPD=] SHALL conform to the below table.
                 [[!ISOBMFF]]<br/>
                 [[!iso14496-30]][29]
                 <td>`application/mp4`
-        </tbody>
     </table>
     <figcaption>IMSC1 signaling parameters.</figcaption>
 </figure>
@@ -412,7 +402,6 @@ The signaling and encapsulation SHALL conform to [[!DTS9302J81100]], [[!DTS9302K
             <tr>
                 <th>Codec
                 <th>`@codecs`
-        </thead>
         <tbody>
             <tr>
                 <td>DTS Digital Surround
@@ -426,7 +415,6 @@ The signaling and encapsulation SHALL conform to [[!DTS9302J81100]], [[!DTS9302K
             <tr>
                 <td>DTS-HD Lossless (no core)
                 <td>`dtsl`
-        </tbody>
     </table>
     <figcaption>DTS `@codecs` values</figcaption>
 </figure>
@@ -462,7 +450,6 @@ ISO BMFF encapsulation SHALL conform to [[!iso23008-3]].
             <tr>
                 <th>Codec
                 <th>`@codecs`
-        </thead>
         <tbody>
             <tr>
                 <td>MPEG-H 3D audio LC profile level 1
@@ -473,7 +460,6 @@ ISO BMFF encapsulation SHALL conform to [[!iso23008-3]].
             <tr>
                 <td>MPEG-H 3D audio LC profile level 3
                 <td>`mhm1.0x0D`
-        </tbody>
     </table>
     <figcaption>Permitted `@codecs` values</figcaption>
 </figure>
@@ -559,12 +545,10 @@ Bitstreams conforming to this chapter MAY contain one or more sets of optional d
             <tr>
                 <th>Scheme
                 <th>@value
-        </thead>
         <tbody>
             <tr>
                 <td>ETSI TS 103.433 SEI messages
                 <td>`TS103433`
-        </tbody>
     </table>
     <figcaption>HEVC HDR dynamic metadata schemes.</figcaption>
 </figure>
@@ -634,7 +618,6 @@ The presence of dynamic metadata is signalled by a Supplemental Descriptor with 
             <tr>
                 <th>Scheme
                 <th>@value
-        </thead>
         <tbody>
             <tr>
                 <td>SMPTE 2094-10 SEI messages
@@ -645,7 +628,6 @@ The presence of dynamic metadata is signalled by a Supplemental Descriptor with 
             <tr>
                 <td>TS 103.433 SEI messages
                 <td>`TS103433`
-        </tbody>
     </table>
     <figcaption>HEVC HDR PQ10 dynamic metadata schemes</figcaption>
 </figure>
