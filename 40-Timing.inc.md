@@ -66,7 +66,7 @@ Parts of the MPD structure that are not relevant for this chapter have been omit
 
 In a static MPD, the first [=period=] SHALL start at the zero point of the [=MPD timeline=]. In a dynamic MPD, the first [=period=] SHALL start at or after the zero point of the [=MPD timeline=].
 
-In a static MPD, the last [=period=] SHALL have a `Period@duration`. In a dynamic MPD, the last [=period=] MAY have a `Period@duration`, in which case it is considered to have a fixed duration. If without `Period@duration`, the last [=period=] in a dynamic MPD SHALL be considered to have an unlimited duration.
+In a static MPD, the last [=period=] SHALL have a `Period@duration`. In a dynamic MPD, the last [=period=] MAY have a `Period@duration`, in which case it has a fixed duration. If without `Period@duration`, the last [=period=] in a dynamic MPD has an unlimited duration.
 
 Note: In a dynamic MPD, a [=period=] with an unlimited duration may be converted to fixed-duration by an MPD update. Periods in a dynamic MPD may also be shortened or removed entirely under certain conditions. See [[#timing-mpd-updates]].
 

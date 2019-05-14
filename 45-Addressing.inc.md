@@ -29,7 +29,7 @@ Note: Future updates to [[!MPEGDASH]] are expected to eliminate the critical lim
 
 ## Indexed addressing ## {#addressing-indexed}
 
-A representation that uses <dfn>indexed addressing</dfn> consists of a [[!MPEGCMAF|CMAF track file]] containing an index segment, an initialization segment and a sequence of [=media segments=].
+A representation that uses <dfn>indexed addressing</dfn> consists of a [=CMAF track file=] containing an index segment, an initialization segment and a sequence of [=media segments=].
 
 Note: This addressing mode is sometimes called "SegmentBase" in other documents.
 
@@ -42,17 +42,17 @@ Note: [[MPEGDASH]] makes a distinction between "segment" (HTTP-addressable entit
 	<figcaption>Indexed addressing is based on an index segment that references all [=media segments=].</figcaption>
 </figure>
 
-The MPD defines the byte range in the [[!MPEGCMAF|CMAF track file]] that contains the [=index segment=]. The [=index segment=] informs the client of all the [=media segments=] that exist, the time spans they cover on the [=sample timeline=] and their byte ranges.
+The MPD defines the byte range in the [=CMAF track file=] that contains the [=index segment=]. The [=index segment=] informs the client of all the [=media segments=] that exist, the time spans they cover on the [=sample timeline=] and their byte ranges.
 
-Multiple [=representations=] SHALL NOT be stored in the same track file.
+Multiple [=representations=] SHALL NOT be stored in the same [=CMAF track file=].
 
-At least one `Representation/BaseURL` element SHALL be present in the MPD and SHALL contain a reference to the track file.
+At least one `Representation/BaseURL` element SHALL be present in the MPD and SHALL contain a reference to the [=CMAF track file=].
 
-The `SegmentBase@indexRange` attribute SHALL be present in the MPD and SHALL reference the byte range of the segment index in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes.
+The `SegmentBase@indexRange` attribute SHALL be present in the MPD and SHALL reference the byte range of the segment index in the [=CMAF track file=]. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes.
 
-The `SegmentBase@timescale` attribute SHALL be present and its value SHALL match the value of the `timescale` field in the index segment (in the [[!ISOBMFF]] `sidx` box).
+The `SegmentBase@timescale` attribute SHALL be present and its value SHALL match the value of the `timescale` field in the [=index segment=] (in the [[!ISOBMFF]] `sidx` box) and the value of the `timescale` field in the [=initialization segment=] (in the [[!ISOBMFF `tkhd` box)]]).
 
-The `SegmentBase/Initialization@range` attribute SHALL reference the byte range of the initialization segment in the track file. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
+The `SegmentBase/Initialization@range` attribute SHALL reference the byte range of the initialization segment in the [=CMAF track file=]. The value SHALL be formatted as a `byte-range-spec` as defined in [[!RFC7233]], referencing a single range of bytes. The `Initialization@sourceURL` attribute SHALL NOT be used.
 
 <div class="example">
 Below is an example of common usage of the indexed addressing mode.
