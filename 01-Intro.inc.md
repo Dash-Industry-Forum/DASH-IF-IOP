@@ -40,6 +40,8 @@ DASH is an adaptive media delivery technology defined in [[!MPEGDASH]]. DASH tog
 
 This document was generated in close coordination with [[DVB-DASH]]. The features are aligned to the extent considered reasonable. To support implementers, this document attempts to highlight differences between [[=IOP=]] and [[DVB-DASH]].
 
+Clients consuming DASH content will need to interact with the host device's media platform. While few constraints are defined on these interactions, [=IOP=] does assume that the media platform implements APIs that are equivalent to the popular [[media-source|Media Source Extensions (MSE)]] and [[encrypted-media|Encrypted Media Extensions (EME)]].
+
 ## Structure of a DASH presentation ## {#what-is-dash}
 
 [[!MPEGDASH]] specifies the structure of a DASH presentation, which consists primarily of:
