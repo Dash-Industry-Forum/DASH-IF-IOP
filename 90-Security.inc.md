@@ -329,17 +329,17 @@ It should be noted that clients receiving content keys through the Clear Key key
 
 ### License Acquisition URL XML Element Laurl ### {#Laurl}
 
-The `Laurl` element MAY be added under the `ContentProtection` element. This element that specifies the URL for a license server allowing to receive a license in the format defined in [[!encrypted-media]]. It has the attribute `@Lic_type` that is a string describing the license type served by this license server. 
+The `Laurl` element MAY be added under the `ContentProtection` element. This element that specifies the URL for a license server allowing to receive a license. It has the attribute `@licenseType` that is a string describing the license type served by this license server. 
 
-The name space for the `Laurl` element is `http://dashif.org/guidelines/clearKey`  [???Change this namespace???]
+The name space for the `Laurl` element is `http://dashif.org/guidelines/ContentProtection`
 
 The XML schema for this element is:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-xmlns="http://dashif.org/guidelines/clearKey" 
-targetNamespace="http://dashif.org/guidelines/clearKey">
+xmlns="http://dashif.org/guidelines/ContentProtection" 
+targetNamespace="http://dashif.org/guidelines/ContentProtection">
 	<xs:complexType name="Laurl">
 		<xs:simpleContent>
 			<xs:extension base="xs:anyURI">
@@ -353,19 +353,20 @@ targetNamespace="http://dashif.org/guidelines/clearKey">
 
 #### ClearKey Example Using Laurl #### {#ClearKey-Laurl}
   
-An example of a Clear Key `ContentProtection` element using `Laurl` is as follows. One possible value of `@Lic_type` is “EME-1.0” when the license served by the Clear Key license server is in the format defined in [[!encrypted-media]].
+An example of a Clear Key `ContentProtection` element using `Laurl` is as follows. One possible value of `@licenseType` is “EME-1.0” when the license served by the Clear Key license server is in the format defined in [[!encrypted-media]].
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd http://dashif.org/guidelines/clearKey laurl.xsd"
+xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd http://dashif.org/guidelines/ContentProtection laurl.xsd"
 xmlns="urn:mpeg:dash:schema:mpd:2011"
 xmlns:dashif="http://dashif.org/guidelines/clearKey"
 type="static" profiles="urn:mpeg:dash:profile:mp2t-simple:2011" minBufferTime="PT1.4S">
 	<Period id="42" duration="PT6158S">
 		<AdaptationSet mimeType="video/mp2t" codecs="avc1.4D401F,mp4a">
 			<ContentProtection  schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"  value="ClearKey1.0">
-				 <dashif:Laurl Lic_type="EME-1.0">https://clearKeyServer.foocompany.com </dashif:Laurl>
+				 <dashif:Laurl licenseType="EME-1.0">https://clearKeyServer.foocompany.com</dashif:Laurl>
+				 <dashif:Laurl licenseType="EME-1.1">https://clearKeyServer.foocompany.com</dashif:Laurl>
 			</ContentProtection>
 		</AdaptationSet>
 	</Period>
