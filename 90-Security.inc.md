@@ -360,7 +360,7 @@ An example of a Clear Key `ContentProtection` element using `Laurl` is as follow
 <MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd http://dashif.org/guidelines/ContentProtection laurl.xsd"
 xmlns="urn:mpeg:dash:schema:mpd:2011"
-xmlns:dashif="http://dashif.org/guidelines/clearKey"
+xmlns:dashif="http://dashif.org/guidelines/ContentProtection"
 type="static" profiles="urn:mpeg:dash:profile:mp2t-simple:2011" minBufferTime="PT1.4S">
 	<Period id="42" duration="PT6158S">
 		<AdaptationSet mimeType="video/mp2t" codecs="avc1.4D401F,mp4a">
