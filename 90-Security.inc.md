@@ -329,7 +329,7 @@ It should be noted that clients receiving content keys through the Clear Key key
 
 ### License Acquisition URL XML Element Laurl ### {#Laurl}
 
-The `Laurl` element MAY be added under the `ContentProtection` element. This element that specifies the URL for a license server allowing to receive a license. It has the attribute `@licenseType` that is a string describing the license type served by this license server. 
+The `Laurl` element MAY be added under the `ContentProtection` element. This element specifies the URL for a license server allowing to receive a license. It has the optional attribute `@licenseType` that is a string that provides additional information that is DRM-specific. 
 
 The name space for the `Laurl` element is `http://dashif.org/guidelines/ContentProtection`
 
@@ -365,8 +365,8 @@ type="static" profiles="urn:mpeg:dash:profile:mp2t-simple:2011" minBufferTime="P
 	<Period id="42" duration="PT6158S">
 		<AdaptationSet mimeType="video/mp2t" codecs="avc1.4D401F,mp4a">
 			<ContentProtection  schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"  value="ClearKey1.0">
-				 <dashif:Laurl licenseType="EME-1.0">https://clearKeyServer.foocompany.com</dashif:Laurl>
-				 <dashif:Laurl licenseType="EME-1.1">https://clearKeyServer.foocompany.com</dashif:Laurl>
+				 <dashif:Laurl>https://clearKeyServer.foocompany.com</dashif:Laurl>
+				 <dashif:Laurl licenseType="EME-1.0">file://cache/licenseInfo.txt</dashif:Laurl>
 			</ContentProtection>
 		</AdaptationSet>
 	</Period>
