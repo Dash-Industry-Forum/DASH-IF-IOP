@@ -320,11 +320,6 @@ The MPD SHOULD NOT contain Clear Key initialization data. Instead, clients SHALL
 
 When requesting a Clear Key license to the license server, it is recommended to use a secure connection as described in Section [[#CPS-HTTPS]].
 
-When used with a license type equal to “EME-1.0”:
-
-* The GET request for the license includes in the body the JSON license request format defined in [[!encrypted-media]] section 9.1.3. The license request MAY also include additional authentication elements such as access token, device or user ID.
-* The response from the license server includes in the body the Clear Key license in the format defined in [[!encrypted-media]] section 9.1.4 if the device is entitled to receive the Content Keys.
-
 It should be noted that clients receiving content keys through the Clear Key key system may not have the same robustness that typical DRM clients are required to have. When the same content keys are distributed to DRM clients and to weakly-protected or unprotected clients, the weakly-protected or unprotected clients become a weak link in the system and limits the security of the overall system.
 
 ### License Acquisition URL XML Element Laurl ### {#Laurl}
@@ -372,3 +367,8 @@ type="static" profiles="urn:mpeg:dash:profile:mp2t-simple:2011" minBufferTime="P
 	</Period>
 </MPD>
 ```
+When used with a @licenseType equal to “EME-1.0”:
+
+* The GET request for the license includes in the body the JSON license request format defined in [[!encrypted-media]] section 9.1.3. The license request MAY also include additional authentication elements such as access token, device or user ID.
+* The response from the license server includes in the body the Clear Key license in the format defined in [[!encrypted-media]] section 9.1.4 if the device is entitled to receive the Content Keys.
+
