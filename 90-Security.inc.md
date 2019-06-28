@@ -343,7 +343,7 @@ targetNamespace="http://dashif.org/guidelines/ContentProtection">
 	<xs:complexType name="Laurl">
 		<xs:simpleContent>
 			<xs:extension base="xs:anyURI">
-				<xs:attribute name="Lic_type" type="xs:string"/>
+				<xs:attribute name="licenseType" type="xs:string"/>
 				<xs:anyAttribute namespace="##other" processContents="lax"/>
 			</xs:extension>
 		</xs:simpleContent>
