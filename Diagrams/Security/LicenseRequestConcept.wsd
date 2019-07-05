@@ -1,0 +1,19 @@
+@startuml
+
+participant "DASH client" as Client
+participant "DRM system" as CDM
+participant "License server" as LS
+
+Client -> CDM : Activate for KID 123
+CDM -> CDM : Check stored licenses
+
+alt If no usable license for KID 123 is stored
+    CDM -> Client : License request (opaque blob)
+    Client -> LS : License request (opaque blob)
+    LS -> Client : License response (opaque blob)
+    Client -> CDM : License response (opaque blob)
+end
+
+CDM -> Client : Ready to decrypt KID 123
+
+@enduml

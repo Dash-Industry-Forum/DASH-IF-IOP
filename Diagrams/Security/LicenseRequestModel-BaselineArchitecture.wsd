@@ -1,0 +1,14 @@
+@startuml
+
+participant "DASH client" as Client
+participant "Authorization service" as Authz
+participant "License server" as LS
+
+Client -> Authz : Get authorization token
+Authz -> Authz : Check if user is authorized
+Authz -> Client : Token
+Client -> LS : Get license\n(Token attached)
+LS -> LS : Validate token
+LS -> Client : License
+
+@enduml

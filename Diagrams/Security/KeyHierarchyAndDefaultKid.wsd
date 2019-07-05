@@ -1,0 +1,28 @@
+@startuml
+
+[Root key] as Root
+[Leaf key] as A
+[Leaf key] as B
+[Leaf key] as C
+
+package "MPD" {
+    [default_KID] as DKID
+}
+
+Root --> A
+Root --> B
+Root --> C
+
+DKID -> Root
+
+package "CMAF" {
+    [tenc]
+    [sgpd]
+}
+
+[tenc] -> Root
+[sgpd] -up-> A
+[sgpd] -up-> B
+[sgpd] -up-> C
+
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+
+participant "DASH client" as Client
+participant "License proxy" as Proxy
+participant "License server" as LS
+
+Client -> Proxy : Get license
+Proxy -> Proxy : Check if user is authorized
+Proxy -> LS : Get license\n(Proprietary proof of authorization attached)
+LS -> Proxy : License
+Proxy -> Client : License
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+
+participant "DASH client" as Client
+participant "DRM system" as DRM
+participant "Authorization service" as Authz
+participant "License server" as LS
+
+Client -> DRM : Configure to decrypt:\n* Key 1 (SD video)\n* Key 2 (HD video)\n* Key 3 (4K video)\n* Key 4 (stereo audio)\n* Key 5 (7.1 audio)
+DRM -> Client : License requests for keys 1-5
+
+Client -> Authz : Authorize keys 1-5
+note left of Authz: User has not purchased 4K quality\nservice plan - cannot use 4K key
+Authz -> Client : Keys 1, 2, 4 and 5 authorized\nKey 3 (4K video) not authorized
+
+Client -> LS : Request licenses
+note left of LS: User's mobile device is not secure enough\nfor HD quality - will not release HD key
+LS -> Client : Licenses for keys 1 (SD), 4 (stereo) and 5 (7.1 audio)
+
+Client -> DRM : Ingest licenses
+note over DRM: Device does not have sufficiently secure 7.1\noutput - will not decrypt using the 7.1 audio key
+DRM -> Client: Configuration complete\nAvailable keys: 1, 4
+
+@enduml
