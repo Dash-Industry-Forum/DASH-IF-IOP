@@ -1,16 +1,22 @@
-# Optional features # {#features}
+# Commonly used features # {#features}
 
-This chapter describes requirements for publishing and consuming services that make use of optional DASH features.
+This chapter describes some features of DASH presentations in their common implementations.
 
-These features might not be needed by all services and even if used by a service, might not be implemented by all clients. The requirements specified here attempt to define behavior that enables the features to be used in an interoperable way when present and ideally enable services to provide graceful degradation when encountering a client that does not implement a feature.
+Not every DASH client will support each of these features. Compatibility of different clients and services can verified by comparing the feature sets supported by clients and used by services (and may require experimentation and testing).
 
-## Custom metadata in MPD ## {#mpd-custom-metadata}
+## Seamless switching ## {#seamless-switching}
 
-In addition to metadata specified in [=IOP=], custom metadata MAY be added to MPDs using [=essential property descriptors=] and [=supplemental property descriptors=] defined in [[!MPEGDASH]]. Services SHALL NOT require clients to understand custom metadata in order to correctly play back a DASH presentation.
+A key feature of DASH is the ability for clients to seamlessly switch between compatible [=representations=] at predetermined points on the [=MPD timeline=], enabling content from different [=representations=] to be interleaved according to the wishes of the client. This enables adaptive streaming - changing the active quality level in accordance with dynamically changing network conditions. Most DASH presentations define switching points at 1-10 second intervals.
 
-Note: In other words, use of custom metadata does not make a service nonconforming to this specification but neither is the use of custom metadata an interoperable feature.
+Note: Decoder reinitialization during [=representation=] switches may result in visible or audible artifacts on some clients.
 
-Metadata identifiers are registered on the [DASH-IF website](https://dashif.org/).
+There are IDR-like SAPs (i.e. SAPs of type 1 or 2) at the start of each [=media segment=]. This enables seamless switching. The presence of such SAPs is be signaled in the [=MPD=] by providing a value of `1` or `2`, depending on the sample structure of the [=media segments=], for either `AdaptationSet@subsegmentStartsWithSAP` (if [=indexed addressing=] is used) or `AdaptationSet@segmentStartsWithSAP` (if any other [=addressing mode=] is used).
+
+Issue: We need to clarify how to determine the right value for startsWithSAP. [#235](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/235)
+
+Issue: Add a reference here to help readers understand what are "IDS-like SAPs (i.e. SAPs of type 1 or 2)".
+
+See also [[#bitstream-switching]].
 
 ## Preview thumbnails for seeking and navigation ## {#thumbnails}
 
@@ -201,11 +207,3 @@ When accessing a [[#svc-live|live service]], you can instruct the client to use 
 When referencing a moment in real time using `t=posix`, the `period` parameter SHALL NOT be used.
 
 Issue: How do leap seconds tie into this? See #161
-
-## Extended segment information ## {#extended-segment-info}
-
-Issue: porposal to deprecate https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/258
-
-## Last segment signaling ## {#lmsg}
-
-Issue: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/276

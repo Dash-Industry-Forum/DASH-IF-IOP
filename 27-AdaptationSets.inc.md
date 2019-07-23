@@ -1,43 +1,3 @@
-# Basic constraints # {#constraints}
-
-The standards and specifications that make up the DASH ecosystem are very flexible, enabling both interoperable and special-case scenarios. [=IOP=] only targets interoperable scenarios, which requires certain constraints to be defined to ensure a common interpretation. This chapter defines global constraints that are not specific to a particular feature or use case.
-
-## CMAF and ISO BMFF ## {#cmaf-bmff-constraints}
-
-The formats for many DASH data structures are defined by [[!MPEGCMAF]], which is largely based on [[!ISOBMFF]]. This chapter defines constraints on the use of [[!MPEGCMAF]] and [[!ISOBMFF]] features to limit them to a highly interoperable subset.
-
-Default values set in the Track Extends (`trex`) box MAY be overridden by corresponding values set in movie fragments (in `tfhd` or `trun` boxes).
-
-Movie Fragment (`moof`) boxes SHALL NOT use external data references. The flag `default-base-is-moof` SHALL be set (aka movie-fragment relative addressing) and `data-offset` SHALL be used (i.e. `base-data-offset-present` SHALL NOT be used).
-
-Any Segment Index (`sidx`) and Subsegment Index (`ssix`) boxes SHALL be placed before any Movie Fragment (`moof`) boxes within [=media segments=]. There SHALL be at most one Segment Index (`sidx`) box for each [=representation=].
-
-[=Media segments=] SHALL be non-multiplexed (contain only one track).
-
-## Media segment duration ## {#segment-duration-constraints}
-
-[=Media segments=] referenced by the same [=representation=] SHOULD be equal in duration. Occasional jitter MAY occur (e.g. due to encoder decisions on GOP size).
-
-Note: [=Media segment=] durations must be expressed in the [=MPD=] in conformance to the rules of the selected [=addressing mode=].
-
-Note: [[DVB-DASH]] defines some relevant constraints in section 4.5. Consider obeying these constraints to be compatible with [[DVB DASH]].
-
-## Large timescales and time values ## {#timescale-constraints}
-
-[[ECMASCRIPT]] is unable to accurately represent numeric values greater than 2<sup>53</sup> using built-in types. Therefore, interoperable services cannot use such values.
-
-All timescales are start times used in a DASH presentations SHALL be sufficiently small that no timecode value exceeding 2<sup>53</sup> will be encountered, even during the publishing of long-lasting [[#svc-live|live services]].
-
-Note: This may require the use of 64-bit fields, although the values must still be limited to under 2<sup>53</sup>.
-
-## Segments must be aligned ## {#segment-alignment-constraints}
-
-[=Media segments=] are said to be aligned if the start/end points of all [=media segments=] on the [=sample timeline=] are equal in all [=representations=] that belong to the same [=adaptation set=].
-
-[=Media segments=] SHALL be aligned.
-
-When using [=simple addressing=] or [=explicit addressing=], this SHALL be signaled by `AdaptationSet@segmentAlignment=true` in the [=MPD=]. When using [=indexed addressing=], this SHALL be signaled by `AdaptationSet@subsegmentAlignment=true` in the [=MPD=].
-
 ## Adaptation set contents ## {#adaptation-set-constraints}
 
 [=Adaptation sets=] SHALL contain [=media segments=] compatible with a single decoder, although services MAY require the decoder to be re-initialized when switching to a new [=representation=]. See also [[#bitstream-switching]].
@@ -46,7 +6,7 @@ All [=representations=] in the same [=adaptation set=] SHALL have the same [=tim
 
 [[!ISOBMFF]] edit lists SHALL be identical for all [=representations=] in an [=adaptation set=].
 
-Note: [[DVB-DASH]] defines some relevant constraints in section 4.5. Consider obeying these constraints to be compatible with [[DVB DASH]].
+Note: [[DVB-DASH]] defines some relevant constraints in section 4.5. Consider obeying these constraints to be compatible with [[DVB-DASH]].
 
 ## Adaptation set types ## {#adaptation-set-types}
 
@@ -140,45 +100,3 @@ The `AudioChannelConfiguration` element SHALL be present either on the [=adaptat
 [=Text adaptation sets=] SHOULD be annotated using descriptors defined by [[!MPEGDASH]], specifically `Role`, `Accessibility`, `EssentialProperty` and `SupplementalProperty` descriptors.
 
 Guidelines for annotation are provided in [[#selection]] and section 7.1.2 of [[DVB-DASH]].
-
-## Representing durations in XML ## {#xml-duration-constraints}
-
-All units expressed in [=MPD=] fields of datatype `xs:duration` SHALL be treated as fixed size:
-
-* 60S = 1M (minute)
-* 60M = 1H
-* 24H = 1D
-* 30D = 1M (month)
-* 12M = 1Y
-
-[=MPD=] fields having datatype `xs:duration` SHALL NOT use the year and month units and SHOULD be expressed as a count of seconds, without using any of the larger units.
-
-## Expanding URL template variables ## {#template-variable-constraints}
-
-This section clarifies expansion rules for URL template variables such as `$Time$` and `$Number`, defined by [[!MPEGDASH]].
-
-The set of string formatting suffixes used SHALL be restricted to `%0[width]d`.
-
-Note: The string format suffixes are not intended for general-purpose string formatting. Restricting it to only this single suffix enables the functionality to be implemented without a string formatting library.
-
-## Clock drift is forbidden ## {#no-clock-drift}
-
-Some encoders experience clock drift - they do not produce exactly 1 second worth of output per 1 second of input, either stretching or compressing time.
-
-A DASH service SHALL NOT publish content that suffers from clock drift.
-
-If a packager receives input from an encoder at the wrong rate, it must take corrective action. For example, it might:
-
-1. Drop a span of content if input is produced faster than real-time.
-1. Insert regular padding content if input is produced slower than real-time. This padding can take different forms:
-	* Silence or a blank picture.
-	* Repeating frames.
-	* Insertion of short-duration [=periods=] where the affected [=representations=] are not present.
-
-Of course, such after-the-fact corrective actions can disrupt the end-user experience. The optimal solution is to fix the defective encoder.
-
-## MPD size ## {#mpd-size-constraints}
-
-No constraints are defined on [=MPD=] size, or on the number of elements. However, services SHOULD NOT create unnecessarily large [=MPDs=].
-
-Note: [[DVB-DASH]] defines some relevant constraints in section 4.5. Consider obeying these constraints to be compatible with [[DVB DASH]].

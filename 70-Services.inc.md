@@ -51,7 +51,7 @@ For initial access to the service and joining the service, an [=MPD=] is require
 
 Note: Support for [[#mpd-anchors|MPD anchors]] is an optional client feature - a service should consider clients that lack an implementation.
 
-The initial [=MPD=] or join [=MPD=] is accessed and processed by the client and, [[#clock-sync-feature|having an accurate clock that is synchronized with the server]], the client can analyze the [=MPD=] and extract suitable information in order to initiate playback of the service. This includes, but is not limited to:
+The initial [=MPD=] or join [=MPD=] is accessed and processed by the client and, [[#clock-sync|having an accurate clock that is synchronized with the server]], the client can analyze the [=MPD=] and extract suitable information in order to initiate playback of the service. This includes, but is not limited to:
 
 * Identifying the currently active [=periods=] in the service and the [=period=] that contains the [=live edge=].
 * Selecting the suitable media components by selecting one or multiple [=adaptation sets=]. Within each [=adaptation set=] selecting an appropriate [=representation=] and identifying the live edge segment in each [=representation=]. The client then issues requests for the [=media segments=].
@@ -95,7 +95,7 @@ The limitations imposed by the following factors SHOULD be considered when selec
 
 ## Selecting the media segment duration ## {#live-segmentduration}
 
-The [=media segment=] duration SHOULD be between 1 and 10 seconds. The duration influences the end-to-end latency but also the switching and random access granularity as in DASH-264/AVC each [=media segment=] starts with a stream access point which can also be used as a [[#seamless-switching-feature|switching point]]. The service provider should set the value taking into account at least the following:
+The [=media segment=] duration SHOULD be between 1 and 10 seconds. The duration influences the end-to-end latency but also the switching and random access granularity as in DASH-264/AVC each [=media segment=] starts with a stream access point which can also be used as a [[#seamless-switching|switching point]]. The service provider should set the value taking into account at least the following:
 
 * The desired end-to-end latency.
 * The desired compression efficiency.

@@ -1,16 +1,15 @@
 #include "01-Intro.inc.md"
 
-#include "20-CoreFeatures.inc.md"
+#include "20-Interoperability.inc.md"
+#include "21-Timing.inc.md"
+#include "22-Addressing.inc.md"
+#include "27-AdaptationSets.inc.md"
+#include "28-Http.inc.md"
+#include "29-Misc.inc.md"
 
-#include "30-BasicConstraints.inc.md"
-
-#include "40-Timing.inc.md"
-
-#include "45-Addressing.inc.md"
+#include "40-Features.inc.md"
 
 #include "50-ContentSelection.inc.md"
-
-#include "60-OptionalFeatures.inc.md"
 
 #include "70-Services.inc.md"
 
