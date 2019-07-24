@@ -1,4 +1,4 @@
-# Segment addressing modes # {#addressing}
+## Segment addressing modes ## {#addressing}
 
 This section defines the <dfn>addressing modes</dfn> that can be used for referencing [=media segments=], [=initialization segments=] and [=index segments=] in interopreable DASH presentations.
 
@@ -27,7 +27,7 @@ Note: Future updates to [[!MPEGDASH]] are expected to eliminate the critical lim
 * A single large file is more efficient to transfer and cache than 100 000 or more small files, reducing computational and I/O overhead.
 * CDNs are aware of the nature of byte-range requests and can preemptively read-ahead to fill the cache ahead of playback.
 
-## Indexed addressing ## {#addressing-indexed}
+### Indexed addressing ### {#addressing-indexed}
 
 A representation that uses <dfn>indexed addressing</dfn> consists of a [=CMAF track file=] containing an index segment, an initialization segment and a sequence of [=media segments=].
 
@@ -150,7 +150,7 @@ Note: This matches the definitiuon in [[!ISOBMFF]] but is simply re-worded into 
 
 Issue: We need to clarify how to determine the right value for `SAP_type`. [#235](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/235)
 
-### Moving the period start point (indexed addressing) ### {#addressing-indexed-startpoint}
+#### Moving the period start point (indexed addressing) #### {#addressing-indexed-startpoint}
 
 When splitting [=periods=] in two or performing other types of editorial timing adjustments, a service might want to start a [=period=] at a point after the "natural" start point of the [=representations=] within.
 
@@ -159,7 +159,7 @@ For [=representations=] that use [=indexed addressing=], perform the following a
 1. Update `SegmentBase@presentationTimeOffset` to indicate the desired start point on the [=sample timeline=].
 1. Update `Period@duration` to match the new duration.
 
-## Explicit addressing ## {#addressing-explicit}
+### Explicit addressing ### {#addressing-explicit}
 
 A representation that uses <dfn>explicit addressing</dfn> consists of a set of [=media segments=] accessed via URLs constructed using a template defined in the MPD, with the exact time span covered by each [=media segment=] described in the MPD.
 
@@ -247,7 +247,7 @@ The example defines a sequence of 11 [=media segments=] starting at position 120
 Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
 </div>
 
-### Moving the period start point (explicit addressing) ### {#addressing-explicit-startpoint}
+#### Moving the period start point (explicit addressing) #### {#addressing-explicit-startpoint}
 
 When splitting [=periods=] in two or performing other types of editorial timing adjustments, a service might want to start a [=period=] at a point after the "natural" start point of the [=representations=] within.
 
@@ -264,7 +264,7 @@ For [=representations=] that use [=explicit addressing=], perform the following 
 
 Note: See [[#timing-representation]] and [[#timing-mpd-updates-remove-content]] to understand the constraints that apply to [=segment reference=] removal.
 
-## Simple addressing ## {#addressing-simple}
+### Simple addressing ### {#addressing-simple}
 
 Issue: Once we have a specific `@earliestPresentationTime` proposal submitted to MPEG we need to update this section to match. See [#245](https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues/245).
 
@@ -311,7 +311,7 @@ The example defines a [=sample timeline=] with a [=timescale=] of 1000 units per
 Parts of the MPD structure that are not relevant for this chapter have been omitted - this is not a fully functional MPD file.
 </div>
 
-### Inaccuracy in media segment timing when using simple addressing ### {#addressing-simple-inaccuracy}
+#### Inaccuracy in media segment timing when using simple addressing #### {#addressing-simple-inaccuracy}
 
 When using [=simple addressing=], the samples contained in a [=media segment=] MAY cover a different time span on the [=sample timeline=] than what is indicated by the nominal timing in the MPD, as long as no constraints defined in this document are violated by this deviation.
 
@@ -346,7 +346,7 @@ Near [=period=] boundaries, all the constraints of timing and addressing must st
 If such a [=media segment=] contained samples from 1 to 5 seconds (drift of 1 second away from zero point at both ends, which is within acceptable limits) it would be non-conforming because of the requirement in [[#timing-mediasegment]] that the first [=media segment=] contain a media sample that starts at or overlaps the [=period=] start point.
 </div>
 
-### Moving the period start point (simple addressing) ### {#addressing-simple-startpoint}
+#### Moving the period start point (simple addressing) #### {#addressing-simple-startpoint}
 
 When splitting [=periods=] in two or performing other types of editorial timing adjustments, a service might want to start a [=period=] at a point after the "natural" start point of the [=representations=] within.
 
@@ -373,7 +373,7 @@ Having ensured conformance to the above requirements for the new [=period=] star
 
 </div>
 
-### Converting simple addressing to explicit addressing ### {#addressing-simple-to-explicit}
+#### Converting simple addressing to explicit addressing #### {#addressing-simple-to-explicit}
 
 It may sometimes be desirable to convert a presentation from [=simple addressing=] to [=explicit addressing=]. This chapter provides an algorithm to do this.
 

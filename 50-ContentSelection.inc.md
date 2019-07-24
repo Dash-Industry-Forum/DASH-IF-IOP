@@ -1,4 +1,4 @@
-# Content selection # {#selection}
+# Content annotation and selection # {#selection}
 
 [[!MPEGDASH]] enables a service to annotate [=adaptation sets=] to enable clients to make an informed decision on which [=adaptation set=] to select for presentation from among the alternatives offered for each [[#adaptation-set-types|adaptation set type]]. The selection is based on client capabilities, client preferences, user preferences and possibly also interactive choices presented to the user. Typically, the signalling and selection is independent of the codec in use.
 
