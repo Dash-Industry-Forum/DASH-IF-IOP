@@ -11,11 +11,11 @@ While alternative interpretations may be equally valid in terms of standards con
 
 Requirements in this document describe client and service behavior that DASH-IF considers interoperable. If you choose to follow these requirements in a published DASH service, that service is likely to experience successful playback on a wide variety of clients and exhibit graceful degradation when a client does not support all features used by the service. Client-oriented requirements describe the mechanisms for consuming services that conform to this document.
 
-This document assumes that the entire DASH presentation conforms to these guidelines. Interoperable behavior cannot be expected from partially conforming presentations.
-
-There is no strict backward compatibility with previous versions - best practices change over time and what was once considered sensible may be replaced by a superior approach later on. Therefore, clients and services that were conforming to version N of this document are not guaranteed to conform to version N+1.
+This document uses statements of fact (e.g. "is" and "can") when describing normative requirements defined in referenced specifications such as [[!MPEGDASH]] and [[!MPEGCMAF]]. [[!RFC2119]] statements (e.g. "SHALL" and "SHOULD") are used when this document defines a new requirement or further constrains a requirement from a referenced document. See also [[#conformance]].
 
 All DASH presentations are assumed to be conforming to [=IOP=]. A service MAY explicitly signal itself as conforming by including the string `https://dashif.org/guidelines/` in `MPD@profiles`.
+
+There is no strict backward compatibility with previous versions - best practices change over time and what was once considered sensible may be replaced by a superior approach later on. Therefore, clients and services that were conforming to version N of this document are not guaranteed to conform to version N+1.
 
 # Disclaimer # {#legal}
 
