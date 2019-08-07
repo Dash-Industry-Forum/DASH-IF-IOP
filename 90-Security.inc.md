@@ -324,9 +324,9 @@ It should be noted that clients receiving content keys through the Clear Key key
 
 ### License Acquisition URL XML Element Laurl ### {#Laurl}
 
-The `Laurl` element MAY be added under the `ContentProtection` element. This element specifies the URL for a license server allowing to receive a license. It has the optional attribute `@licenseType` that is a string that provides additional information that is DRM-specific. 
+One or more `Laurl` elements MAY be added under the `ContentProtection` element. This element specifies the URL for a license server allowing to receive a license. It has the optional attribute `@licenseType` that is a string that provides additional information that is DRM-specific. 
 
-The name space for the `Laurl` element is `http://dashif.org/guidelines/ContentProtection`
+The name space for the `Laurl` element is `http://dashif.org/guidelines/ContentProtection` The namespace shortname is recommended to be "dashif:".
 
 The XML schema for this element is:
 
