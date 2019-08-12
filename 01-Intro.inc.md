@@ -46,7 +46,7 @@ DASH together with related standards and specifications is the foundation for an
 
 [[!MPEGDASH]] defines a highly flexible set of building blocks that needs to be constrained to a meaningful subset to ensure interoperable behavior in common scenarios. This document defines constraints that limit DASH features to those that are considered appropriate for use in interoperable clients and services.
 
-This document was generated in close coordination with [[!DVB-DASH]]. The features are aligned to the extent considered reasonable. The tools and features are aligned to the extent considered reasonable. In addition, DASH-IF worked closely with ATSC to develop a DASH profile for ATSC3.0 for broadcast distribution [[!ATSC3.0]].
+This document was generated in close coordination with [[!DVB-DASH]]. The features are aligned to the extent considered reasonable. The tools and features are aligned to the extent considered reasonable. In addition, DASH-IF worked closely with ATSC to develop a DASH profile for ATSC3.0 for broadcast distribution [[ATSC3]].
 
 Clients consuming DASH content will need to interact with the host device's media platform. While few constraints are defined on these interactions, this document does assume that the media platform implements APIs that are equivalent to the popular [[media-source|Media Source Extensions (MSE)]] and [[encrypted-media|Encrypted Media Extensions (EME)]].
 
@@ -84,7 +84,7 @@ The data container format defines the physical structure of the following elemen
 1. Each [=representation=] in the [=MPD=] references any number of [=media segments=].
 1. Some [=representations=] in the [=MPD=] may reference an [=index segment=], depending on the [=addressing mode=] used.
 
-Note: HLS (RFC8216) also support ([[!MPEGCMAF]]). Therefore, under certain constraints, the content encoded in ([![MPEGCMAF]]) can be delivered using MPD or HLS m3u8 manifest format.
+Note: HLS (RFC8216) also support ([[!MPEGCMAF]]). Therefore, under certain constraints, the content encoded in ([[!MPEGCMAF]]) can be delivered using MPD or HLS m3u8 manifest format.
 
 <figure id="cmaf-terms">
 	<table class="data">
