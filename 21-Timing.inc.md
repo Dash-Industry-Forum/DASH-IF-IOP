@@ -357,9 +357,9 @@ Issue: We could benefit from some detailed examples here, especially as clock sy
 
 #### Availability #### {#timing-availability}
 
-A [=media segment=] is <dfn>available</dfn> when an HTTP request to acquire the [=media segment=] can be started and successfully performed to completion by a client. During playback of a [=dynamic MPD=], new [=media segments=] continuously become [=available=] and stop being [=available=] with the passage of time.
+A [=media segment=] is <dfn>available</dfn> when an HTTP request to acquire the [=media segment=] can be started and successfully performed to completion by a client. During playback of a [=dynamic MPD=], new [=media segments=] continuously become [=available=] and stop being [=available=] with the passage of time. [[!MPEGDASH]] defines the <dfn>segment availability times<dfn> of a segment as the duration in wall-clock time in which that segment is available.
 
-An <dfn>availability window</dfn> is a time span on the [=MPD timeline=] that determines which [=media segments=] can be expected to be [=available=]. Each [=representation=] has its own [=availability window=].
+An <dfn>availability window</dfn> is a time span on the [=MPD timeline=] that determines which [=media segments=] can be expected to be [=available=]. Each [=representation=] has its own [=availability window=]. Consequently, [=availability window=] at each moment is defined by the union of [=segment availability times=] of all available segments at that moment.
 
 A <dfn>segment start point</dfn> (referred to as <dfn>MPD start time</dfn> of a segment in [[!MPEGDASH]]) is the presentation start time of the segment in [=MPD timeline=].
 
