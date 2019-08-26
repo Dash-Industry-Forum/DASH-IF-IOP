@@ -335,7 +335,8 @@ The XML schema for this element is:
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
 xmlns="http://dashif.org/guidelines/ContentProtection" 
 targetNamespace="http://dashif.org/guidelines/ContentProtection">
-	<xs:complexType name="Laurl">
+	<xs:element name="Laurl" type="LaurlType"/>
+	<xs:complexType name="LaurlType">
 		<xs:simpleContent>
 			<xs:extension base="xs:anyURI">
 				<xs:attribute name="licenseType" type="xs:string"/>
