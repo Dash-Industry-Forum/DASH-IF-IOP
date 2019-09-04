@@ -30,7 +30,7 @@ One can also use HTTPS for retrieving other types of data carried with a MPD tha
 <ContentProtection
     schemeIdUri="urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     value="DRMNAME version"
-    <drm:License>https://MoviesSP.example.com/protect?license=kljklsdfiowek</drm:License>
+    <dashif:laurl>https://MoviesSP.example.com/protect?license=kljklsdfiowek</dashif:laurl>
 </ContentProtection>
 ```
 
@@ -141,27 +141,6 @@ The contents of [=DRM system=] specific `ContentProtection` elements with the sa
 Note: If you wish to change the default [=DRM system configuration=] associated with a content key, you must update all the instances where the data is present in the MPD. For live services, this can mean updating the data in multiple [=periods=].
 
 If a DASH client exposes APIs/callbacks to business logic for the purpose of controlling DRM interactions, it SHALL NOT allow these APIs to associate multiple [=DRM system configurations=] for the same [=DRM system=] with the same `default_KID`. Conversely, DASH client APIs SHOULD allow business logic to associate different [=DRM system configurations=] for the same [=DRM system=] with different `default_KIDs`.
-
-#### XML schema extensions ### {#CPS-mpd-drm-config-schema}
-
-The namespace for the DASH-IF extension elements is `https://dashif.org/`. This document refers to this namespace as `dashif:`.
-
-The XML schema defining the DASH-IF extension elements is:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="https://dashif.org/">
-	<xs:element name="laurl" type="LaurlType"/>
-	<xs:complexType name="LaurlType">
-		<xs:simpleContent>
-			<xs:extension base="xs:anyURI">
-				<xs:anyAttribute namespace="##other" processContents="lax"/>
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-</xs:schema>
-```
 
 ### default_KID defines the scope of DRM system interactions ### {#CPS-default_KID}
 
@@ -799,14 +778,14 @@ The `dashif:laurl` element SHOULD be used to indicate the license server URL. Le
 
 W3C describes the use of the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` in [[!eme-initdata-cenc]] section 4 to indicate that tracks are encrypted with [[!MPEGCENC|Common Encryption]]. However, the presence of this "common" `pssh` box does not imply that Clear Key is to be used for decryption. DASH clients SHALL NOT interpret a `pssh` box with the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` as an indication that the Clear Key mechanism is to be used (nor as an indication of anything else beyond the use of Common Encryption).
 
-One or more `Laurl` elements MAY be added under the `ContentProtection` element. This element specifies the URL for a license server allowing to receive a license. The license request and response format is defined in [[!encrypted-media]].
+One or more `laurl` elements MAY be added under the `ContentProtection` element. This element specifies the URL for a license server allowing to receive a license. The license request and response format is defined in [[!encrypted-media]].
 
 Advisement: Clients receiving content keys through the Clear Key key system will not have the same robustness that typical DRM clients are required to have. When the same content keys are distributed to DRM clients and to weakly-protected or unprotected clients, the weakly-protected or unprotected clients become a weak link in the system and limits the security of the overall system.
 
 
 <div class="example">
 
-An example of a Clear Key `ContentProtection` element using `Laurl` is as follows.
+An example of a Clear Key `ContentProtection` element using `laurl` is as follows.
 
 ```xml
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:dashif="https://dashif.org/">
@@ -823,3 +802,18 @@ An example of a Clear Key `ContentProtection` element using `Laurl` is as follow
 
 Parts of the [=MPD=] structure that are not relevant for this chapter have been omitted - this is not a fully functional [=MPD=] file.
 </example>
+
+## XML Schema for DASH-IF MPD extensions ## {#CPS-schema}
+
+The namespace for the DASH-IF MPD extensions is `https://dashif.org/`. This document refers to this namespace using the `dashif` prefix. The XML schema of the extensions is:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:dashif="https://dashif.org/"
+    targetNamespace="https://dashif.org/">
+
+    <xs:element name="laurl" type="xs:anyURI"/>
+    <xs:element name="authzurl" type="xs:anyURI"/>
+</xs:schema>
+```
