@@ -52,6 +52,39 @@ In a DASH presentation, every [=representation=] in an [=adaptation set=] SHALL 
 
 Note: This means that if [=representations=] use different content keys, they must be in different [=adaptation sets=], even if they would otherwise (were they not encrypted) belong to the same [=adaptation set=]. See also [[#seamless-switching-xas]].
 
+### W3C Encrypted Media Extensions ### {#CPS-EME}
+
+This document assumes that the media platform of the DASH client implements an API equal to or similar to W3C Encrypted Media Extensions (EME) [[!encrypted-media]].
+
+Whereas the DRM signaling in DASH deals with [=DRM systems=], EME deals with <dfn>key systems</dfn>. While similar in concept, they are not always the same thing. A single [=DRM system=] may be implemented on a single device by multiple different [=key systems=], with different decoding capabilities and functionality, potentially at different [=robustness levels=].
+
+Even if multimple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow custom business logic to override the chosen [=key system=] (e.g. to force the use of a high-robustness variant).
+
+<div class="example">
+
+A device may implement the "ExampleDRM" [=DRM system=] as a number of [=key systems=]:
+
+* The key system "ExampleDRMvariant1" may support playback of encrypted H.264 and H.265 content at up to 1080p resolution with "low" [=robustness level=].
+* The key system "ExampleDRMvariant2" may support playback of encrypted H.264 content at up to 4K resolution with "high" [=robustness level=].
+* The key system "ExampleDRMvariant3" may support playback of encrypted H.265 content at up to 4K resolution with "high" [=robustness level=].
+
+</div>
+
+### Robustness ### {#CPS-robustness}
+
+The concept of <dfn>robustness level</dfn> expresses the difficulty of breaking the protection offered by a [=DRM system=]. An [=DRM system=] with a higher [=robustness level=] is believed by its author to be more resistant to attacks.
+
+Note: A [=DRM system=] with a higher [=robustness level=] may be superior in protecting content but may be more restircted in the choice of codecs or codec profiles/levels.
+
+Playback policy associated with content can require a certain [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. The license server is what enforces this policy by refusing to provide content keys to implementations with low [=robustness levels=].
+
+The minimum required [=robustness level=] may be different for different device models and is not expressed in the MPD. It is an aspect of solution-specific business logic and impossible for a DASH client to determine on its own as it has no knowledge of the policy enforced by the license server.
+
+A DASH client SHOULD enable custom business logic to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this may take two forms:
+
+1. Changing the mapping of [=DRM system=] to [=key system=] in EME-based implementations (see [[#CPS-EME]]).
+1. Specifying a minimum [=robustness level=] during capability detection (see [[#CPS-system-capabilities]]).
+
 ## Content protection constraints for CMAF ## {#CPS-cmaf}
 
 The structure of content protection related information in the CMAF containers used by DASH is largely specified by [[!MPEGCMAF]] and [[!MPEGCENC]]. This chapter outlines some additional requirements to ensure interoperable behavior of DASH clients and services.
@@ -75,22 +108,22 @@ The <dfn>DRM system configuration</dfn> is the complete data set required for a 
 * License server URL
 * [[#CPS-lr-model|Authorization service URL]]
 
-The exact set of values required for successful DRM workflow execution depends on the requirements of the selected DRM system (e.g. what kind of initialization data it can accept) and the mechanism used for content key acquisition (e.g. [[#CPS-lr-model|the DASH-IF interoperable license request model]]). By default, a DASH client SHOULD assume that a [=DRM system=] accepts initialization data in `pssh` format and that [[#CPS-lr-model|the DASH-IF interoperable license request model]] is used for content key acquisition.
+The exact set of values required for successful DRM workflow execution depends on the requirements of the selected [=DRM system=] (e.g. what kind of initialization data it can accept) and the mechanism used for content key acquisition (e.g. [[#CPS-lr-model|the DASH-IF interoperable license request model]]). By default, a DASH client SHOULD assume that a [=DRM system=] accepts initialization data in `pssh` format and that [[#CPS-lr-model|the DASH-IF interoperable license request model]] is used for content key acquisition.
 
-When configuring a [=DRM system=] to decrypt content using multiple content keys, a distinct [=DRM system configuration=] is associated with each content key. Concurrent use of multiple [=DRM systems=] is not considered an interoperable scenario.
+When configuring a [=DRM system=] to decrypt content using multiple content keys, a distinct [=DRM system configuration=] is associated with each content key. Concurrent use of multiple [=DRM systems=] is not an interoperable scenario.
 
-Note: In principle, it is possible for the DRM system initialization data to be the same for different content keys. In practice, the `default_KID` is often included in the initialization data so this is unlikely. Nevertheless, DASH clients cannot assume that using equal initialization data implies anything about equality of the [=DRM system configuration=] or the content key - the `default_KID` is always the distinguishing factor. See [[#CPS-default_KID]].
+Note: In theory, it is possible for the [=DRM system=] initialization data to be the same for different content keys. In practice, the `default_KID` is often included in the initialization data so this is unlikely. Nevertheless, DASH clients cannot assume that using equal initialization data implies anything about equality of the [=DRM system configuration=] or the content key - the `default_KID` is the factor identifying the scope in which a single content key is to be used. See [[#CPS-default_KID]].
 
-### Protection scheme signaling ### {#CPS-mpd-scheme}
+### Signaling presence of encrypted content ### {#CPS-mpd-scheme}
 
-The presence of a `ContentProtection` descriptor with `schemeIdUri="urn:mpeg:dash:mp4protection:2011"` on an [=adaptation set=] informs a DASH client that all [=representations=] in the [=adaptation set=] are encrypted in conformance to Common Encryption and require a [=DRM system=] to provide access. See [[!MPEGDASH]] for the definition of this descriptor.
+The presence of a `ContentProtection` descriptor with `schemeIdUri="urn:mpeg:dash:mp4protection:2011"` on an [=adaptation set=] informs a DASH client that all [=representations=] in the [=adaptation set=] are encrypted in conformance to Common Encryption ([[!MPEGDASH]] 5.8.4.1, 5.8.5.2 and [[!MPEGCENC]] 11) and require a [=DRM system=] to provide access.
 
-This descriptor SHALL be present for encrypted [=adaptation sets=]. The `value` attribute SHALL be either `cenc` or `cbcs`, matching the used [=protection scheme=]. The `cenc:default_KID` attribute SHALL be present and have a value matching the `default_KID` in the `tenc` box, expressed in lowercase UUID string notation.
+This descriptor is present for all encrypted content ([[!MPEGDASH]] 5.8.4.1). It SHALL be defined on the [=adaptation set=] level. The `value` attribute SHALL be either `cenc` or `cbcs`, matching the used [=protection scheme=]. The `cenc:default_KID` attribute SHALL be present and have a value matching the `default_KID` in the `tenc` box, expressed in lowercase UUID string notation.
 
-Note: This document uses the `cenc:` prefix to reference the XML namespace `urn:mpeg:cenc:2013` defined in [[!MPEGCENC]].
+Note: This document uses the `cenc:` prefix to reference the XML namespace `urn:mpeg:cenc:2013` [[!MPEGCENC]].
 
 <div class="example">
-Signaling an [=adaptation set=] encrypted using the `cbcs` scheme and with a key identified by `34e5db32-8625-47cd-ba06-68fca0655a72`.
+Signaling an [=adaptation set=] encrypted using the `cbcs` scheme and with a content key identified by `34e5db32-8625-47cd-ba06-68fca0655a72`.
 
 <xmp highlight="xml">
 <ContentProtection
@@ -102,23 +135,23 @@ Signaling an [=adaptation set=] encrypted using the `cbcs` scheme and with a key
 
 ### Providing default DRM system configuration ### {#CPS-mpd-drm-config}
 
-A DASH service SHOULD supply a default [=DRM system configuration=] in the MPD for all supported [=DRM systems=] in all encrypted [=adaptation sets=]. This enables playback without the need for DASH client customization or additional configuration. [=DRM system configuration=] MAY also be supplied or enhanced/replaced by logic executed at runtime (e.g. to load the values from configuration files or other data sources).
+A DASH service SHOULD supply a default [=DRM system configuration=] in the MPD for all supported [=DRM systems=] in all encrypted [=adaptation sets=]. This enables playback without the need for DASH client customization or additional client-side configuration. [=DRM system configuration=] MAY also be supplied by logic executed at runtime (e.g. to load the values from configuration files), replacing or enhancing the defaults provided in the MPD.
 
-Any number of `ContentProtection` descriptors MAY be present in the MPD on the [=adaptation set=] level to provide [=DRM system configuration=]. The contents of these descriptors MAY be ignored by the DASH client if overridden by custom business logic or runtime data sources - the [=DRM system configuration=] in the MPD simply provides default values known at content authoring time.
+Any number of `ContentProtection` descriptors ([[!MPEGDASH]] 5.8.4.1) MAY be present in the MPD to provide [=DRM system configuration=]. These descriptors SHALL be defined on the [=adaptation set=] level. The contents MAY be ignored by the DASH client if overridden by custom business logic or runtime data sources - the [=DRM system configuration=] in the MPD simply provides default values known at content authoring time.
 
-A `ContentProtection` element providing a default [=DRM system configuration=] SHALL use the attribute `schemeIdUri="urn:uuid:<systemid>"` to identify the [=DRM system=], with the `<systemid>` matching a value in the [DASH-IF system-specific identifier registry](https://dashif.org/identifiers/content_protection/). The `value` attribute of the `ContentProtection` element SHOULD contain the DRM system name and version number in a human readable form (for diagnostic purposes).
+A `ContentProtection` element providing a default [=DRM system configuration=] SHALL use  `schemeIdUri="urn:uuid:<systemid>"` to identify the [=DRM system=], with the `<systemid>` matching a value in the [DASH-IF system-specific identifier registry](https://dashif.org/identifiers/content_protection/). The `value` attribute of the `ContentProtection` element SHOULD contain the DRM system name and version number in a human readable form (for diagnostic purposes).
 
-Note: W3C defines the Clear Key mechanism, which is a "dummy" DRM system implementation intended for client and platform development/testing purposes. **Understand that Clear Key does not fulfill the content protection and content key protection duties ordinarily expected from a DRM system.** For more guidelines on Clear Key usage, see [[#CPS-AdditionalConstraints-W3C]].
+Note: W3C defines the Clear Key mechanism ([[!encrypted-media]] 9.1), which is a "dummy" DRM system implementation intended for client and platform development/testing purposes. **Understand that Clear Key does not fulfill the content protection and content key protection duties ordinarily expected from a DRM system.** For more guidelines on Clear Key usage, see [[#CPS-AdditionalConstraints-W3C]].
 
-Each DRM system specific `ContentProtection` descriptor can contain a mix of XML elements and attributes defined by [[!MPEGCENC|Common Encryption]], the [=DRM system=] author, DASH-IF or any other party. If a DRM system specific `ContentProtection` descriptor contains the same data in multiple forms then the more generic form SHALL have precedence (e.g. if the license server URL is defined both using `dashif:laurl` and a DRM system specific element, the former is used by DASH clients).
+Each DRM system specific `ContentProtection` descriptor can contain a mix of XML elements and attributes defined by [[!MPEGCENC|Common Encryption]], the [=DRM system=] author, DASH-IF or any other party. If a [=DRM system=] specific `ContentProtection` descriptor contains the same data in multiple forms then the more generic form SHALL have precedence (e.g. if the license server URL is defined both using `dashif:laurl` and a [=DRM system=] specific element, the former is used by DASH clients).
 
-For [=DRM systems=] initialized by supplying `pssh` boxes (as defined in [[!ISOBMFF]]), the `cenc:pssh` element SHOULD be present under the `ContentProtection` descriptor if the value is known at MPD authoring time. The base64 encoded contents of the element SHALL be equivalent to a `pssh` box including its header. See also [[#CPS-cmaf]].
+For [=DRM systems=] initialized by supplying `pssh` boxes [[!ISOBMFF]], the `cenc:pssh` element SHOULD be present under the `ContentProtection` descriptor if the value is known at MPD authoring time. The base64 encoded contents of the element SHALL be equivalent to a complete `pssh` box including its length and header fields. See also [[#CPS-cmaf]].
 
 [=DRM systems=] generally use the concept of license requests as the mechanism for obtaining content keys and associated usage constraints (see [[#CPS-license-request-workflow]]). For [=DRM systems=] that use this concept, exactly one `dashif:laurl` element SHOULD be present under the `ContentProtection` descriptor, with the value of the element being the default URL to send license requests to. This URL MAY contain [[#CPS-lr-model-contentid|content identifiers]].
 
 For [=DRM systems=] that require proof of authorization to be attached to the license request in a manner conforming to [[#CPS-lr-model]], exactly one `dashif:authzurl` element SHOULD be present under the `ContentProtection` descriptor, containing the default URL to send authorization requests to (see [[#CPS-license-request-workflow]]).
 
-Issue: Allow multiple URLs for failover? If yes, should be aligned with `<Location>` and `<BaseUrl>` logic where multiple URLs are also accepted. Should also make recommendations for failover logic in that case.
+Issue: Allow multiple laurl and authzurl for failover? If yes, should be aligned with `<Location>` and `<BaseUrl>` logic where multiple URLs are also accepted. Should also make recommendations for failover logic in that case.
 
 <div class="example">
 A `ContentProtection` descriptor that provides default [=DRM system configuration=] for a fictional [=DRM system=].
@@ -140,7 +173,7 @@ The contents of [=DRM system=] specific `ContentProtection` elements with the sa
 
 Note: If you wish to change the default [=DRM system configuration=] associated with a content key, you must update all the instances where the data is present in the MPD. For live services, this can mean updating the data in multiple [=periods=].
 
-If a DASH client exposes APIs/callbacks to business logic for the purpose of controlling DRM interactions, it SHALL NOT allow these APIs to associate multiple [=DRM system configurations=] for the same [=DRM system=] with the same `default_KID`. Conversely, DASH client APIs SHOULD allow business logic to associate different [=DRM system configurations=] for the same [=DRM system=] with different `default_KIDs`.
+If a DASH client exposes APIs/callbacks to business logic for the purpose of controlling DRM interactions and/or supplying data for [=DRM system configuration=], it SHALL NOT allow these APIs to associate multiple [=DRM system configurations=] for the same [=DRM system=] with the same `default_KID`. Conversely, DASH client APIs SHOULD allow business logic to provide different [=DRM system configurations=] for the same [=DRM system=] for use with different `default_KIDs`.
 
 ### default_KID defines the scope of DRM system interactions ### {#CPS-default_KID}
 
@@ -174,9 +207,11 @@ This logic applies to all scenarios that make use of additional keys, regardless
 
 ### Delivering updates to DRM system internal state ### {#CPS-mpd-moof-pssh}
 
-Some DRM systems support live updates to DRM system internal state (e.g. to deliver new leaf keys in a key hierarchy). These updates SHALL NOT be present in the MPD and SHALL be delivered as `moof/pssh` boxes in media segments.
+Some DRM systems support live updates to DRM system internal state (e.g. to deliver new leaf keys in a key hierarchy). These updates SHALL NOT be present in the MPD and SHALL be delivered by `moof/pssh` boxes in media segments.
 
 These state updates are transparent to the DASH client - the media platform is expected to intercept the `moof/pssh` boxes and supply them directly to the active [=DRM system=].
+
+Issue: How does this update mechanism materialize in the EME API? Does the DASH client need to do something to ensure the right logic is triggered?
 
 ## DASH-IF interoperable license request model ## {#CPS-lr-model}
 
@@ -198,13 +233,13 @@ These benefits increase in value with the size of the solution, as they reduce t
 
 ### Proof of authorization ### {#CPS-lr-model-authz}
 
-An <dfn>authorization token</dfn> is a [[!jwt|JSON Web Token]] used to prove to a license server that the caller has the right to use one or more content keys under certain conditions. Attaching this proof of authorization to a license request is optional, allowing for architectures where a "license proxy" performs authorization checks transparently to the DASH client.
+An <dfn>authorization token</dfn> is a [[!jwt|JSON Web Token]] used to prove to a license server that the caller has the right to use one or more content keys under certain conditions. Attaching this proof of authorization to a license request is optional, allowing for architectures where a "license proxy" performs authorization checks in a manner transparent to the DASH client.
 
-The [=authorization token=] is a JSON Web Token for which [[!jwt]] and [[!rfc7515]] define the basic structural requirements. Beyond the basic requirements defined in the referenced specifications and this document, the license server implementation is what defines the structure (the set of claims) of the [=authorization token=], as the data needs to express implementation-specific license server business logic parameters that cannot be generalized.
+The basic structural requirements for [=authorization tokens=] are defined by [[!jwt]] and [[!rfc7515]]. This document adds some additional constraints to ensure interoperability. Beyond that, the license server implementation is what defines the contents of the [=authorization token=] (the set of claims it contains), as the data needs to express implementation-specific license server business logic parameters that cannot be generalized.
 
-Note: An [=authorization token=] is divided into a header and body, though the distinction between the two is effectively irrelevant and merely an artifact of the [[!jwt|JWT specification]] that defines where some general purpose fields are located.
+Note: An [=authorization token=] is divided into a header and body. The distinction between the two is effectively irrelevant and merely an artifact of the [[!jwt|JWT specification]]. License servers may use existing fields and define new fields in both the header and the body.
 
-Implementations SHALL process claims listed in [[!jwt]] section 4.1 "Registered Claim Names" when they are present (e.g. `exp` Expiration Time and `nbf` Not Before). The presence of these claims in an [=authorization token=] is optional. The `typ` header parameter defined in [[!jwt]] SHOULD NOT be present. The `alg` header parameter defined in [[!rfc7515]] SHALL be present.
+Implementations SHALL process claims listed in [[!jwt]] 4.1 "Registered Claim Names" when they are present (e.g. `exp` "Expiration Time" and `nbf` "Not Before"). The `typ` header parameter ([[!jwt]] 5.1) SHOULD NOT be present. The `alg` header parameter defined in [[!rfc7515]] SHALL be present.
 
 <div class="example">
 JWT headers, specifying digital signature algorithm and expiration time (general purpose fields):
@@ -217,7 +252,7 @@ JWT headers, specifying digital signature algorithm and expiration time (general
 }
 </xmp>
 
-JWT body with list of authorized content key IDs (a hypothetical license server specific field):
+JWT body with list of authorized content key IDs (an example field that could be defined by a license server):
 
 <xmp highlight="json">
 {
@@ -238,7 +273,7 @@ The above data sets are serialized and digitally signed to arrive at the final f
 	<figcaption>Role of the authorization service in DRM workflow related communication.</figcaption>
 </figure>
 
-An authorization service SHALL digitally sign any issued [=authorization token=] with an algorithm from the "HMAC with SHA-2 Functions" or "Digital Signature with ECDSA" sets as defined in [[!jwt|the JWT specification]]. The HS256 algorithm is recommended as a highly compatible default, as it is a required part of every JWT implementation. License server implementations SHALL validate the digital signature and reject tokens with invalid signatures or tokens using signature algorithms other than those referenced here. The license server MAY further constrain the set of allowed algorithms.
+An authorization service SHALL digitally sign any issued [=authorization token=] with an algorithm from the "HMAC with SHA-2 Functions" or "Digital Signature with ECDSA" sets in [[!jwt]]. The HS256 algorithm is recommended as a highly compatible default, as it is a required part of every JWT implementation. License server implementations SHALL validate the digital signature and reject tokens with invalid signatures or tokens using signature algorithms other than those referenced here. The license server MAY further constrain the set of allowed signature algorithms.
 
 #### Obtaining authorization tokens #### {#CPS-lr-model-authz-requesting}
 
@@ -303,7 +338,7 @@ JWT headers, specifying digital signature algorithm and expiration time:
 }
 </xmp>
 
-JWT body with list of authorized content key IDs:
+JWT body with list of authorized content key IDs (an example field that could be defined by a license server):
 
 <xmp highlight="json">
 {
@@ -321,7 +356,7 @@ An authorization service SHALL NOT issue [=authorization tokens=] that authorize
 
 Note: During license issuance, the license server may further constrain the set of available content keys (e.g. as a result of examining the device's security level). See [[#CPS-unavailable-keys]].
 
-[=Authorization tokens=] SHALL be returned by an authorization service using [[!rfc7515|JWS Compact Serialization]] (the `aaa.bbb.ccc` format). The serialized form of an [=authorization token=] SHOULD NOT exceed 5000 characters to ensure that a license server does not reject a license request carrying the token due to excessive HTTP header size.
+[=Authorization tokens=] SHALL be returned by an authorization service using JWS Compact Serialization [[!rfc7515]] (the `aaa.bbb.ccc` format). The serialized form of an [=authorization token=] SHOULD NOT exceed 5000 characters to ensure that a license server does not reject a license request carrying the token due to excessive HTTP header size.
 
 #### Attaching authorization tokens to license requests #### {#CPS-lr-model-authz-using}
 
@@ -338,7 +373,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6IjE1MTYyMzkwMj
 </xmp>
 </div>
 
-The same [=authorization token=] may be used with multiple license requests but one license request can only carry one [=authorization token=], even if the license request is for multiple content keys. A DASH client SHALL NOT use content key batching features offered by the platform APIs to combine requests for content keys that require the use of separate [=authorization tokens=].
+The same [=authorization token=] may be used with multiple license requests but one license request can only carry one [=authorization token=], even if the license request is for multiple content keys. A DASH client SHALL NOT use [[#CPS-default_KID|content key batching features]] offered by the platform APIs to combine requests for content keys that require the use of separate [=authorization tokens=].
 
 A DASH client SHALL NOT make license requests for content keys that are configured as requiring an [=authorization token=] (e.g. by the presence of `dashif:authzurl` in the MPD) but for which the DASH client has failed to acquire an [=authorization token=].
 
@@ -431,7 +466,7 @@ A common implementation for transparent authorization is to use a "license proxy
 
 The two architectures can be mixed, with some DRM systems performing the authorization operations in the license server (or a "license proxy") and others using the authorization service directly. This may be relevant when integrating license servers from different vendors into the same solution.
 
-A DASH client will attempt to contact an authorization service if an authorization service URL is provided. If no such URL is provided, it will assume that all authorization checks (if any are required) are provided by the license server and will not attach any proof of authorization.
+A DASH client will attempt to contact an authorization service if an authorization service URL is provided. If no such URL is provided, it will assume that all authorization checks (if any are required) are performed by the license server (in reality, often a license proxy) and will not attach any proof of authorization.
 
 ### Passing a content ID to services ### {#CPS-lr-model-contentid}
 
@@ -467,21 +502,66 @@ The content ID SHOULD NOT be embedded in DRM system specific data structures suc
 To present encrypted content a DASH client needs to:
 
 1. [[#CPS-selection-workflow|Select a DRM system that is capable of decrypting the content.]]
+    * During selection, [[#CPS-system-capabilities|the set of desired DRM system capabilities and the supported capabilities is examined]] to identify suitable candidate systems.
 1. [[#CPS-activation-workflow|Activate the selected DRM system and configure it to decrypt content.]]
     * During activation, [[#CPS-license-request-workflow|acquire any missing content keys and the licenses that govern their use]].
 
 A client also needs to take observations at runtime to detect the need for different content keys to be used (e.g. in live services that change the content keys periodically) and to detect content keys becoming unavailable (e.g. due to expiration of access rights).
 
-This chapter defines the recommended DASH client workflows for interacting with DRM systems in these aspects. It is assumed that the platform implements an API similar to [[encrypted-media|W3C Encrypted Media Extensions (EME)]].
+This chapter defines the recommended DASH client workflows for interacting with DRM systems in these aspects. It is assumed that the platform implements an API similar to Encrypted Media Extensions [[!encrypted-media]].
+
+### Capability detection ### {#CPS-system-capabilities}
+
+A [=DRM system=] implemented by a client platform may only support playback of encrypted content that matches certain parameters (e.g. codec type and level). A DASH client needs to detect what capabilities each [=DRM system=] has in order to understand what [=adaptation sets=] can be presented and to make an informed choice when multiple [=DRM systems=] can be used.
+
+<div class="example">
+A typical [=DRM system=] might offer the following set of capabilities:
+
+* Decoding H.264 High profile up to level 4.0 at "low" robustness
+* Decoding H.264 High profile level 4.1 at "low" robustness
+* Decoding H.265 Main 10 profile up to level 5.2 at "low" robustness
+* Decoding AAC at "low" robustness
+* Unique user identification
+* Session persistence
+
+</div>
+
+A typical media platform API such as EME [[!encrypted-media]] will require the DASH client to query the platform by supplying a desired capability set. The media platform will inspect the desired capabilities, possibly displaying a permissions prompt to the user (if sensitive capabilities such as unique user identification are requested), after which it will return a supported capability set that indicates which of the desired capabilities are available.
+
+<figure>
+	<img src="Images/Security/CapabilityNegotiation.png" />
+	<figcaption>The DASH client presents a set of desired capabilities for each [=DRM system=] and receives a response with the supported subset.</figcaption>
+</figure>
+
+The exact set of capabilities that can be used and the data format used to express them in capability detection APIs are defined by the media platform API. A DASH client is expected to have a full understanding of the potentially offered capabilities and how they map to parameters in the MPD. Some capabilities may have no relation to the MPD and whether they are required depends entirely on the DASH client or custom business logic.
+
+To detect the set of supported capabilities, a DASH client must first determine the <dfn>required capability set</dfn> for each [=adaptation set=]. This is the set of capabilities required to present all the content in a single [=adaptation set=] and can be determined based on the following:
+
+1. Content characteristics defined in the [=MPD=] (e.g. codecs strings of the [=representations=] and the used [=protection scheme=]).
+1. Custom business logic or configuration (e.g. what [=robustness level=] is required).
+
+Advisement: Querying for the support of different [=protection schemes=] is currently not possible via the capability detection API of Encrypted Media Extensions [[!encrypted-media]]. To determine the supported [=protection schemes=], a DASH client must assume what the CDM supports. A bug is open on W3C EME and [a pull request exists](https://github.com/w3c/encrypted-media/pull/392) for the ISOBMFF file format bytestream. In future versions of EME, this may become possible.
+
+Some of the capabilities (e.g. required [=robustness level=]) are [=DRM system=] specific. The [=required capability set=] contains the values for all [=DRM systems=].
+
+During [=DRM system=] selection, the [=required capability set=] of each [=adaptation set=] is compared with the supported capability set of a [=DRM system=]. As a result of this, each candidate [=DRM system=] is assocaited with zero or more [=adaptation sets=] that can be successfully presented using that [=DRM system=].
+
+It is possible that multiple [=DRM systems=] have the capabilities required to present some or all of the [=adaptation sets=]. When multiple candidates exist, the DASH client SHOULD enable custom business logic to make the final decision.
+
+Note: Some sensible default behavior can be implemented in a generic way (e.g. the [=DRM system=] should be able to decode both audio and video if both media types are present in the MPD). Still, there will still exist scenarios where the choices seem equivalent to the DASH client and an arbitrary choice needs to be made.
+
+The workflows defined in this document contain the necessary extension points to allow DASH clients to exhibit sensible default behavior and enable custom business logic to drive the choices in an optimal direction.
 
 ### Selecting the DRM system ### {#CPS-selection-workflow}
 
-The MPD describes how content is encrypted, with the `default_KID` values identifying the content keys required for playback, and optionally provides the default [=DRM system configuration=] for one or more [=DRM systems=] via `ContentProtection` descriptors.
+The MPD describes how content is encrypted, with the `default_KID` values identifying the content keys required for playback, and optionally provides the default [=DRM system configuration=] for one or more [=DRM systems=] via `ContentProtection` descriptors. It also identifies the codecs used by each [=representation=], enabling a DASH client to determine the set of required [=DRM system=] capabilities.
+
+Note: Neither an [=initialization segment=] nor a [=media segment=] is required to select a [=DRM system=]. The MPD is the only component of the presentation used for [=DRM system=] selection.
 
 <div class="example">
-An adaptation set encrypted with a key identified by `34e5db32-8625-47cd-ba06-68fca0655a72` using the `cenc` encryption scheme.
+An [=adaptation set=] encrypted with a key identified by `34e5db32-8625-47cd-ba06-68fca0655a72` using the `cenc` encryption scheme.
 
-<xmp highlight="xml">
+```xml
 <AdaptationSet>
     <ContentProtection
         schemeIdUri="urn:mpeg:dash:mp4protection:2011"
@@ -500,60 +580,89 @@ An adaptation set encrypted with a key identified by `34e5db32-8625-47cd-ba06-68
         <cenc:pssh>ZXQgb2YgcGxheWFibGUgYWRhcHRhdGlvbiBzZXRzIG1heSBjaGFuZ2Ugb3ZlciB0aW1lIChlLmcuIGR1ZSB0byBsaWNlbnNlIGV4cGlyYXRpb24gb3IgZHVl</cenc:pssh>
         <dashif:authzurl>https://example.com/tenants/5341/authorize?mode=secondDRM</dashif:authzurl>
     </ContentProtection>
+    <Representation mimeType="video/mp4" codecs="avc1.64001f" width="640" height="360" />
+    <Representation mimeType="video/mp4" codecs="avc1.640028" width="852" height="480" />
 </AdaptationSet>
 </xmp>
+```
 
 The MPD provides [=DRM system configuration=] for [=DRM systems=]:
 
 * For `FirstDRM`, the MPD provides complete [=DRM system configuration=], including the optional `dashif:authzurl`.
-* For `SecondDRM`, the MPD does not provide the license server URL, which must be supplied at runtime.
+* For `SecondDRM`, the MPD does not provide the license server URL. It must be supplied at runtime.
+
+There are two encrypted [=representations=] in the [=adaptation set=], each with a different codecs string. A [=DRM system=] must be capable of decoding both [=representations=] in order to present this [=adaptation set=].
 
 </div>
 
-Note: Neither an [=initialization segment=] nor a [=media segment=] is required to select a [=DRM system=]. The MPD is the only component of the presentation used for [=DRM system=] selection.
-
 In addition to the MPD, a DASH client can also execute custom business logic for controlling DRM selection and configuration decisions (e.g. loading license server URLs from configuration data instead of the MPD). This is often implemented in the form of callbacks exposed by the DASH client to an "app" layer in which the client is hosted. It is assumed that when executing any such callbacks, a DASH client makes available relevant contextual data, allowing the business logic to make fully informed decisions.
 
-The purpose of the [=DRM system=] selection workflow is to select a single [=DRM system=] that is capable of decrypting the [=adaptation sets=] selected for playback. The selected [=DRM system=] will be one that is actually implemented by the media platform and for which a [=DRM system configuration=] exists for at least one content key.
+The purpose of the [=DRM system=] selection workflow is to select a single [=DRM system=] that is capable of decrypting a meaningful subset of the [=adaptation sets=] selected for playback. The selected [=DRM system=] will meet the following criteria:
 
-Note: It may be that the selected [=DRM system=] is only able to decrypt a subset of the encrypted [=adaptation sets=] selected for playback. See also [[#CPS-unavailable-keys]].
+1. It is actually implemented by the media platform.
+1. It implements a set of capabilities sufficient to present an acceptable set of [=adaptation sets=].
+1. The necessary [=DRM system configuration=] for this [=DRM system=] is available.
 
-The set of [=adaptation sets=] considered need not be constrained to a single [=period=], potentially enabling seamless transitions to a new [=period=] with a different set of content keys.
+It may be that the selected [=DRM system=] is only able to decrypt a subset of the encrypted [=adaptation sets=] selected for playback. See also [[#CPS-unavailable-keys]].
 
-When encrypted [=adaptation sets=] are initially selected for playback or when the set of encrypted [=adaptation sets=] selected for playback changes, a DASH client SHOULD execute the following algorithm for [=DRM system=] selection:
+The set of [=adaptation sets=] considered during selection need not be constrained to a single [=period=], potentially enabling seamless transitions to a new [=period=] with a different set of content keys. Furthermore, in live services new [=periods=] may be added over time, with potentially different [=DRM system configuration=] and [=required capability sets=], making it necessary to re-execute the selection process.
+
+Note: DASH clients are not expected to re-execute DRM workflows if the default [=DRM system configuration=] in the [=MPD=] changes for an [=adaptation set=] that has already been processed in the past. Such changes will only affect clients that are starting playback.
+
+When encrypted [=adaptation sets=] are initially selected for playback or when the selected set of encrypted [=adaptation sets=] changes (e.g. because a new [=period=] was added to a live service), a DASH client SHOULD execute the following algorithm for [=DRM system=] selection:
 
 <div algorithm="drm-selection">
 
-1. Let <var>adaptation_sets</var> be the set of encrypted [=adaptation sets=] selected for playback.
-1. Ley <var>default_kids</var> be the set of all distinct `default_KID` values of <var>adaptation_sets</var>.
-1. Ley <var>default_kid_schemes</var> be a map of `default_KID -> string`, with the map keys being <var>default_kids</var> and the map values being the [=protection scheme=] signaled for each `default_KID`.
 1. Let <var>signaled_system_ids</var> be the set of DRM system IDs for which a `ContentProtection` element is present in the MPD on any entries in <var>adaptation_sets</var>.
-1. Provide <var>signaled_system_ids</var> to the business logic component and have it return the desired DRM systems as an **ordered** list <var>desired_system_ids</var>.
-    * This enables business logic to establish an order of preference where multiple DRM systems are present. This document does not define any default ordering.
-    * This enables business logic to filter out DRM systems known to be unsuitable.
-    * This enables business logic to indicate DRM systems not signaled in the MPD.
-1. Remove from <var>desired_system_ids</var> any DRM systems that are not supported by the platform.
-1. For each <var>system_id</var> in <var>desired_system_ids</var>:
-    1. Let <var>supported_default_kids</var> be the values from <var>default_kids</var> for which the [=DRM system=] indicates that it supports the [=protection scheme=] indicated by <var>default_kid_schemes</var>.
-    1. Let <var>configurations</var> be a map where the map keys are <var>supported_default_kids</var> and the map values are the [=DRM system configurations=] initialized with data from `ContentProtection` elements in the MPD (matching on `default_KID` and <var>system_id</var>).
-        * If there is no matching [=DRM system=] specific `ContentProtection` element in the MPD, the map still contains a partially initialized [=DRM system configuration=].
-        * Enhance the MPD-provided default [=DRM system configuration=] with synthesized data where appropriate (e.g. [[#CPS-AdditionalConstraints-W3C|to generate W3C Clear Key initialization data in a format supported by the platform API]]).
+1. Determine the candidate [=DRM systems=]:
+    1. Provide <var>signaled_system_ids</var> to custom business logic and have it return the desired [=DRM systems=] as an **ordered** list <var>candidate_system_ids</var>.
+        * This enables business logic to establish an order of preference where multiple [=DRM systems=] are present.
+        * This enables business logic to filter out DRM systems known to be unsuitable.
+        * This enables business logic to include DRM systems not signaled in the MPD.
+
+1. Let <var>default_kids</var> be the set of all distinct `default_KID` values in the MPD.
+1. Let <var>system_configurations</var> be an empty map of `system ID -> map(default_kid -> configuration)`, representing the [=DRM system configuration=] of each `default_KID` for each [=DRM system=].
+1. For each <var>system_id</var> in <var>candidate_system_ids</var>:
+    1. Let <var>configurations</var> be a map where the map of `default_kid -> configuration` where the keys are all the <var>default_kids</var> and the values are the [=DRM system configurations=] initialized with data from `ContentProtection` elements in the MPD (matching on `default_KID` and <var>system_id</var>).
+        * If there is no matching [=DRM system=] specific `ContentProtection` element in the MPD, the map still contains a partially initialized [=DRM system configuration=] for the `default_KID`.
+        * Enhance the MPD-provided default [=DRM system configuration=] with default synthesized data where appropriate (e.g. [[#CPS-AdditionalConstraints-W3C|to generate W3C Clear Key initialization data in a format supported by the platform API]]).
     1. Provide <var>configurations</var> to the business logic component for inspection and modification.
         * This enables business logic to override the default [=DRM system configuration=] provided by the MPD.
         * This enables business logic to inject values that were not embedded in the MPD.
         * This enables business logic to reject content keys that it knows cannot be used, by removing the [=DRM system configuration=] for them.
-    1. Remove any entries from <var>configurations</var> that contain insufficient data for successful [=DRM system=] activation.
-    1. If at least one entry remains in <var>configurations</var>:
-        1. Execute the [[#CPS-activation-workflow|DRM system activation workflow]] on the selected [=DRM system=], providing <var>configurations</var> as input.
-        1. Exit this algorithm.
-    1. Continue loop to process next [=DRM system=].
-1. If this point is reached, no [=DRM system=] was selected and playback of encrypted content is not possible.
+    1. Remove any entries from <var>configurations</var> that contain insufficient data for [=DRM system=] activation.
+    1. Add <var>configurations</var> to <var>system_configurations</var> (keyed on <var>system_id</var>).
+1. Remove from <var>candidate_system_ids</var> any entries for which the list in <var>system_configurations</var> is empty.
+
+1. Let <var>adaptation_sets</var> be the set of encrypted [=adaptation sets=] selected for playback.
+1. Let <var>required_capability_sets</var> be a map of `adaptation set -> capability set`, providing the [=required capability set=] of every item in <var>adaptation_sets</var>.
+1. Match the capabilities of [=DRM systems=] with the [=required capability sets=] of [=adaptation sets=]:
+    1. Let <var>supported_adaptation_sets</var> be an empty map of `system ID -> list of adaptation set`, incidating which [=adaptation sets=] are supported by which [=DRM systems=].
+    1. For each <var>system_id</var> in <var>candidate_system_ids</var>:
+        1. Let <var>candidate_adaptation_sets</var> by the set of [=adaptation sets=] for which <var>system_configurations</var> contains [=DRM system configuration=] (keyed on <var>system_id</var> and then the `default_KID` of the [=adaptation set=]).
+            * This removes from consideration any [=adaptation sets=] that could not be used anyway due to lacking [=DRM system configuration=], both for capability detection and final [=DRM system=] selection.
+        1. Let <var>maximum_capability_set</var> be the union of all values in <var>required_capability_sets</var> keyed on items of <var>candidate_adaptation_sets</var>.
+        1. Query the DRM system with the capability set <var>maximum_capability_set</var>, assigning the output to <var>supported_capability_set</var>.
+            * A [=DRM system=] that is not supported by the media platform is treated as having no capabilities.
+        1. For each <var>adaptation_set</var> in <var>candidate_adaptation_sets</var>:
+            1. If <var>supported_capability_set</var> contains all the capabilities in the corresponding entry in <var>required_capability_sets</var> (keyed on <var>adaptation_set</var>), add <var>adaptation_set</var> to the list in <var>supported_adaptation_sets</var> (keyed on <var>system_id</var>).
+
+1. Remove from <var>supported_adaptation_sets</var> any entries for which the value (the set of [=adaptation sets=]) meets any of the following criteria:
+    * The set is empty (this [=DRM system=] does not support playback of any [=adaptation set=]).
+    * The set does not contain all encrypted media types present in the MPD (e.g. the [=DRM system=] can decrypt only the audio content but not the video content).
+1. If <var>supported_adaptation_sets</var> is empty, playback of encrypted content is not possible and the workflow ends.
+1. If <var>supported_adaptation_sets</var> contains multiple items, request custom business logic to select the preferred [=DRM system=] from among them.
+1. If custom business logic does not make a decision, match against <var>candidate_system_ids</var> find the first item where the system ID exists in both variables, evaluating in the order of entries in <var>candidate_system_ids</var>. Remove all other items from <var>supported_adaptation_sets</var>.
+1. Let <var>selected_system_id</var> be the single remaining key in <var>supported_adaptation_sets</var>.
+1. Let <var>final_adaptation_sets</var> be the single remaining value in <var>supported_adaptation_sets</var>.
+1. Let <var>final_configurations</var> be the entry from <var>system_configurations</var> keyed on <var>selected_system_id</var>.
+1. Remove from <var>final_configurations</var> any entries keyed on `default_KID` values that are not used by any [=adaptation set=] in <var>final_adaptation_sets</var>.
+    * These are the configurations of [=adaptation sets=] that had configuration but for which the required capabilities were not offered by the [=DRM system=].
+1. Prohibit playback of any encrypted [=adaptation sets=] that are not in <var>final_adaptation_sets</var>.
+    * These are existing [=adaptation sets=] for which either no [=DRM system configuration=] exists or for which the required capabilities are not provided by the selected [=DRM system=].
+1. Execute the [[#CPS-activation-workflow|DRM system activation workflow]], providing <var>selected_system_id</var> and <var>final_configurations</var> as inputs.
 
 </div>
-
-In short, take the list of platform-supported [=DRM systems=], in the order specified by custom business logic, and select for activation the first [=DRM system=] for which you have [=DRM system configuration=] for at least one content key, filtering out content keys used with unsupported [=protection schemes=].
-
-Advisement: To determine the supported [=protection schemes=], clients in browsers must assume what the CDM supports as there is no standardized API for probing the platform to determine which [=protection scheme=] is supported. A bug is open on W3C EME and [a pull request exists](https://github.com/w3c/encrypted-media/pull/392) for the ISOBMFF file format bytestream.
 
 If a [=DRM system=] is successfully selected, activation and potentially one or more license requests will follow before playback can proceed. These related workflows are described in the next chapters.
 
