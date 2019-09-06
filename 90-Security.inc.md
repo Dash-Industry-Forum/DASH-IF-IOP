@@ -613,51 +613,53 @@ When encrypted [=adaptation sets=] are initially selected for playback or when t
 
 <div algorithm="drm-selection">
 
+1. Let <var>adaptation_sets</var> be the set of encrypted [=adaptation sets=] selected for playback.
 1. Let <var>signaled_system_ids</var> be the set of DRM system IDs for which a `ContentProtection` element is present in the MPD on any entries in <var>adaptation_sets</var>.
-1. Determine the candidate [=DRM systems=]:
-    1. Provide <var>signaled_system_ids</var> to custom business logic and have it return the desired [=DRM systems=] as an **ordered** list <var>candidate_system_ids</var>.
-        * This enables business logic to establish an order of preference where multiple [=DRM systems=] are present.
-        * This enables business logic to filter out DRM systems known to be unsuitable.
-        * This enables business logic to include DRM systems not signaled in the MPD.
+1. Let <var>candidate_system_ids</var> be an ordered list initialized with items of <var>signaled_system_ids</var> in any order.
+1. Provide <var>candidate_system_ids</var> to custom business logic for inspection/modification.
+    * This enables business logic to establish an order of preference where multiple [=DRM systems=] are present.
+    * This enables business logic to filter out DRM systems known to be unsuitable.
+    * This enables business logic to include DRM systems not signaled in the MPD.
 
 1. Let <var>default_kids</var> be the set of all distinct `default_KID` values in the MPD.
 1. Let <var>system_configurations</var> be an empty map of `system ID -> map(default_kid -> configuration)`, representing the [=DRM system configuration=] of each `default_KID` for each [=DRM system=].
 1. For each <var>system_id</var> in <var>candidate_system_ids</var>:
-    1. Let <var>configurations</var> be a map where the map of `default_kid -> configuration` where the keys are all the <var>default_kids</var> and the values are the [=DRM system configurations=] initialized with data from `ContentProtection` elements in the MPD (matching on `default_KID` and <var>system_id</var>).
-        * If there is no matching [=DRM system=] specific `ContentProtection` element in the MPD, the map still contains a partially initialized [=DRM system configuration=] for the `default_KID`.
-        * Enhance the MPD-provided default [=DRM system configuration=] with default synthesized data where appropriate (e.g. [[#CPS-AdditionalConstraints-W3C|to generate W3C Clear Key initialization data in a format supported by the platform API]]).
-    1. Provide <var>configurations</var> to the business logic component for inspection and modification.
+    1. Let <var>configurations</var> be a map of `default_kid -> configuration` where the keys are all the <var>default_kids</var> and the values are the [=DRM system configurations=] initialized with data from `ContentProtection` elements in the MPD (matching on `default_KID` and <var>system_id</var>).
+        * If there is no matching `ContentProtection` element in the MPD, the map still contains a partially initialized [=DRM system configuration=] for the `default_KID`.
+        * Enhance the MPD-provided default [=DRM system configuration=] with synthesized data where appropriate (e.g. [[#CPS-AdditionalConstraints-W3C|to generate W3C Clear Key initialization data in a format supported by the platform API]]).
+    1. Provide <var>configurations</var> to the business logic component for inspection and modification, passing <var>system_id</var> along as contextual information.
         * This enables business logic to override the default [=DRM system configuration=] provided by the MPD.
         * This enables business logic to inject values that were not embedded in the MPD.
         * This enables business logic to reject content keys that it knows cannot be used, by removing the [=DRM system configuration=] for them.
     1. Remove any entries from <var>configurations</var> that contain insufficient data for [=DRM system=] activation.
     1. Add <var>configurations</var> to <var>system_configurations</var> (keyed on <var>system_id</var>).
-1. Remove from <var>candidate_system_ids</var> any entries for which the list in <var>system_configurations</var> is empty.
+1. Remove from <var>candidate_system_ids</var> any entries for which the map of [=DRM system configurations=] in <var>system_configurations</var> is empty.
 
-1. Let <var>adaptation_sets</var> be the set of encrypted [=adaptation sets=] selected for playback.
 1. Let <var>required_capability_sets</var> be a map of `adaptation set -> capability set`, providing the [=required capability set=] of every item in <var>adaptation_sets</var>.
 1. Match the capabilities of [=DRM systems=] with the [=required capability sets=] of [=adaptation sets=]:
     1. Let <var>supported_adaptation_sets</var> be an empty map of `system ID -> list of adaptation set`, incidating which [=adaptation sets=] are supported by which [=DRM systems=].
     1. For each <var>system_id</var> in <var>candidate_system_ids</var>:
         1. Let <var>candidate_adaptation_sets</var> by the set of [=adaptation sets=] for which <var>system_configurations</var> contains [=DRM system configuration=] (keyed on <var>system_id</var> and then the `default_KID` of the [=adaptation set=]).
-            * This removes from consideration any [=adaptation sets=] that could not be used anyway due to lacking [=DRM system configuration=], both for capability detection and final [=DRM system=] selection.
+            * This excludes from further consideration any [=adaptation sets=] that could not be used due to lacking [=DRM system configuration=], even if capabilities match.
         1. Let <var>maximum_capability_set</var> be the union of all values in <var>required_capability_sets</var> keyed on items of <var>candidate_adaptation_sets</var>.
-        1. Query the DRM system with the capability set <var>maximum_capability_set</var>, assigning the output to <var>supported_capability_set</var>.
+        1. Query the [=DRM system=] identified by <var>system_id</var> with the capability set <var>maximum_capability_set</var>, assigning the output to <var>supported_capability_set</var>.
             * A [=DRM system=] that is not supported by the media platform is treated as having no capabilities.
         1. For each <var>adaptation_set</var> in <var>candidate_adaptation_sets</var>:
             1. If <var>supported_capability_set</var> contains all the capabilities in the corresponding entry in <var>required_capability_sets</var> (keyed on <var>adaptation_set</var>), add <var>adaptation_set</var> to the list in <var>supported_adaptation_sets</var> (keyed on <var>system_id</var>).
 
 1. Remove from <var>supported_adaptation_sets</var> any entries for which the value (the set of [=adaptation sets=]) meets any of the following criteria:
-    * The set is empty (this [=DRM system=] does not support playback of any [=adaptation set=]).
+    * The set is empty (the [=DRM system=] does not support playback of any [=adaptation set=]).
     * The set does not contain all encrypted media types present in the MPD (e.g. the [=DRM system=] can decrypt only the audio content but not the video content).
 1. If <var>supported_adaptation_sets</var> is empty, playback of encrypted content is not possible and the workflow ends.
 1. If <var>supported_adaptation_sets</var> contains multiple items, request custom business logic to select the preferred [=DRM system=] from among them.
-1. If custom business logic does not make a decision, match against <var>candidate_system_ids</var> find the first item where the system ID exists in both variables, evaluating in the order of entries in <var>candidate_system_ids</var>. Remove all other items from <var>supported_adaptation_sets</var>.
+    * This allows custom business logic to make an informed choice when different [=DRM systems=] can play different [=adaptation sets=]. Contrast this to the initial order of preference that was defined near the start of the algorithm, which does not consider capabilities.
+1. If custom business logic does not make a decision, find the first entry in <var>candidate_system_ids</var> that is among the keys of <var>supported_adaptation_sets</var>. Remove items with any other key from <var>supported_adaptation_sets</var>.
+    * This falls back to the "order of preference" logic.
 1. Let <var>selected_system_id</var> be the single remaining key in <var>supported_adaptation_sets</var>.
 1. Let <var>final_adaptation_sets</var> be the single remaining value in <var>supported_adaptation_sets</var>.
-1. Let <var>final_configurations</var> be the entry from <var>system_configurations</var> keyed on <var>selected_system_id</var>.
+1. Let <var>final_configurations</var> (map of `default_KID -> DRM system configuration`) be the value from <var>system_configurations</var> keyed on <var>selected_system_id</var>.
 1. Remove from <var>final_configurations</var> any entries keyed on `default_KID` values that are not used by any [=adaptation set=] in <var>final_adaptation_sets</var>.
-    * These are the configurations of [=adaptation sets=] that had configuration but for which the required capabilities were not offered by the [=DRM system=].
+    * These are the configurations of [=adaptation sets=] for which configuration was present but for which the required capabilities were not offered by the [=DRM system=].
 1. Prohibit playback of any encrypted [=adaptation sets=] that are not in <var>final_adaptation_sets</var>.
     * These are existing [=adaptation sets=] for which either no [=DRM system configuration=] exists or for which the required capabilities are not provided by the selected [=DRM system=].
 1. Execute the [[#CPS-activation-workflow|DRM system activation workflow]], providing <var>selected_system_id</var> and <var>final_configurations</var> as inputs.
