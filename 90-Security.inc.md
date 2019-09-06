@@ -912,7 +912,7 @@ An example of a Clear Key `ContentProtection` element using `laurl` is as follow
 ```
 
 Parts of the [=MPD=] structure that are not relevant for this chapter have been omitted - this is not a fully functional [=MPD=] file.
-</example>
+</div>
 
 ## XML Schema for DASH-IF MPD extensions ## {#CPS-schema}
 
