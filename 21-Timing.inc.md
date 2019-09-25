@@ -76,18 +76,18 @@ Parts of the [=MPD=] structure that are not relevant for this chapter have been 
 
 [[!MPEGDASH]] clause 5.3.2 defines the period's requirements in MPD authoring. Among others it requires the followings:
 
-1. All periods must be consecutive and non-overlapping. A [=period=] may have a duration of zero.
+1. All periods are consecutive and non-overlapping. A [=period=] may have a duration of zero.
 
 Note: A [=period=] with a duration of zero might, for example, be the result of ad-insertion logic deciding not to insert any ad.
 
-2. In a [=static MPD=], the first [=period=] must start at the time zero of the [=MPD timeline=]. In a [=dynamic MPD=], the first [=period=] must start at or after the zero point of the [=MPD timeline=].
+2. In a [=static MPD=], the first [=period=] starts at the time zero of the [=MPD timeline=]. In a [=dynamic MPD=], the first [=period=] starts at or after the zero point of the [=MPD timeline=].
 
-1. In a [=static MPD=], either the last [=period=] must have a `Period@duration` or `MPD@mediaPresentationDuration` must exist. 
+1. In a [=static MPD=], either the last [=period=] has a `Period@duration` or `MPD@mediaPresentationDuration` exists. 
 1. In a [=dynamic MPD=], the last [=period=] may have a `Period@duration`, in which case it has a fixed duration. If without `Period@duration`, the last [=period=] in a [=dynamic MPD=] has an unknown duration, which allows to extend the timeline indefinitely.
 
 Note: In a [=dynamic MPD=], a [=period=] with an unknown duration may be converted to fixed-duration by an MPD update. Periods in a [=dynamic MPD=] can also be shortened or removed entirely under certain conditions. However, [=Media Presentation=] is defined until (current wall clock time + `MPD@minimumUpdatePeriod`), by which the current MPD is still valid. See [[#timing-mpd-updates]].
 
-5. `MPD@mediaPresentationDuration` may be present. If present, it must accurately match the duration between the time zero on the [=MPD timeline=] and the end of the last period. Clients must calculate the total duration of a [=static MPD=] by adding up the durations of each [=period=] and must rely on the presence of `MPD@mediaPresentationDuration`.
+5. `MPD@mediaPresentationDuration` may be present. If present, it accurately matches the duration between the time zero on the [=MPD timeline=] and the end of the last period. Clients must calculate the total duration of a [=static MPD=] by adding up the durations of each [=period=] and must rely on the presence of `MPD@mediaPresentationDuration`.
 
 Note: This calculation is necessary because the durations of [[#xlink-feature|XLink periods]] can only be known after the [=XLink=] is resolved. Therefore it is impossible to always determine the total [=MPD=] duration on the service side as only the client is guaranteed to have access to all the required knowledge.
 
@@ -112,7 +112,7 @@ As recommended by [[!MPEGDASH]] 7.2.1:
 
 
 This document additionally requires:
- - In a [=static MPD=] a [=representation=] SHALL contain enough [=segment references=] to cover the entire time span of the [=period=]. However, gaps in this time span are allowed.
+ - In a [=static MPD=] a [=representation=] SHALL contain enough [=segment references=] to cover the entire time span of the [=period=]. 
 
 <figure>
 	<img src="Images/Timing/StaticMpdMustBeCovered.png" />
@@ -130,7 +130,7 @@ This document additionally requires:
 Note: In a dynamic MPD, each [=Media segments=] only become [=available=] when its end point is within their [=availability window=] (This time may need to be adjusted by availabilityTimeOffset (need to be defined) and `@availabilityTimeComplete` values) ([[!MPEGDASH]] 5.3.9.5.1 and 5.3.5.3). It is a valid situation that a [=media segment=] is required to be referenced but is not yet [=available=].
 
 As required by [[!MPEGDASH]] 5.3.9.5.3:
-- A [=dynamic MPD=] must remain valid for its entire validity duration after publishing. In other words, a [=dynamic MPD=] must supply enough [=segment references=] to allow the [=time shift buffer=] to extend to `now + MPD@minimumUpdatePeriod`, where `now` is the current time according to [[#clock-sync|the synchronized clock]].
+- A [=dynamic MPD=] remains valid for its entire validity duration after publishing. In other words, a [=dynamic MPD=] supplies enough [=segment references=] to allow the [=time shift buffer=] to extend to `now + MPD@minimumUpdatePeriod`, where `now` is the current time according to [[#clock-sync|the synchronized clock]].
 
 As allowed by [[!MPEGDASH]] 7.2.1:
 - [=Media segment=] start/end points may be unaligned with [=period=] start/end points except when using [=simple addressing=]. This possible offset is signaled by `@eptDelta`.
@@ -213,16 +213,16 @@ A <dfn>media segment</dfn> is an HTTP-addressable data structure that contains o
 
 Note: Different media segments may be different byte ranges accessed on the same URL.
 
-[[!MPEGCMAF]] requires that [=Media segments=] must contain one or more consecutive media samples, and consecutive [=media segments=] in the same [=representation=] must contain consecutive media samples.
+[[!MPEGCMAF]] requires that [=Media segments=] contain one or more consecutive media samples, and consecutive [=media segments=] in the same [=representation=] contain consecutive media samples.
 
 [[!MPEGDASH]] 7.2.1 requires the followings:
 
-- [=Media segments=] must contain the media samples that exactly match the time span on the [=sample timeline=] that is assigned to the [=media segment=] by the MPD, except when using [=simple addressing=] in which case a certain amount of inaccuracy may be present as defined in [[#addressing-simple-inaccuracy]].
+- [=Media segments=] contains the media samples that exactly match the time span on the [=sample timeline=] that is assigned to the [=media segment=] by the MPD, except when using [=simple addressing=] in which case a certain amount of inaccuracy may be present as defined in [[#addressing-simple-inaccuracy]].
 
-- The [=media segment=] that starts at or overlaps the [=period=] start point must contain a media sample that starts at or overlaps the [=period=] start point and the [=media segment=] that ends at or overlaps the [=period=] end point must contain a media sample that ends at or overlaps the [=period=] end point.
+- The [=media segment=] that starts at or overlaps the [=period=] start point contains a media sample that starts at or overlaps the [=period=] start point and the [=media segment=] that ends at or overlaps the [=period=] end point contains a media sample that ends at or overlaps the [=period=] end point.
 
 [[!MPEGCMAF]] 7.3.4 and [[!MPEGDASHCMAFPROFILE]] requires the following:
-- [[#segment-alignment|Aligned media segments]] in different [=representations=] of the same adaptation set must contain samples for the same true time span, even if using [=simple addressing=] with [[#addressing-simple-inaccuracy|inaccurate media segment timing]].
+- [[#segment-alignment|Aligned media segments]] in different [=representations=] of the same adaptation set contains samples for the same true time span, even if using [=simple addressing=] with [[#addressing-simple-inaccuracy|inaccurate media segment timing]].
 
 #### Media segment duration deviation #### {#segment-duration-deviation}
 
@@ -234,7 +234,7 @@ When using [=simple addressing=], the samples contained in a media segment may c
 </figure>
 
 [[!MPEGDASH]] 7.2.1 requires:
-The duration deviation must be no more than 50% of the nominal media segment duration and may be in either direction.
+The duration deviation is no more than 50% of the nominal media segment duration and may be in either direction.
 
 This document also recommends:
 - [=Media segments=] of a [=representation=] SHOULD be equal in duration. Occasional jitter MAY occur (e.g. due to encoder decisions on GOP size).
@@ -243,11 +243,11 @@ Note: [[DVB-DASH]] defines some relevant constraints in section 4.5. Consider ob
 
 #### Segments must be aligned #### {#segment-alignment}
 
-[=Media segments=] are said to be aligned if the earliest/latest presentation time of all [=media segments=] on the [=sample timeline=] are equal in all [=representations=] that belong to the same [=adaptation set=].
+[=Media segments=] are said to be aligned if the earliest presentation time of all [=media segments=] on the [=sample timeline=] is equal in all [=representations=] that belong to the same [=adaptation set=].
 
 [[!MPEGDASHCMAFPROFILE]] requires:
-- [=Media segments=] must be aligned.
-- When using [=simple addressing=] or [=explicit addressing=], the media segments alignment must be signaled by `AdaptationSet@segmentAlignment=true` in the [=MPD=]. When using [=indexed addressing=], this must be signaled by `AdaptationSet@subsegmentAlignment=true` in the [=MPD=].
+- [=Media segments=] are aligned.
+- When using [=simple addressing=] or [=explicit addressing=], the media segments alignment is signaled by `AdaptationSet@segmentAlignment=true` in the [=MPD=]. When using [=indexed addressing=], this is signaled by `AdaptationSet@subsegmentAlignment=true` in the [=MPD=].
 
 ### Period connectivity ### {#timing-connectivity}
 
@@ -323,7 +323,7 @@ Three main factors differentiate them from [=static MPDs=]:
 1. A [=dynamic MPD=] may change over time, with clients retrieving new snapshots of the [=MPD=] when the validity duration of the previous snapshot expires.
 
 [[!MPEGDASH]] 5.4.1 requires:
-* A dynamic MPD SHALL conform to the constraints in this document not only at its moment of initial publishing but through the entire <dfn>MPD validity duration</dfn>, which is a period of `MPD@minimumUpdatePeriod` starting from the moment the MPD download is started by a client, unless overridden by [[#inband|in-band validity expiration signaling]].
+* A dynamic MPD conforms to the MPD constraints not only at its moment of initial publishing but through the entire <dfn>MPD validity duration</dfn>, which is a period of `MPD@minimumUpdatePeriod` starting from the moment the MPD download is started by a client, unless overridden by [[#inband|in-band validity expiration signaling]].
 
 Advisement: The [=MPD validity duration=] starts when the MPD download is initiated by a client, which may be some time after it is generated/published!
 
@@ -357,7 +357,7 @@ Issue: We could benefit from some detailed examples here, especially as clock sy
 
 #### Availability #### {#timing-availability}
 
-A [=media segment=] is <dfn>available</dfn> when an HTTP request to acquire the [=media segment=] can be started and successfully performed to completion by a client. During playback of a [=dynamic MPD=], new [=media segments=] continuously become [=available=] and stop being [=available=] with the passage of time. [[!MPEGDASH]] defines the <dfn>segment availability times<dfn> of a segment as the duration in wall-clock time in which that segment is available.
+A [=media segment=] is <dfn>available</dfn> when an HTTP request to acquire the [=media segment=] can be started and successfully performed to completion by a client. During playback of a [=dynamic MPD=], new [=media segments=] continuously become [=available=] and stop being [=available=] with the passage of time. [[!MPEGDASH]] defines the <dfn>segment availability times</dfn> of a segment as the duration in wall-clock time in which that segment is available.
 
 An <dfn>availability window</dfn> is a time span on the [=MPD timeline=] that determines which [=media segments=] can be expected to be [=available=]. Each [=representation=] has its own [=availability window=]. Consequently, [=availability window=] at each moment is defined by the union of [=segment availability times=] of all available segments at that moment.
 
@@ -366,7 +366,7 @@ A <dfn>segment start point</dfn> (referred to as <dfn>MPD start time</dfn> of a 
 A <dfn>segment end point</dfn> is defined is the presentation end time of the segment in [=MPD timeline=].
 
 [!MPEGDASH]] requires:
-* A service must make [=available=] all [=media segments=] that have their end point inside or at the end of the [=availability window=].
+* A service makes [=available=] all [=media segments=] that have their end point inside or at the end of the [=availability window=].
 
 Advisement: It is the responsibility of the service to ensure that [=media segments=] are [=available=] to clients when they are described as [=available=] by the [=MPD=]. Consider that the criterium for availability is a successful download by clients, not successful publishing from a packager.
 
@@ -462,17 +462,17 @@ Some common reasons to make changes in [=dynamic MPDs=]:
 
 [[!MPEGDASH]] 5.4.1 requires the following restrictions for MPD updates:
 
-* `MPD@id` must not change.
-* `MPD.Location` must not change.
-* `MPD@availabilityStartTime` must not change.
-* `Period@id` must not change.
-* `Period@start` must not change.
-* `Period@duration` must not change except when explicitly allowed by other statements in this document.
-* The [=adaptation sets=] present in a [=period=] (i.e. the set of `AdaptationSet@id` values) must not change.
-* The [=representations=] present in an [=adaptation set=] (i.e. the set of `Representation@id` values) must not change.
-* The functional behavior of a [=representation=] (identified by a matching `Representation@id` value) must not change, neither in terms of metadata-driven behavior (including metadata inherited from [=adaptation set=] level) nor in terms of [=media segment=] timing. In particular:
-	* `SegmentTemplate@presentationTimeOffset` must not change.
-	* `SegmentBase@presentationTimeOffset` must not change.
+* `MPD@id` does not change.
+* `MPD.Location` does not change.
+* `MPD@availabilityStartTime` does not change.
+* `Period@id` does not change.
+* `Period@start` does not change.
+* `Period@duration` does not change except when explicitly allowed by other statements in this document.
+* The [=adaptation sets=] present in a [=period=] (i.e. the set of `AdaptationSet@id` values) does not change.
+* The [=representations=] present in an [=adaptation set=] (i.e. the set of `Representation@id` values) does not change.
+* The functional behavior of a [=representation=] (identified by a matching `Representation@id` value) does not change, neither in terms of metadata-driven behavior (including metadata inherited from [=adaptation set=] level) nor in terms of [=media segment=] timing. In particular:
+	* `SegmentTemplate@presentationTimeOffset` does not change.
+	* `SegmentBase@presentationTimeOffset` does not change.
 
 Advisement: Additional restrictions on MPD updates are defined by other parts of this document.
 
