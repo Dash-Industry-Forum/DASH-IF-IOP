@@ -2,15 +2,15 @@
 
 [MPD]
 
-[MPD] <-left- [MPEGDASH] : Defines
+[MPD] <-left- [MPEG DASH] : Defines
 
 [MPD] --> [CMAF header] : Initialization segment
 [MPD] --> [CMAF segment] : Media segment
 [MPD] --> [ISOBMFF sidx] : Index segment
 
-[MPEGCMAF] -up-> [CMAF header] : Defines
-[MPEGCMAF] -up-> [CMAF segment] : Defines
+[MPEG CMAF] -up-> [CMAF header] : Defines
+[MPEG CMAF] -up-> [CMAF segment] : Defines
 [ISOBMFF] -up-> [ISOBMFF sidx] : Defines
-[MPEGCMAF] -> [ISOBMFF] : Based on
+[MPEG CMAF] -> [ISOBMFF] : Based on
 
 @enduml
