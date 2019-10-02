@@ -1,19 +1,13 @@
 # Interoperability requirements # {#interoperability}
 
-The DASH-related standards enable various different interpretations of critical factors. A single interpretation is necessary in order to establish interoperable behavior.
+The DASH-related standards enable various options for each feature supported by these standards. Limiting options and in some cases additional constraints are needed to establish interoperable behavior between service offerings and client implementations.
 
-This chapter defines the requirements that enable DASH clients and services to provide interoperable behavior. All clients and services are expected to conform to these requirements.
+This chapter defines the requirements that enable DASH services and clients to provide interoperable behavior. To be compliant to a feature in this document, each service offering or client must conform to specific requirements of that feature, outline in this document.
 
-## CMAF and ISO BMFF ## {#cmaf-bmff-constraints}
+Issue: Need to add a paragraph on interoperability on baseline, if we have any
 
-Issue: Can we omit some or all of this heading if we assume CMAF conformance?
+## CMAF and ISO BMFF Requirements## {#cmaf-bmff-constraints}
 
-The formats for many DASH data structures are defined by [[!MPEGCMAF]], which is largely based on [[!ISOBMFF]]. This chapter defines constraints on the use of [[!MPEGCMAF]] and [[!ISOBMFF]] features to limit them to a highly interoperable subset.
+Media segments SHALL be compliant to [[!MPEGDASHCMAFPROFILE]].
 
-Default values set in the Track Extends (`trex`) box MAY be overridden by corresponding values set in movie fragments (in `tfhd` or `trun` boxes).
-
-Movie Fragment (`moof`) boxes SHALL NOT use external data references. The flag `default-base-is-moof` SHALL be set (aka movie-fragment relative addressing) and `data-offset` SHALL be used (i.e. `base-data-offset-present` SHALL NOT be used).
-
-Any Segment Index (`sidx`) and Subsegment Index (`ssix`) boxes SHALL be placed before any Movie Fragment (`moof`) boxes within [=media segments=]. There SHALL be at most one Segment Index (`sidx`) box for each [=representation=].
-
-[=Media segments=] SHALL be non-multiplexed (contain only one track).
+Note: [[!MPEGDASHCMAFPROFILE]] defines the media segment format using [[!MPEGCMAF]], which is largely based on [[!ISOBMFF]]. 

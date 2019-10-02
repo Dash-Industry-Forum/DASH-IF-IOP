@@ -47,5 +47,14 @@
     },
     "jws": {
         "aliasOf": "rfc7515"
+    },
+    "ATSC3": {
+        "href": "https://https://www.atsc.org/wp-content/uploads/2017/10/A300-2017-ATSC-3-System-Standard-1.pdf",
+        "title": "ATSC Standard: A/300:2017 “ATSC3.0 System”",
+        "publisher": "ATSC"
+    },
+    "MPEGDASHCMAFPROFILE": {
+        "title": "N18641 WD of ISO/IEC 23009-1 4th edition AMD 1 Client event and timed metadata processing",
+        "publisher": "ISO/IEC JTC1/SC29/WG11 MPEG"
     }
 }
