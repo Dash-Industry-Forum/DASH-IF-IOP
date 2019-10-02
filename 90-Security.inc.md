@@ -6,7 +6,7 @@ This document does not define any [=DRM system=]. DASH-IF maintains a registry o
 
 Common Encryption specifies several [=protection schemes=] which can be applied by a scrambling system and used by different [=DRM systems=]. The same encrypted DASH presentation can be decrypted by different [=DRM systems=] if a DASH client is provided the [=DRM system configuration=] for each [=DRM system=], either in the MPD or at runtime.
 
-The <dfn>content key</dfn> is a 128-bit key required to decrypt content. It is identified by a UUID-format string called `default_KID` (or sometimes simply `KID`) and is shared between all [=DRM systems=], whereas the mechanisms used for key acquisition and content protection are largely [=DRM system=] specific. Different DASH adaptation sets are often encrypted with different [=content keys=].
+A <dfn>content key</dfn> is a 128-bit key required to decrypt content. It is identified by a UUID-format string called `default_KID` (or sometimes simply `KID`) and is shared between all [=DRM systems=], whereas the mechanisms used for key acquisition and content protection are largely [=DRM system=] specific. Different DASH adaptation sets are often encrypted with different [=content keys=].
 
 <div class="example">
 Example `default_KID` in string format: `72c3ed2c-7a5f-4aad-902f-cbef1efe89a9`
