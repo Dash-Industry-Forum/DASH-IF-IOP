@@ -9,9 +9,9 @@ package "MPD" {
     [default_KID] as DKID
 }
 
-Root --> A
-Root --> B
-Root --> C
+Root -- A
+Root -- B
+Root -- C
 
 DKID -> Root
 
