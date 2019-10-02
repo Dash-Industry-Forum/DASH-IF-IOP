@@ -44,5 +44,8 @@
     },
     "3GPP26.116": {
         "title": "3GPP TS 26.116 (03/2016): Television (TV) over 3GPP services; Video Profiles."
+    },
+    "jws": {
+        "aliasOf": "rfc7515"
     }
 }
