@@ -60,7 +60,7 @@ Note: This means that if [=representations=] use different [=content keys=], the
 
 This document assumes that the media platform of the DASH client implements an API equal to or similar to W3C Encrypted Media Extensions (EME) [[!encrypted-media]].
 
-Whereas the DRM signaling in DASH deals with [=DRM systems=], EME deals with <dfn>key systems</dfn>. While similar in concept, they are not always the same thing. A single [=DRM system=] may be implemented on a single device by multiple different [=key systems=], with different decoding capabilities and functionality, potentially at different [=robustness levels=].
+Whereas the DRM signaling in DASH deals with [=DRM systems=], EME deals with <dfn>key systems</dfn>. While similar in concept, they are not always the same thing. A single [=DRM system=] may be implemented on a single device by multiple different [=key systems=], with different codec compatibility and functionality, potentially at different [=robustness levels=].
 
 Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow custom business logic to override the chosen [=key system=] (e.g. to force the use of a high-robustness variant).
 
@@ -532,10 +532,10 @@ A [=DRM system=] implemented by a client platform may only support playback of e
 <div class="example">
 A typical [=DRM system=] might offer the following set of capabilities:
 
-* Decoding H.264 High profile up to level 4.0 at "low" robustness
-* Decoding H.264 High profile level 4.1 at "low" robustness
-* Decoding H.265 Main 10 profile up to level 5.2 at "low" robustness
-* Decoding AAC at "low" robustness
+* Playback of H.264 High profile up to level 4.0 at "low" robustness
+* Playback of H.264 High profile level 4.1 at "low" robustness
+* Playback of H.265 Main 10 profile up to level 5.2 at "low" robustness
+* Playback of AAC at "low" robustness
 * Unique user identification
 * Session persistence
 
