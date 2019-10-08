@@ -77,7 +77,7 @@ Note: This means that if [=representations=] use different [=content keys=], the
 
 ### Robustness ### {#CPS-robustness}
 
-Most [=DRM systems=] define rules that govern how they can be implemented. These rules can define different <dfn>robustness levels</dfn>. [=Robustness levels=] are typically used to differentiate implementations that offer different levels of resistance to attacks. The set of [=robustness levels=], their names and the constraints that apply to each are all specific to each [=DRM system=].
+Most [=DRM systems=] define rules that govern how they can be implemented. These rules can define different <dfn>robustness levels</dfn>. [=Robustness levels=] are typically used to differentiate implementations based on their resistance to attacks. The set of [=robustness levels=], their names and the constraints that apply to each are all specific to each [=DRM system=].
 
 <div class="example">
 
@@ -90,11 +90,11 @@ A hypothetical [=DRM system=] might define the following [=robustness levels=]:
 
 </div>
 
-Playback policy associated with content can require the [=DRM system=] implementation to conform to a specific [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. The license server is what enforces this policy by refusing to provide [=content keys=] to implementations with low [=robustness levels=].
+Playback policy associated with content can require a [=DRM system=] implementation to conform to a certain [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. The license server is what enforces this policy by refusing to provide [=content keys=] to implementations with low [=robustness levels=].
 
-The minimum required [=robustness level=] may be different for different device models and is not expressed in the MPD. It is a matter of policy and is impossible for a DASH client to determine on its own as it has no knowledge of the policy enforced by the license server.
+Multiple implementations of a [=DRM system=] may be available to a DASH client, potentially at different [=robustness levels=]. The DASH client must choose at media load time which [=DRM system=] implementation to use. However, the required [=robustness level=] may be different for different device types and is not expressed in the MPD! This decision is a matter of policy and is impossible for a DASH client to determine on its own. Therefore, [=solution-specific logic and configuration=] must inform the DASH client of the correct choice.
 
-Multiple implementations of a [=DRM system=] may be available to a DASH client, potentially at different [=robustness levels=]. A DASH client SHOULD enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
+A DASH client SHOULD enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
 
 1. Changing the mapping of [=DRM system=] to [=key system=] in EME-based implementations (see [[#CPS-EME]]).
 1. Specifying a minimum [=robustness level=] during capability detection (see [[#CPS-system-capabilities]]).
