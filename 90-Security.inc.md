@@ -53,17 +53,19 @@ Different software architectural components are involved in playback of encrypte
 
 The <dfn>media platform</dfn> provides one or more APIs that allow the device's media playback and DRM capabilities to be used by a DASH client. The DASH client is typically a library included in an app. On some device types, the DASH client may be a part of the [=media platform=].
 
-This document assumes that the [=media platform=] exposes its encrypted content playback features via an API similar to W3C Encrypted Media Extensions (EME) [[!encrypted-media]]. The technical nature of the API may be different for different device types but EME-equivalent functionality is expected.
+This document assumes that the [=media platform=] exposes its encrypted content playback features via an API similar to W3C Encrypted Media Extensions (EME) [[!encrypted-media]]. The technical nature of the API may be different but EME-equivalent functionality is expected.
 
-The [=media platform=] often implements at least one [=DRM system=]. Additional [=DRM system=] implementations can be included as libraries in the app if the [=media platforms=].
+The [=media platform=] often implements at least one [=DRM system=]. Additional [=DRM system=] implementations can be included as libraries in the app.
 
-The guidelines in this document define recommended workflows and default behavior for a generi DASH client implementation that performs playback of encrypted content. In many scenarios, the default behavior is sufficient. When deviation from the default behavior is desired, <dfn>solution-specific logic and configuration</dfn> can be provided by the app. Extension points are explicitly defined in the workflows at points where solution-specific decisions are most appropriate.
+The guidelines in this document define recommended workflows and default behavior for a generic DASH client implementation that performs playback of encrypted content. In many scenarios, the default behavior is sufficient. When deviation from the default behavior is desired, <dfn>solution-specific logic and configuration</dfn> can be provided by the app. Extension points are explicitly defined in the workflows at points where solution-specific decisions are most appropriate.
 
 ## Content encryption and DRM ## {#CPS-encryption-and-drm}
 
 A DASH service MAY offer some or all [=adaptation sets=] in encrypted form, requiring the use of a <dfn>DRM system</dfn> to decrypt the content for playback. The duty of a [=DRM system=] is to decrypt content while preventing disclosure of the [=content key=] and misuse of the decrypted content (e.g. recording via screen capture).
 
 Encrypted DASH content SHALL use either the `cenc` or the `cbcs` <dfn>protection scheme</dfn> defined in [[!MPEGCENC]]. [=Representations=] in the same [=adaptation set=] SHALL use the same [=protection scheme=]. [=Representations=] in different [=adaptation sets=] MAY use different [=protection schemes=].
+
+Issue: CMAF presentation profiles only include one or the other. There is no CMAF presentation profile that would allow both `cenc` and `cbcs` to be present in the same DASH period. Do we want to allow more here? It does make sense to offer alternatives (after all, it is no different from offering alternative codecs). But if so, how?
 
 `cenc` and `cbcs` are two mutually exclusive [=protection schemes=]. DASH content encrypted according to the `cenc` [=protection scheme=] cannot be decrypted by a DRM system supporting only the `cbcs` [=protection scheme=] and vice versa.
 
