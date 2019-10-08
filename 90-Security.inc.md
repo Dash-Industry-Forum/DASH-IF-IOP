@@ -73,11 +73,37 @@ In a DASH presentation, every [=representation=] in an [=adaptation set=] SHALL 
 
 Note: This means that if [=representations=] use different [=content keys=], they must be in different [=adaptation sets=], even if they would otherwise (were they not encrypted) belong to the same [=adaptation set=]. See also [[#seamless-switching-xas]].
 
+### Robustness ### {#CPS-robustness}
+
+Most [=DRM systems=] define rules that govern how they can be implemented. These rules can define different <dfn>robustness levels</dfn>. [=Robustness levels=] are typically used to differentiate implementations that offer different levels of resistance to attacks. The set of [=robustness levels=], their names and the constraints that apply to each are all specific to each [=DRM system=].
+
+<div class="example">
+
+A hypothetical [=DRM system=] might define the following [=robustness levels=]:
+
+* High - All cryptographic operations are performed on a separate CPU not accessible to the device's primary operating system. Decrypted data only exists in a memory region not accessible to the device's primary operating system.
+* Medium - All cryptographic operations are performed on a separate CPU not accessible to the device's primary operating system. Decrypted data may be passed to the primary operating system's media platform.
+* Low - All operations are performed in software that can be inspected and modified by the user. Obfuscation must be used to protect against analysis.
+* None - For development only. Implementation does not resist attacks.
+
+</div>
+
+Playback policy associated with content can require the [=DRM system=] implementation to conform to a specific [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. The license server is what enforces this policy by refusing to provide [=content keys=] to implementations with low [=robustness levels=].
+
+The minimum required [=robustness level=] may be different for different device models and is not expressed in the MPD. It is a matter of policy and is impossible for a DASH client to determine on its own as it has no knowledge of the policy enforced by the license server.
+
+Multiple implementations of a [=DRM system=] may be available to a DASH client, potentially at different [=robustness levels=]. A DASH client SHOULD enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
+
+1. Changing the mapping of [=DRM system=] to [=key system=] in EME-based implementations (see [[#CPS-EME]]).
+1. Specifying a minimum [=robustness level=] during capability detection (see [[#CPS-system-capabilities]]).
+
 ### W3C Encrypted Media Extensions ### {#CPS-EME}
 
 Whereas the DRM signaling in DASH deals with [=DRM systems=], EME deals with <dfn>key systems</dfn>. While similar in concept, they are not always the same thing. A single [=DRM system=] may be implemented on a single device by multiple different [=key systems=], with different codec compatibility and functionality, potentially at different [=robustness levels=].
 
-Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow [=solution-specific logic and configuration=] to override the chosen [=key system=] (e.g. to force the use of a high-robustness variant).
+Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow [=solution-specific logic and configuration=] to override the [=key system=] chosen by default (e.g. to force the use of a high-robustness variant).
+
+Different [=key systems=] may have different capabilities in terms of media playback.
 
 <div class="example">
 
@@ -88,21 +114,6 @@ A device may implement the "ExampleDRM" [=DRM system=] as a number of [=key syst
 * The key system "ExampleDRMvariant3" may support playback of encrypted H.265 content at up to 4K resolution with "high" [=robustness level=].
 
 </div>
-
-### Robustness ### {#CPS-robustness}
-
-The concept of <dfn>robustness level</dfn> expresses the difficulty of breaking the protection offered by a [=DRM system=]. A [=DRM system=] with a higher [=robustness level=] is believed by its author to be more resistant to attacks.
-
-Note: A [=DRM system=] with a higher [=robustness level=] may be superior in protecting content but may be more restricted in the choice of codecs or codec profiles/levels.
-
-Playback policy associated with content can require a certain [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. The license server is what enforces this policy by refusing to provide [=content keys=] to implementations with low [=robustness levels=].
-
-The minimum required [=robustness level=] may be different for different device models and is not expressed in the MPD. It is an aspect of solution-specific business logic and impossible for a DASH client to determine on its own as it has no knowledge of the policy enforced by the license server.
-
-A DASH client SHOULD enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
-
-1. Changing the mapping of [=DRM system=] to [=key system=] in EME-based implementations (see [[#CPS-EME]]).
-1. Specifying a minimum [=robustness level=] during capability detection (see [[#CPS-system-capabilities]]).
 
 ## Content protection constraints for CMAF ## {#CPS-cmaf}
 
@@ -924,9 +935,6 @@ The `dashif:laurl` element SHOULD be used to indicate the license server URL. Le
 W3C describes the use of the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` in [[!eme-initdata-cenc]] section 4 to indicate that tracks are encrypted with [[!MPEGCENC|Common Encryption]]. However, the presence of this "common" `pssh` box does not imply that Clear Key is to be used for decryption. DASH clients SHALL NOT interpret a `pssh` box with the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` as an indication that the Clear Key mechanism is to be used (nor as an indication of anything else beyond the use of Common Encryption).
 
 One or more `laurl` elements MAY be added under the `ContentProtection` descriptor. This element specifies the URL for a license server allowing to receive a license. The license request and response format is defined in [[!encrypted-media]].
-
-Advisement: Clients receiving [=content keys=] through the Clear Key key system will not have the same robustness that typical DRM clients are required to have. When the same [=content keys=] are distributed to DRM clients and to weakly-protected or unprotected clients, the weakly-protected or unprotected clients become a weak link in the system and limits the security of the overall system.
-
 
 <div class="example">
 
