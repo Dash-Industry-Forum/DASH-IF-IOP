@@ -103,10 +103,6 @@ A DASH client SHOULD enable [=solution-specific logic and configuration=] to spe
 
 Whereas the DRM signaling in DASH deals with [=DRM systems=], EME deals with <dfn>key systems</dfn>. While similar in concept, they are not always the same thing. A single [=DRM system=] may be implemented on a single device by multiple different [=key systems=], with different codec compatibility and functionality, potentially at different [=robustness levels=].
 
-Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow [=solution-specific logic and configuration=] to override the [=key system=] chosen by default (e.g. to force the use of a high-robustness variant).
-
-Different [=key systems=] may have different capabilities in terms of media playback.
-
 <div class="example">
 
 A device may implement the "ExampleDRM" [=DRM system=] as a number of [=key systems=]:
@@ -116,6 +112,8 @@ A device may implement the "ExampleDRM" [=DRM system=] as a number of [=key syst
 * The key system "ExampleDRMvariant3" may support playback of encrypted H.265 content at up to 4K resolution with "high" [=robustness level=].
 
 </div>
+
+Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow [=solution-specific logic and configuration=] to override the [=key system=] chosen by default (e.g. to force the use of a high-robustness variant).
 
 ## Content protection constraints for CMAF ## {#CPS-cmaf}
 
