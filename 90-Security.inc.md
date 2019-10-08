@@ -4,9 +4,9 @@ DASH-IF provides guidelines for using multiple [=DRM systems=] to access a DASH 
 
 This document does not define any [=DRM system=]. DASH-IF maintains a registry of [=DRM system=] identifiers on [dashif.org](https://dashif.org/identifiers/content_protection/).
 
-Common Encryption specifies several [=protection schemes=] which can be applied by a scrambling system and used by different [=DRM systems=]. The same encrypted DASH presentation can be decrypted by different [=DRM systems=] if a DASH client is provided the [=DRM system configuration=] for each [=DRM system=], either in the MPD or at runtime.
+Common Encryption [[!MPEGCENC]] specifies several [=protection schemes=] which can be applied by a scrambling system and used by different [=DRM systems=]. The same encrypted DASH presentation can be decrypted by different [=DRM systems=] if a DASH client is provided the [=DRM system configuration=] for each [=DRM system=], either in the MPD or at runtime.
 
-A <dfn>content key</dfn> is a 128-bit key required to decrypt content. It is identified by a UUID-format string called `default_KID` (or sometimes simply `KID`) and is shared between all [=DRM systems=], whereas the mechanisms used for key acquisition and content protection are largely [=DRM system=] specific. Different DASH adaptation sets are often encrypted with different [=content keys=].
+A <dfn>content key</dfn> is a 128-bit key used by a [=DRM system=] to make content available for playback. It is identified by a UUID-format string called `default_KID` (or sometimes simply `KID`). A [=content key=] and its identifier are shared between all [=DRM systems=], whereas the mechanisms used for key acquisition and content protection are largely [=DRM system=] specific. Different DASH adaptation sets are often protected by different [=content keys=].
 
 <div class="example">
 Example `default_KID` in string format: `72c3ed2c-7a5f-4aad-902f-cbef1efe89a9`
@@ -42,6 +42,23 @@ It is recommended that HTTPS be adopted for delivering DASH content. It should b
 
 While using HTTPS in DASH provides good protection for data exchanged between DASH servers and clients, HTTPS only protects the transport link, but does not by itself provide an enforcement mechanism for access control and usage policies on the streamed content. HTTPS itself does not imply user authentication and content authorization (or access control). This is especially the case that HTTPS provides no protection to any streamed content cached in a local buffer at a client for playback. HTTPS does not replace a DRM.
 
+## Client reference architecture for encrypted content playback ## {#drm-client-components}
+
+Different software architectural components are involved in playback of encrypted content. The exact nature depends on the specific implementation. A high-level reference architecture is described here.
+
+<figure>
+	<img src="Diagrams/Security/SoftwareComponents.png" />
+	<figcaption>Reference architecture for encrypted content playback.</figcaption>
+</figure>
+
+The <dfn>media platform</dfn> provides one or more APIs that allow the device's media playback and DRM capabilities to be used by a DASH client. The DASH client is typically a library included in an app. On some device types, the DASH client may be a part of the [=media platform=].
+
+This document assumes that the [=media platform=] exposes its encrypted content playback features via an API similar to W3C Encrypted Media Extensions (EME) [[!encrypted-media]]. The technical nature of the API may be different for different device types but EME-equivalent functionality is expected.
+
+The [=media platform=] often implements at least one [=DRM system=]. Additional [=DRM system=] implementations can be included as libraries in the app if the [=media platforms=].
+
+The guidelines in this document define recommended workflows and default behavior for a generi DASH client implementation that performs playback of encrypted content. In many scenarios, the default behavior is sufficient. When deviation from the default behavior is desired, <dfn>solution-specific logic and configuration</dfn> can be provided by the app. Extension points are explicitly defined in the workflows at points where solution-specific decisions are most appropriate.
+
 ## Content encryption and DRM ## {#CPS-encryption-and-drm}
 
 A DASH service MAY offer some or all [=adaptation sets=] in encrypted form, requiring the use of a <dfn>DRM system</dfn> to decrypt the content for playback. The duty of a [=DRM system=] is to decrypt content while preventing disclosure of the [=content key=] and misuse of the decrypted content (e.g. recording via screen capture).
@@ -58,11 +75,9 @@ Note: This means that if [=representations=] use different [=content keys=], the
 
 ### W3C Encrypted Media Extensions ### {#CPS-EME}
 
-This document assumes that the media platform of the DASH client implements an API equal to or similar to W3C Encrypted Media Extensions (EME) [[!encrypted-media]].
-
 Whereas the DRM signaling in DASH deals with [=DRM systems=], EME deals with <dfn>key systems</dfn>. While similar in concept, they are not always the same thing. A single [=DRM system=] may be implemented on a single device by multiple different [=key systems=], with different codec compatibility and functionality, potentially at different [=robustness levels=].
 
-Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow custom business logic to override the chosen [=key system=] (e.g. to force the use of a high-robustness variant).
+Even if multiple variants are available, a DASH client SHOULD map each [=DRM system=] to a single [=key system=]. The default [=key system=] SHOULD be the one the DASH client expects to offer greatest compatibility with content (potentially at a low [=robustness level=]). The DASH client SHOULD allow [=solution-specific logic and configuration=] to override the chosen [=key system=] (e.g. to force the use of a high-robustness variant).
 
 <div class="example">
 
@@ -76,7 +91,7 @@ A device may implement the "ExampleDRM" [=DRM system=] as a number of [=key syst
 
 ### Robustness ### {#CPS-robustness}
 
-The concept of <dfn>robustness level</dfn> expresses the difficulty of breaking the protection offered by a [=DRM system=]. An [=DRM system=] with a higher [=robustness level=] is believed by its author to be more resistant to attacks.
+The concept of <dfn>robustness level</dfn> expresses the difficulty of breaking the protection offered by a [=DRM system=]. A [=DRM system=] with a higher [=robustness level=] is believed by its author to be more resistant to attacks.
 
 Note: A [=DRM system=] with a higher [=robustness level=] may be superior in protecting content but may be more restricted in the choice of codecs or codec profiles/levels.
 
@@ -84,7 +99,7 @@ Playback policy associated with content can require a certain [=robustness level
 
 The minimum required [=robustness level=] may be different for different device models and is not expressed in the MPD. It is an aspect of solution-specific business logic and impossible for a DASH client to determine on its own as it has no knowledge of the policy enforced by the license server.
 
-A DASH client SHOULD enable custom business logic to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
+A DASH client SHOULD enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
 
 1. Changing the mapping of [=DRM system=] to [=key system=] in EME-based implementations (see [[#CPS-EME]]).
 1. Specifying a minimum [=robustness level=] during capability detection (see [[#CPS-system-capabilities]]).
@@ -173,7 +188,7 @@ This logic applies to all scenarios that make use of additional keys, regardless
 
 A DASH service SHOULD supply a default [=DRM system configuration=] in the MPD for all supported [=DRM systems=] in all encrypted [=adaptation sets=]. This enables playback without the need for DASH client customization or additional client-side configuration. [=DRM system configuration=] MAY also be supplied by logic executed at runtime (e.g. to load the values from configuration files), replacing or enhancing the defaults provided in the MPD.
 
-Any number of `ContentProtection` descriptors ([[!MPEGDASH]] 5.8.4.1) MAY be present in the MPD to provide [=DRM system configuration=]. These descriptors SHALL be defined on the [=adaptation set=] level. The contents MAY be ignored by the DASH client if overridden by custom business logic or runtime data sources - the [=DRM system configuration=] in the MPD simply provides default values known at content authoring time.
+Any number of `ContentProtection` descriptors ([[!MPEGDASH]] 5.8.4.1) MAY be present in the MPD to provide [=DRM system configuration=]. These descriptors SHALL be defined on the [=adaptation set=] level. The contents MAY be ignored by the DASH client if overridden by [=solution-specific logic and configuration=] - the [=DRM system configuration=] in the MPD simply provides default values known at content authoring time.
 
 A `ContentProtection` descriptor providing a default [=DRM system configuration=] SHALL use  `schemeIdUri="urn:uuid:<systemid>"` to identify the [=DRM system=], with the `<systemid>` matching a value in the [DASH-IF system-specific identifier registry](https://dashif.org/identifiers/content_protection/). The `value` attribute of the `ContentProtection` descriptor SHOULD contain the DRM system name and version number in a human readable form (for diagnostic purposes).
 
@@ -232,7 +247,7 @@ In performing license acquisition, a DASH client needs to:
 
 This license request model defines a mechanism for achieving both goals. This results in the following interoperability benefits:
 
-* DASH clients can execute DRM workflows without project-specific customization.
+* DASH clients can execute DRM workflows without [=solution-specific logic and configuration=].
 * Custom code specific to a license server implementation is limited to backend business logic.
 
 These benefits increase in value with the size of the solution, as they reduce the development cost required to offer playback of encrypted content on a wide range of DRM-capable client platforms using different [=DRM systems=], with licenses potentially served by different license server implementations.
@@ -390,7 +405,7 @@ The same [=authorization token=] MAY be used with multiple license requests but 
 
 A DASH client SHALL NOT make license requests for [=content keys=] that are configured as requiring an [=authorization token=] but for which the DASH client has failed to acquire an [=authorization token=].
 
-Note: A [=content key=] requires an [=authorization token=] if there is a `dashif:authzurl` in the MPD or if this element  is added by custom business logic at runtime.
+Note: A [=content key=] requires an [=authorization token=] if there is a `dashif:authzurl` in the MPD or if this element  is added by [=solution-specific logic and configuration=].
 
 ### Problem signaling and handling ### {#CPS-lr-model-errors}
 
@@ -481,13 +496,13 @@ A common implementation for transparent authorization is to use a "license proxy
 
 The two architectures can be mixed, with some [=DRM systems=] performing the authorization operations in the license server (or a "license proxy") and others using the authorization service directly. This may be relevant when integrating license servers from different vendors into the same solution.
 
-A DASH client will attempt to contact an authorization service if an authorization service URL is provided either in the MPD or by custom business logic executed at runtime. If no such URL is provided, it will assume that all authorization checks (if any are required) are performed by the license server (in reality, often a license proxy) and will not attach any proof of authorization.
+A DASH client will attempt to contact an authorization service if an authorization service URL is provided either in the MPD or by [=solution-specific logic and configuration=]. If no such URL is provided, it will assume that all authorization checks (if any are required) are performed by the license server (in reality, often a license proxy) and will not attach any proof of authorization.
 
 ### Passing a content ID to services ### {#CPS-lr-model-contentid}
 
 The concept of a content ID is sometimes used to identify groups of [=content keys=]. The DRM workflows described by this document do not require this concept to be used but do support it if the solution architecture demands it.
 
-In order to make use of a content ID in DRM workflows, the content ID SHOULD be embedded into authorization service URLs and/or license server URLs (depending on which components are used and require the use of the content ID). This may be done either directly at MPD authoring time (if the URLs and content ID are known at such time) or by custom business logic performing MPD post-processing within the DASH client.
+In order to make use of a content ID in DRM workflows, the content ID SHOULD be embedded into authorization service URLs and/or license server URLs (depending on which components are used and require the use of the content ID). This may be done either directly at MPD authoring time (if the URLs and content ID are known at such time) or by [=solution-specific logic and configuration=].
 
 No standard mechanism of embedding the content ID is defined, as a content ID is always a proprietary concept. Likely options include:
 
@@ -523,7 +538,7 @@ To present encrypted content a DASH client needs to:
 
 A client also needs to take observations at runtime to detect the need for different [=content keys=] to be used (e.g. in live services that change the [=content keys=] periodically) and to detect [=content keys=] becoming unavailable (e.g. due to expiration of access rights).
 
-This chapter defines the recommended DASH client workflows for interacting with [=DRM systems=] in these aspects. It is assumed that the platform implements an API similar to Encrypted Media Extensions [[!encrypted-media]].
+This chapter defines the recommended DASH client workflows for interacting with [=DRM systems=] in these aspects.
 
 ### Capability detection ### {#CPS-system-capabilities}
 
@@ -548,12 +563,12 @@ A typical media platform API such as EME [[!encrypted-media]] will require the D
 	<figcaption>The DASH client presents a set of desired capabilities for each [=DRM system=] and receives a response with the supported subset.</figcaption>
 </figure>
 
-The exact set of capabilities that can be used and the data format used to express them in capability detection APIs are defined by the media platform API. A DASH client is expected to have a full understanding of the potentially offered capabilities and how they map to parameters in the MPD. Some capabilities may have no relation to the MPD and whether they are required depends entirely on the DASH client or custom business logic.
+The exact set of capabilities that can be used and the data format used to express them in capability detection APIs are defined by the media platform API. A DASH client is expected to have a full understanding of the potentially offered capabilities and how they map to parameters in the MPD. Some capabilities may have no relation to the MPD and whether they are required depends entirely on the DASH client or [=solution-specific logic and configuration=].
 
 To detect the set of supported capabilities, a DASH client must first determine the <dfn>required capability set</dfn> for each [=adaptation set=]. This is the set of capabilities required to present all the content in a single [=adaptation set=] and can be determined based on the following:
 
 1. Content characteristics defined in the [=MPD=] (e.g. codecs strings of the [=representations=] and the used [=protection scheme=]).
-1. Custom business logic or configuration (e.g. what [=robustness level=] is required).
+1. [=Solution-specific logic and configuration=] (e.g. what [=robustness level=] is required).
 
 Advisement: Querying for the support of different [=protection schemes=] is currently not possible via the capability detection API of Encrypted Media Extensions [[!encrypted-media]]. To determine the supported [=protection schemes=], a DASH client must assume what the CDM supports. A bug is open on W3C EME and [a pull request exists](https://github.com/w3c/encrypted-media/pull/392) for the ISOBMFF file format bytestream. In future versions of EME, this may become possible.
 
@@ -561,11 +576,11 @@ Some of the capabilities (e.g. required [=robustness level=]) are [=DRM system=]
 
 During [=DRM system=] selection, the [=required capability set=] of each [=adaptation set=] is compared with the supported capability set of a [=DRM system=]. As a result of this, each candidate [=DRM system=] is associated with zero or more [=adaptation sets=] that can be successfully presented using that [=DRM system=].
 
-It is possible that multiple [=DRM systems=] have the capabilities required to present some or all of the [=adaptation sets=]. When multiple candidates exist, the DASH client SHOULD enable custom business logic to make the final decision.
+It is possible that multiple [=DRM systems=] have the capabilities required to present some or all of the [=adaptation sets=]. When multiple candidates exist, the DASH client SHOULD enable [=solution-specific logic and configuration=] to make the final decision.
 
 Note: Some sensible default behavior can be implemented in a generic way (e.g. the [=DRM system=] should be able to enable playback of both audio and video if both media types are present in the MPD). Still, there will still exist scenarios where the choices seem equivalent to the DASH client and an arbitrary choice needs to be made.
 
-The workflows defined in this document contain the necessary extension points to allow DASH clients to exhibit sensible default behavior and enable custom business logic to drive the choices in an optimal direction.
+The workflows defined in this document contain the necessary extension points to allow DASH clients to exhibit sensible default behavior and enable [=solution-specific logic and configuration=] to drive the choices in an optimal direction.
 
 ### Selecting the DRM system ### {#CPS-selection-workflow}
 
@@ -610,7 +625,7 @@ There are two encrypted [=representations=] in the [=adaptation set=], each with
 
 </div>
 
-In addition to the MPD, a DASH client can also execute custom business logic for controlling DRM selection and configuration decisions (e.g. loading license server URLs from configuration data instead of the MPD). This is often implemented in the form of callbacks exposed by the DASH client to an "app" layer in which the client is hosted. It is assumed that when executing any such callbacks, a DASH client makes available relevant contextual data, allowing the business logic to make fully informed decisions.
+In addition to the MPD, a DASH client can use [=solution-specific logic and configuration=] for controlling DRM selection and configuration decisions (e.g. loading license server URLs from configuration data instead of the MPD). This is often implemented in the form of callbacks exposed by the DASH client to an "app" layer in which the client is hosted. It is assumed that when executing any such callbacks, a DASH client makes available relevant contextual data, allowing the business logic to make fully informed decisions.
 
 The purpose of the [=DRM system=] selection workflow is to select a single [=DRM system=] that is capable of decrypting a meaningful subset of the [=adaptation sets=] selected for playback. The selected [=DRM system=] will meet the following criteria:
 
@@ -631,7 +646,7 @@ When encrypted [=adaptation sets=] are initially selected for playback or when t
 1. Let <var>adaptation_sets</var> be the set of encrypted [=adaptation sets=] selected for playback.
 1. Let <var>signaled_system_ids</var> be the set of DRM system IDs for which a `ContentProtection` descriptor is present in the MPD on any entries in <var>adaptation_sets</var>.
 1. Let <var>candidate_system_ids</var> be an ordered list initialized with items of <var>signaled_system_ids</var> in any order.
-1. Provide <var>candidate_system_ids</var> to custom business logic for inspection/modification.
+1. Provide <var>candidate_system_ids</var> to [=solution-specific logic and configuration=] for inspection/modification.
     * This enables business logic to establish an order of preference where multiple [=DRM systems=] are present.
     * This enables business logic to filter out DRM systems known to be unsuitable.
     * This enables business logic to include DRM systems not signaled in the MPD.
@@ -642,7 +657,7 @@ When encrypted [=adaptation sets=] are initially selected for playback or when t
     1. Let <var>configurations</var> be a map of `default_kid -> configuration` where the keys are <var>default_kids</var> and the values are the [=DRM system configurations=] initialized with data from `ContentProtection` descriptors in the MPD (matching on `default_KID` and <var>system_id</var>).
         * If there is no matching `ContentProtection` descriptors in the MPD, the map still contains a partially initialized [=DRM system configuration=] for the `default_KID`.
         * Enhance the MPD-provided default [=DRM system configuration=] with synthesized data where appropriate (e.g. [[#CPS-AdditionalConstraints-W3C|to generate W3C Clear Key initialization data in a format supported by the platform API]]).
-    1. Provide <var>configurations</var> to custom business logic for inspection and modification, passing <var>system_id</var> along as contextual information.
+    1. Provide <var>configurations</var> to [=solution-specific logic and configuration=] for inspection and modification, passing <var>system_id</var> along as contextual information.
         * This enables business logic to override the default [=DRM system configuration=] provided by the MPD.
         * This enables business logic to inject values that were not embedded in the MPD.
         * This enables business logic to reject [=content keys=] that it knows cannot be used, by removing the [=DRM system configuration=] for them.
@@ -668,9 +683,9 @@ When encrypted [=adaptation sets=] are initially selected for playback or when t
     * The set is empty (the [=DRM system=] does not support playback of any [=adaptation set=]).
     * The set does not contain all encrypted media types present in the MPD (e.g. the [=DRM system=] can decrypt only the audio content but not the video content).
 1. If <var>supported_adaptation_sets</var> is empty, playback of encrypted content is not possible and the workflow ends.
-1. If <var>supported_adaptation_sets</var> contains multiple items, request custom business logic to select the preferred [=DRM system=] from among them.
-    * This allows custom business logic to make an informed choice when different [=DRM systems=] can play different [=adaptation sets=]. Contrast this to the initial order of preference that was defined near the start of the algorithm, which does not consider capabilities.
-1. If custom business logic does not make a decision, find the first entry in <var>candidate_system_ids</var> that is among the keys of <var>supported_adaptation_sets</var>. Remove items with any other key from <var>supported_adaptation_sets</var>.
+1. If <var>supported_adaptation_sets</var> contains multiple items, request [=solution-specific logic and configuration=] to select the preferred [=DRM system=] from among them.
+    * This allows [=solution-specific logic and configuration=] to make an informed choice when different [=DRM systems=] can play different [=adaptation sets=]. Contrast this to the initial order of preference that was defined near the start of the algorithm, which does not consider capabilities.
+1. If [=solution-specific logic and configuration=] does not make a decision, find the first entry in <var>candidate_system_ids</var> that is among the keys of <var>supported_adaptation_sets</var>. Remove items with any other key from <var>supported_adaptation_sets</var>.
     * This falls back to the "order of preference" logic and takes care of scenarios where business logic did not make an explicit choice.
 1. Let <var>selected_system_id</var> be the single remaining key in <var>supported_adaptation_sets</var>.
 1. Let <var>final_adaptation_sets</var> be the single remaining value in <var>supported_adaptation_sets</var>.
@@ -752,7 +767,7 @@ The request and response body are in [=DRM system=] specific formats and conside
 The license request workflow defined here exists to enable the following goals to be achieved without the need to customize the DASH client with logic specific to a [=DRM system=] or license server implementation:
 
 1. Provide proof of authorization if the license server requires the DASH client to prove that the user being served has the rights to use the requested [=content keys=].
-1. Execute the license request workflow driven purely by the MPD, without any need for project-specific customization of the DASH client logic.
+1. Execute the license request workflow driven purely by the MPD, without any need for [=solution-specific logic and configuration=].
 1. Detect common error scenarios and present an understandable message to the user.
 
 The proof of authorization is optional and the need to attach it to a license request is indicated by the presence of `dashif:authzurl` in the [=DRM system configuration=]. The proof of authorization is a [[!jwt|JSON Web Token]] in compact encoding (the `aaa.bbb.ccc` form) returned as the HTTP response body when the DASH client performs a GET request to this URL. The token is attached to a license request in the HTTP `Authorization` header with the `Bearer` type. For details, see [[#CPS-lr-model]].
@@ -783,7 +798,7 @@ To process license requests queued during execution of the [[#CPS-activation-wor
     1. Else:
         1. Perform an HTTP GET request to <var>authz_url_with_kids</var> (following redirects).
             * Include any relevant HTTP cookies.
-            * Allow custom business logic to intercept the request and inspect/modify it as needed (e.g. provide additional HTTP request headers to enable user identification).
+            * Allow [=solution-specific logic and configuration=] to intercept the request and inspect/modify it as needed (e.g. provide additional HTTP request headers to enable user identification).
         1. If the response status code [[#CPS-lr-model-errors|indicates failure]], make a note of any error information for later processing and skip to the next <var>authz_url</var>.
         1. Let <var>authz_token</var> be the HTTP response body.
         1. Submit <var>authz_token</var> into the DASH client cache, with the cache key being <var>authz_url_with_kids</var> and the expiration being defined by the `exp` "Expiration Time" claim in the [=authorization token=] (defaulting to never expires).
