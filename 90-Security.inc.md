@@ -205,11 +205,13 @@ A `ContentProtection` descriptor providing a default [=DRM system configuration=
 
 Note: W3C defines the Clear Key mechanism ([[!encrypted-media]] 9.1), which is a "dummy" DRM system implementation intended for client and platform development/testing purposes. **Understand that Clear Key does not fulfill the content protection and content key protection duties ordinarily expected from a DRM system.** For more guidelines on Clear Key usage, see [[#CPS-AdditionalConstraints-W3C]].
 
-Each DRM system specific `ContentProtection` descriptor can contain a mix of XML elements and attributes defined by [[!MPEGCENC|Common Encryption]], the [=DRM system=] author, DASH-IF or any other party. If a [=DRM system=] specific `ContentProtection` descriptor contains the same data in multiple forms then the more generic form SHALL have precedence (e.g. if the license server URL is defined both using `dashif:laurl` and a [=DRM system=] specific element, the former is used by DASH clients).
+Each DRM system specific `ContentProtection` descriptor can contain a mix of XML elements and attributes defined by [[!MPEGCENC|Common Encryption]], the [=DRM system=] author, DASH-IF or any other party.
 
 For [=DRM systems=] initialized by supplying `pssh` boxes [[!ISOBMFF]], the `cenc:pssh` element SHOULD be present under the `ContentProtection` descriptor if the value is known at MPD authoring time. The base64 encoded contents of the element SHALL be equivalent to a complete `pssh` box including its length and header fields. See also [[#CPS-cmaf]].
 
 [=DRM systems=] generally use the concept of license requests as the mechanism for obtaining [=content keys=] and associated usage constraints (see [[#CPS-license-request-workflow]]). For [=DRM systems=] that use this concept, exactly one `dashif:laurl` element SHOULD be present under the `ContentProtection` descriptor, with the value of the element being the default URL to send license requests to. This URL MAY contain [[#CPS-lr-model-contentid|content identifiers]].
+
+Multiple mechanisms have historically been used to provide the license server URL in the MPD (e.g. embedding in the `cenc:pssh` data or passing by deprecated DRM system specific DASH-IF `Laurl` elements). A DASH client SHALL prefer `dashif:laurl` if multiple data sources for the URL are present in the MPD.
 
 For [=DRM systems=] that require proof of authorization to be attached to the license request in a manner conforming to [[#CPS-lr-model]], exactly one `dashif:authzurl` element SHOULD be present under the `ContentProtection` descriptor, containing the default URL to send authorization requests to (see [[#CPS-license-request-workflow]]).
 
