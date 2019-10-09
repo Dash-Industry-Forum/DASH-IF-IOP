@@ -511,16 +511,18 @@ A DASH client will attempt to contact an authorization service if an authorizati
 
 ### Passing a content ID to services ### {#CPS-lr-model-contentid}
 
-The concept of a content ID is sometimes used to identify groups of [=content keys=]. The DRM workflows described by this document do not require this concept to be used but do support it if the solution architecture demands it.
+The concept of a content ID is sometimes used to identify groups of [=content keys=] based on solution-specific associations. The DRM workflows described by this document do not require this concept to be used but do support it if the solution architecture demands it.
 
-In order to make use of a content ID in DRM workflows, the content ID SHOULD be embedded into authorization service URLs and/or license server URLs (depending on which components are used and require the use of the content ID). This may be done either directly at MPD authoring time (if the URLs and content ID are known at such time) or by [=solution-specific logic and configuration=].
+In order to make use of a content ID in DRM workflows, the content ID SHOULD be embedded into authorization service URLs and/or license server URLs (depending on which components are used and require the use of the content ID). This may be done either directly at MPD authoring time (if the URLs and content ID are known at such time) or by [=solution-specific logic and configuration=] at runtime.
 
-No standard mechanism of embedding the content ID is defined, as a content ID is always a proprietary concept. Likely options include:
+Having embedded the content ID in the URL, all DRM workflows continue to operate the same as they normally would, except now they also include knowledge of the content ID in each request to the authorization service and/or license server. The content ID is an addition to the license request workflows and does not replace any existing data.
+
+Advisement: Embedding a content ID allows the service handling the request to use the content ID in its business logic. However, the presence of a content ID in the URL does not invalidate any requirements related to the processing of the `default_KID` values of content keys. For example, an authorization service must still constrain the set of authorized [=content keys=] to a subset of the keys listed in the `kids` parameter ([[#CPS-lr-model-authz-issuing]]).
+
+No generic URL template for embedding the content ID is defined, as the content ID is always a proprietary concept. Recommended options include:
 
 * Query string parameters: `https://example.com/tenants/5341/authorize?contentId=movie865343651`
 * Path segments: `https://example.com/moviecatalog-license-api/movie865343651/AcquireLicense`
-
-Having embedded the content ID in the URL, all DRM workflows continue to operate the same as they normally would, except now they also include knowledge of the content ID in each request to the authorization service and/or license server.
 
 <div class="example">
 [=DRM system configuration=] with the content ID embedded in the authorization service and license server URLs. Each service may use a different implementation-defined URL structure for carrying the content ID.
