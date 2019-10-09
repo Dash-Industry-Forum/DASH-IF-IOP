@@ -119,7 +119,7 @@ Even if multiple variants are available, a DASH client SHOULD map each [=DRM sys
 
 ## Content protection constraints for CMAF ## {#CPS-cmaf}
 
-The structure of content protection related information in the CMAF containers used by DASH is largely specified by [[!MPEGCMAF]] and [[!MPEGCENC]]. This chapter outlines some additional requirements to ensure interoperable behavior of DASH clients and services.
+The structure of content protection related information in the CMAF containers used by DASH is largely specified by [[!MPEGCMAF]] and [[!MPEGCENC]] (in particular section 8). This chapter outlines some additional requirements to ensure interoperable behavior of DASH clients and services.
 
 Note: This document uses the `cenc:` prefix to reference the XML namespace `urn:mpeg:cenc:2013` [[!MPEGCENC]].
 
@@ -130,6 +130,31 @@ Note: Placing the `pssh` boxes in the MPD has become common for purposes of oper
 Protected content MAY be published without any `pssh` boxes in both the MPD and media segments. All [=DRM system configuration=] can be provided at runtime, including the `pssh` box data. See also [[#CPS-mpd-drm-config]].
 
 Media segments MAY contain `moof/pssh` boxes ([[!MPEGCMAF]] 7.4.3) to provide updates to [=DRM system=] internal state (e.g. to supply new leaf keys in a key hierarchy). These state updates are transparent to the DASH client - the [=media platform=] is expected to intercept the `moof/pssh` boxes and supply them directly to the active [=DRM system=]. See [[#CPS-default_KID-hierarchy]] for an example.
+
+### Content protection data in CMAF containers ### {#CPS-cmaf-structure}
+
+This chapter describes the structure of content protection data in CMAF containers used to provide encrypted content in a DASH presentation, summarizing the requirements defined by [[!ISOBMFF]], [[!MPEGDASH]], [[!MPEGCENC]], [[!MPEGCMAF]] and other parts of DASH-IF implementation guidelines.
+
+DASH initialization segments contain:
+
+* Zero or more `moov/pssh` "Protection System Specific Header" boxes ([[!MPEGCENC]] 8.1) which provide [=DRM system=] initialization data in [=DRM system=] specific format. This usage is deprecated in favor of providing this data in the MPD. See [[#CPS-mpd-drm-config]].
+* Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schm` "Scheme Type" box ([[!ISOBMFF]] 8.12.5) identifying the [=protection scheme=]. See [[!MPEGCENC]] section 4.
+* Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schi/tenc` "Track Encryption" box ([[!MPEGCENC]] 8.2) which contains default encryption parameters for samples. These default parameters may be overridden in media segments (see below)
+
+DASH media segments are composed of one or more CMAF fragments, where each CMAF fragment contains:
+
+* Exactly one `moof/traf/senc` "Sample Encryption" box ([[!MPEGCENC]] 7.2) which stores initialization vectors (IVs) and, optionally, subsample encryption ranges for samples in the same CMAF fragment.
+* Zero or one `moof/traf/saiz` "Sample Auxiliary Information Size" boxes ([[!ISOBMFF]] 8.7.8) which references the sizes of the per-sample data stored in the `moof/traf/senc` box ([[!MPEGCMAF]] 8.2.2 and [[!MPEGCENC]] section 7).
+    * Omitted if the parameters provided by the `senc` box are identical for all samples in the CMAF fragment.
+* Zero or one `moof/traf/saio` "Sample Auxiliary Information Offset" boxes ([[!ISOBMFF]] 8.7.9) which references the sizes of the per-sample data stored in the `moof/traf/senc` box ([[!MPEGCMAF]] 8.2.2 and [[!MPEGCENC]] section 7).
+    * Omitted if the parameters provided by the `senc` box are identical for all samples in the CMAF fragment.
+* Zero or more `moof/pssh` "Protection System Specific Header" boxes ([[!MPEGCENC]] 8.1) which provide transparent updates to [=DRM system=] internal state. See [[#CPS-mpd-moof-pssh]].
+* For each sample group, exactly one `moof/traf/sgpd` "Sample Group Description" box ([[!ISOBMFF]] 8.9.3 and [[!MPEGCENC]] section 6) which contains overrides for encryption parameters defined in the `tenc` box.
+    * Omitted if no parameters are overridden.
+* For each sample grouping type (see [[!ISOBMFF]], typically one), exactly one `moof/traf/sbgp` "Sample to Group" box ([[!ISOBMFF]] 8.9.2 and [[!MPEGCENC]] section 6) which associates samples with sample groups.
+    * Omitted if no parameters are overridden.
+
+[[#CPS-default_KID-hierarchy|Hierarchical key rotation]] is implemented by listing the `default_KID` in the `tenc` box of the initialization segment (identifying the root key) and then overriding the [=content key=] identifier in the `sgpd` boxes of media segments (identifying the leaf keys that apply to each media segment).
 
 ## Encryption and DRM signaling in the MPD ## {#CPS-mpd}
 
