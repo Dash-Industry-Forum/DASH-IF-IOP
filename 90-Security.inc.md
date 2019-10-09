@@ -61,19 +61,21 @@ The guidelines in this document define recommended workflows and default behavio
 
 ## Content encryption and DRM ## {#CPS-encryption-and-drm}
 
-A DASH service MAY offer some or all [=adaptation sets=] in encrypted form, requiring the use of a <dfn>DRM system</dfn> to decrypt the content for playback. The duty of a [=DRM system=] is to decrypt content while preventing disclosure of the [=content key=] and misuse of the decrypted content (e.g. recording via screen capture).
-
-Encrypted DASH content SHALL use either the `cenc` or the `cbcs` <dfn>protection scheme</dfn> defined in [[!MPEGCENC]]. [=Representations=] in the same [=adaptation set=] SHALL use the same [=protection scheme=]. [=Representations=] in different [=adaptation sets=] MAY use different [=protection schemes=].
-
-Issue: CMAF presentation profiles only include one or the other. There is no CMAF presentation profile that would allow both `cenc` and `cbcs` to be present in the same DASH period. Do we want to allow more here? It does make sense to offer alternatives (after all, it is no different from offering alternative codecs). But if so, how?
-
-`cenc` and `cbcs` are two mutually exclusive [=protection schemes=]. DASH content encrypted according to the `cenc` [=protection scheme=] cannot be decrypted by a DRM system supporting only the `cbcs` [=protection scheme=] and vice versa.
-
-Note: Some [=DRM system=] implementations support both [=protection schemes=]. Even when this is the case, clients should not assume concurrent use is possible. If content is provided using both `cbcs` and `cenc`, the [=adaptation sets=] should be alternatives of identical content.
+A DASH presentation MAY provide some or all [=adaptation sets=] in encrypted form, requiring the use of a <dfn>DRM system</dfn> to decrypt the content for playback. The duty of a [=DRM system=] is to decrypt content while preventing disclosure of the [=content key=] and misuse of the decrypted content (e.g. recording via screen capture).
 
 In a DASH presentation, every [=representation=] in an [=adaptation set=] SHALL be protected using the same [=content key=] (identified by the same `default_KID`).
 
 Note: This means that if [=representations=] use different [=content keys=], they must be in different [=adaptation sets=], even if they would otherwise (were they not encrypted) belong to the same [=adaptation set=]. See also [[#seamless-switching-xas]].
+
+Encrypted DASH content SHALL use either the `cenc` or the `cbcs` <dfn>protection scheme</dfn> defined in [[!MPEGCENC]]. `cenc` and `cbcs` are two mutually exclusive [=protection schemes=]. DASH content encrypted according to the `cenc` [=protection scheme=] cannot be decrypted by a DRM system supporting only the `cbcs` [=protection scheme=] and vice versa.
+
+Some [=DRM system=] implementations support both [=protection schemes=]. Even when this is the case, clients SHALL NOT concurrently consume encrypted content that uses different [=protection schemes=].
+
+[=Representations=] in the same [=adaptation set=] SHALL use the same [=protection scheme=]. [=Representations=] in different [=adaptation sets=] MAY use different [=protection schemes=]. If both [=protection schemes=] are used in the same DASH period, all encrypted [=representations=] in that period SHALL be provided using both [=protection schemes=]. That is, the only permissible scenario for using both [=protection schemes=] together is to offer them as equal alternatives to target DASH clients with different capabilities.
+
+Note: None of the CMAF presentation profiles defined in [[MPEGCMAF]] allow the presence of both `cenc` and `cbcs` content in the same period. While this is permitted by the DASH-IF guidelines - to allow DASH clients to choose between alternative [=protection schemes=] - such content would not be conforming to the presentation profiles defined in [[MPEGCMAF]].
+
+[=Representations=] that contain the same media content using different [=protection schemes=] SHALL use a different [=content key=]. This protects against some cryptographic attacks.
 
 ### Robustness ### {#CPS-robustness}
 
