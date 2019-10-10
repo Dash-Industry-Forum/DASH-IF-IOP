@@ -2,6 +2,11 @@
 
 DASH-IF provides guidelines for using multiple [=DRM systems=] to access a DASH presentation by adding encryption signaling and [=DRM system configuration=] to DASH content encrypted in conformance to Common Encryption [[!MPEGCENC]]. In addition to content authoring guidelines, DASH-IF specifies interoperable workflows for DASH client interactions with [=DRM systems=], platform APIs and external services involved in content protection interactions.
 
+<figure>
+	<img src="Diagrams/Security/DrmBigPicture.png" />
+	<figcaption>A [=DRM system=] cooperates with the device's [=media platform=] to enable playback of encrypted content while protecting the decrypted samples and the [=content key=] against potential attacks. The DASH-IF implementation guidelines focus on the signaling in the DASH presentation and the interactions of the DASH client with other components.</figcaption>
+</figure>
+
 This document does not define any [=DRM system=]. DASH-IF maintains a registry of [=DRM system=] identifiers on [dashif.org](https://dashif.org/identifiers/content_protection/).
 
 Common Encryption [[!MPEGCENC]] specifies several [=protection schemes=] which can be applied by a scrambling system and used by different [=DRM systems=]. The same encrypted DASH presentation can be decrypted by different [=DRM systems=] if a DASH client is provided the [=DRM system configuration=] for each [=DRM system=], either in the MPD or at runtime.

@@ -1,0 +1,29 @@
+@startuml
+
+[DASH presentation] as DASH
+
+[DASH client] as Client
+
+node "Data protected by DRM system" {
+    [Content key] as Key
+
+    [Media platform] as MediaPlatform
+    [DRM system] as DRM
+}
+
+[License server] as LicenseServer
+[Authorization service] as Authz
+
+Client -down-> DASH : Get MPD\nGet segments
+Client -> MediaPlatform : Provide segments
+Client -down-> DRM : Activate\nProvide licenses
+
+DRM -> MediaPlatform : Decrypted samples
+MediaPlatform --> DRM : Encrypted samples
+
+DRM -> Key : Use
+
+Client -up-> LicenseServer : Get licenses
+Client -up-> Authz : Get authorization tokens
+
+@enduml
