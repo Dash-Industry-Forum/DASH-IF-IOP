@@ -17,7 +17,7 @@ A <dfn>content key</dfn> is a 128-bit key used by a [=DRM system=] to make conte
 Example `default_KID` in string format: `72c3ed2c-7a5f-4aad-902f-cbef1efe89a9`
 </div>
 
-A license is a data structure in [=DRM system=] specific format that contains one or more [=content keys=] and associates them with a policy that governs the usage of the [=content keys=] (e.g. expiration time). The encapsulated [=content keys=] are typically encrypted and only readable by the [=DRM system=].
+A <dfn>license</dfn> is a data structure in [=DRM system=] specific format that contains one or more [=content keys=] and associates them with a policy that governs the usage of the [=content keys=] (e.g. expiration time). The encapsulated [=content keys=] are typically encrypted and only readable by the [=DRM system=].
 
 ## HTTPS and DASH ## {#CPS-HTTPS}
 
@@ -35,7 +35,7 @@ DASH also explicitly permits the use of HTTPS as a URI scheme and hence, HTTP ov
 <BaseURL>https://cdn2.example.com/</BaseURL>
 ```
 
-One can also use HTTPS for retrieving other types of data carried with a MPD that are HTTP-URL based, such as, for example, DRM licenses specified within the `ContentProtection` descriptor:
+One can also use HTTPS for retrieving other types of data carried with a MPD that are HTTP-URL based, such as, for example, DRM [=licenses=] specified within the `ContentProtection` descriptor:
 
 ```xml
 <ContentProtection
@@ -283,7 +283,7 @@ Issue: How does this update mechanism materialize in the EME API? Does the DASH 
 
 ## DASH-IF interoperable license request model ## {#CPS-lr-model}
 
-The interactions involved in acquiring licenses and [=content keys=] in DRM workflows have historically been proprietary, requiring a DASH client to be customized in order to achieve compatibility with specific [=DRM systems=] or license server implementations. This chapter defines an interoperable model to encourage the creation of solutions that do not require custom code in the DASH client in order to play back encrypted content. Use of this model is optional but recommended.
+The interactions involved in acquiring [=licenses=] and [=content keys=] in DRM workflows have historically been proprietary, requiring a DASH client to be customized in order to achieve compatibility with specific [=DRM systems=] or license server implementations. This chapter defines an interoperable model to encourage the creation of solutions that do not require custom code in the DASH client in order to play back encrypted content. Use of this model is optional but recommended.
 
 Any conformance statements in this chapter apply to clients and services that opt in to using this model (e.g. a "SHALL" statement means "SHALL, if using this model," and has no effect on implementations that choose to use proprietary mechanisms for license acquisition). The authorization service and license server are considered part of the DASH service.
 
@@ -297,7 +297,7 @@ This license request model defines a mechanism for achieving both goals. This re
 * DASH clients can execute DRM workflows without [=solution-specific logic and configuration=].
 * Custom code specific to a license server implementation is limited to backend business logic.
 
-These benefits increase in value with the size of the solution, as they reduce the development cost required to offer playback of encrypted content on a wide range of DRM-capable client platforms using different [=DRM systems=], with licenses potentially served by different license server implementations.
+These benefits increase in value with the size of the solution, as they reduce the development cost required to offer playback of encrypted content on a wide range of DRM-capable client platforms using different [=DRM systems=], with [=licenses=] potentially served by different license server implementations.
 
 ### Proof of authorization ### {#CPS-lr-model-authz}
 
@@ -356,7 +356,7 @@ If no authorization service URL is provided by the MPD nor made available at run
 	<figcaption>[=Authorization tokens=] are requested from all authorization services referenced by the selected adaptation sets.</figcaption>
 </figure>
 
-DASH clients will use zero or more [=authorization tokens=] depending on the number of authorization service URLs defined for the set of [=content keys=] in use. One [=authorization token=] is requested from each distinct authorization service URL. The authorization service URL is specified individually for each [=DRM system=] and [=content key=] (i.e. it is part of the [=DRM system configuration=]). Services SHOULD use a single [=authorization token=] covering all [=content keys=] and [=DRM systems=] but MAY divide the scope of [=authorization tokens=] if appropriate (e.g. different [=DRM systems=] might use different license server vendors that use mutually incompatible license token formats).
+DASH clients will use zero or more [=authorization tokens=] depending on the number of authorization service URLs defined for the set of [=content keys=] in use. One [=authorization token=] is requested from each distinct authorization service URL. The authorization service URL is specified individually for each [=DRM system=] and [=content key=] (i.e. it is part of the [=DRM system configuration=]). Services SHOULD use a single [=authorization token=] covering all [=content keys=] and [=DRM systems=] but MAY divide the scope of [=authorization tokens=] if appropriate (e.g. different [=DRM systems=] might use different license server vendors that use mutually incompatible authorization token formats).
 
 Note: Path or query string parameters in the authorization service URL can be used to differentiate between license server implementations (and their respective [=authorization token=] formats).
 
@@ -429,7 +429,7 @@ Serialized and digitally signed: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6Ij
 
 An authorization service SHALL NOT issue [=authorization tokens=] that authorize the use of [=content keys=] that are not in the set of requested [=content keys=] (as defined in the request's `kids` query string parameter). An authorization service MAY issue [=authorization tokens=] that authorize the use of only a subset of the requested [=content keys=], provided that at least one [=content key=] is authorized. If no [=content keys=] are authorized for use, an authorization service SHALL [[#CPS-lr-model-errors|signal a failure]].
 
-Note: During license issuance, the license server may further constrain the set of available [=content keys=] (e.g. as a result of examining the device's security level). See [[#CPS-unavailable-keys]].
+Note: During [=license=] issuance, the license server may further constrain the set of available [=content keys=] (e.g. as a result of examining the device's security level). See [[#CPS-unavailable-keys]].
 
 [=Authorization tokens=] SHALL be returned by an authorization service using JWS Compact Serialization [[!jws]] (the `aaa.bbb.ccc` format). The serialized form of an [=authorization token=] SHOULD NOT exceed 5000 characters to ensure that a license server does not reject a license request carrying the token due to excessive HTTP header size.
 
@@ -583,7 +583,7 @@ To present encrypted content a DASH client needs to:
 1. [[#CPS-selection-workflow|Select a DRM system that is capable of decrypting the content.]]
     * During selection, [[#CPS-system-capabilities|the set of desired DRM system capabilities and the supported capabilities is examined]] to identify suitable candidate systems.
 1. [[#CPS-activation-workflow|Activate the selected DRM system and configure it to decrypt content.]]
-    * During activation, [[#CPS-license-request-workflow|acquire any missing [=content keys=] and the licenses that govern their use]].
+    * During activation, [[#CPS-license-request-workflow|acquire any missing [=content keys=] and the [=licenses=] that govern their use]].
 
 A client also needs to take observations at runtime to detect the need for different [=content keys=] to be used (e.g. in live services that change the [=content keys=] periodically) and to detect [=content keys=] becoming unavailable (e.g. due to expiration of access rights).
 
@@ -781,7 +781,7 @@ Note: The batching may, for example, be accomplished by concatenating all the `p
 
 It is possible that not all of the encrypted [=adaptation sets=] selected for playback can actually be played back (e.g. because a [=content key=] for ultra-HD content is only authorized for use on high-security devices). The unavailability of one or more [=content keys=] SHOULD NOT be considered a fatal error condition as long as at least one audio and at least one video [=adaptation set=] remains available for playback (assuming both content types are initially selected for playback). This logic MAY be overridden by solution specific business logic to better reflect end-user expectations.
 
-The set of available [=content keys=] can change over time (e.g. due to license expiration or due to new [=periods=] in the presentation requiring different content keys). A DASH client SHALL monitor the set of `default_KID` values that are required for playback and either request the [=DRM system=] to make these [=content keys=] available or deselect the affected [=adaptation sets=] when the [=content keys=] become unavailable. Conceptually, any such change can be handled by re-executing the [[#CPS-selection-workflow|DRM system selection]] and [[#CPS-activation-workflow|activation workflows]], although platform APIs may also offer more fine-grained update capabilities.
+The set of available [=content keys=] can change over time (e.g. due to [=license=] expiration or due to new [=periods=] in the presentation requiring different content keys). A DASH client SHALL monitor the set of `default_KID` values that are required for playback and either request the [=DRM system=] to make these [=content keys=] available or deselect the affected [=adaptation sets=] when the [=content keys=] become unavailable. Conceptually, any such change can be handled by re-executing the [[#CPS-selection-workflow|DRM system selection]] and [[#CPS-activation-workflow|activation workflows]], although platform APIs may also offer more fine-grained update capabilities.
 
 A DASH client can request a [=DRM system=] to enable decryption using any set of [=content keys=] (if it has the necessary [=DRM system configuration=]). However, this is only a request and playback can be countermanded at multiple stages of processing by different involved entities.
 
@@ -792,19 +792,19 @@ A DASH client can request a [=DRM system=] to enable decryption using any set of
 
 Advisement: [=Media platform=] APIs often refuse to start playback if the [=DRM system=] is not able to decrypt all the data already in [=media platform=] buffers.
 
-The set of available [=content keys=] is only known at the end of executing the activation workflow and may decrease over time (e.g. due to license expiration). The proper handling of unavailable keys depends on the limitations imposed by the platform APIs. It may be appropriate for a DASH client to avoid buffering data for encrypted [=adaptation sets=] until the required [=content key=] is known to be available. This allows the client to avoid potentially expensive buffer resets and rebuffering if unusable data needs to be removed from buffers.
+The set of available [=content keys=] is only known at the end of executing the activation workflow and may decrease over time (e.g. due to [=license=] expiration). The proper handling of unavailable keys depends on the limitations imposed by the platform APIs. It may be appropriate for a DASH client to avoid buffering data for encrypted [=adaptation sets=] until the required [=content key=] is known to be available. This allows the client to avoid potentially expensive buffer resets and rebuffering if unusable data needs to be removed from buffers.
 
 Note: The DASH client should still download the data into intermediate buffers for faster startup and simply defer submitting it to the [=media platform=] API until key availability is confirmed.
 
-If a [=content key=] expires during playback, it is common for a [=media platform=] to pause playback until the [=content key=] can be refreshed with a new license or until data encrypted with the now-unusable [=content key=] is removed from buffers. DASH clients SHOULD acquire new licenses in advance of license expiration. Alternatively, DASH clients should implement appropriate recovery/fallback behavior to ensure a minimally disrupted user experience in situations where some [=content keys=] remain available.
+If a [=content key=] expires during playback, it is common for a [=media platform=] to pause playback until the [=content key=] can be refreshed with a new [=license=] or until data encrypted with the now-unusable [=content key=] is removed from buffers. DASH clients SHOULD acquire new [=licenses=] in advance of [=license=] expiration. Alternatively, DASH clients should implement appropriate recovery/fallback behavior to ensure a minimally disrupted user experience in situations where some [=content keys=] remain available.
 
-Issue: EME has no good way to trigger a license request if the key is still available but about to expire, does it? It will only make license requests once the key is no longer available. This makes it hard to proactively refresh licenses.
+Issue: EME has no good way to trigger a license request if the key is still available but about to expire, does it? It will only make license requests once the key is no longer available. This makes it hard to proactively refresh [=licenses=].
 
 ### Performing license requests ### {#CPS-license-request-workflow}
 
 DASH clients performing license requests SHOULD follow the [[#CPS-lr-model|DASH-IF interoperable license request model]]. The remainder of this chapter only applies to DASH clients that follow this model. Alternative implementations are possible and in common use but are not interoperable and are not described in this document.
 
-[=DRM systems=] generally do not perform license requests on their own. Rather, when they determine that a license is required, they generate a document that serves as the license request body and expect the DASH client to deliver it to a license server for processing. The latter returns a suitable response that, if a license is granted, encapsulates the [=content keys=] in an encrypted form only readable to the DRM system.
+[=DRM systems=] generally do not perform license requests on their own. Rather, when they determine that a [=license=] is required, they generate a document that serves as the license request body and expect the DASH client to deliver it to a license server for processing. The latter returns a suitable response that, if a [=license=] is granted, encapsulates the [=content keys=] in an encrypted form only readable to the DRM system.
 
 <figure>
 	<img src="Diagrams/Security/LicenseRequestConcept.png" />
@@ -877,27 +877,27 @@ At the end of this algorithm, all pending license requests have been performed. 
 
 #### Efficient license acquisition #### {#CPS-efficiency-in-license-requests}
 
-In some situations a DASH client can foresee the need to make new [=content keys=] available for use or to renew the licenses that enable [=content keys=] to be used. For example:
+In some situations a DASH client can foresee the need to make new [=content keys=] available for use or to renew the [=licenses=] that enable [=content keys=] to be used. For example:
 
 * Live DASH services can at any time introduce new periods that use different [=content keys=]. They can also alternmate between encrypted and clear content in different periods.
-* The license that enables a [=content key=] to be used can have an expiration time, after which a new license is required.
+* The [=license=] that enables a [=content key=] to be used can have an expiration time, after which a new [=license=] is required.
 
-DASH clients SHOULD perform license acquisition ahead of time, activating a [=DRM system=] before it is needed or renewing licenses before they expire. This provides the following benefits:
+DASH clients SHOULD perform license acquisition ahead of time, activating a [=DRM system=] before it is needed or renewing [=licenses=] before they expire. This provides the following benefits:
 
-* Playback can continue seamlessly when licenses are renewed, without pausing for license acquisition.
+* Playback can continue seamlessly when [=licenses=] are renewed, without pausing for license acquisition.
 * New [=content keys=] are already available when content needs them, again avoiding a pause for license acquisition.
 
-To avoid a huge number of concurrent license requests causing license server overload, a DASH client SHOULD perform a license request at a randomly selected time between the moment when it became aware of the need for the license request and the time when the license must be provided to a [=DRM system=] (minus some safety margin).
+To avoid a huge number of concurrent license requests causing license server overload, a DASH client SHOULD perform a license request at a randomly selected time between the moment when it became aware of the need for the license request and the time when the [=license=] must be provided to a [=DRM system=] (minus some safety margin).
 
 Multiple license requests to the same license server with the same [=authorization token=] SHOULD be batched into a single request if the [=media platform=] API supports this. See [[#CPS-activation-workflow]] for details.
 
-The possibility for ahead-of-time [=DRM system=] activation, seamless license renewal and license request batching depends on the specific [=DRM system=] and [=media platform=] implementations. Some implementations might not support optimal behavior.
+The possibility for ahead-of-time [=DRM system=] activation, seamless [=license=] renewal and license request batching depends on the specific [=DRM system=] and [=media platform=] implementations. Some implementations might not support optimal behavior.
 
 ## Periodic re-ruthorization ## {#CPS-PeriodReauth}
 
 In a live DASH presentation the rights of the user can be different for different programs included in the presentation. This chapter describes recommended mechanisms for enforcing rights to be re-evaluated at program boundaries.
 
-The user's level of access to content is governed by the issuance (or not) of licenses with [=content keys=] and the policy configuration carried by the licenses. Therefore, to force the rights to be re-evaluated, the service provider needs to ensure that a new license request must be performed to continue playback across program boundaries.
+The user's level of access to content is governed by the issuance (or not) of [=licenses=] with [=content keys=] and the policy configuration carried by the [=licenses=]. Therefore, to force the rights to be re-evaluated, the service provider needs to ensure that a new license request must be performed to continue playback across program boundaries.
 
 The license server is the authority on what rights are assigned to the user. To force re-evaluation of rights, a service must force a new license request to be made. This can be accomplished by changing the [=content key=] to one that is not yet available to DASH clients, thereby triggering [[#CPS-activation-workflow|DRM system activation]] for the new [=content key=]. Changing the [=content key=] is only possible on DASH period boundaries.
 
@@ -914,14 +914,14 @@ A key hierarchy defines a multi-level structure of cryptographic keys, instead o
 * <dfn>Root keys</dfn> take the place of [=content keys=] in DASH client workflows.
 * <dfn>Leaf keys</dfn> are used to encrypt the media samples.
 
-A [=root key=] might not be an actual cryptographic key. Rather, it acts as a reference to identify the set of [=leaf keys=] that protect content. A DASH client requesting a license for a specific [=root key=] will be interpreted as requesting a license that makes available all the [=leaf keys=] associated with that [=root key=].
+A [=root key=] might not be an actual cryptographic key. Rather, it acts as a reference to identify the set of [=leaf keys=] that protect content. A DASH client requesting a [=license=] for a specific [=root key=] will be interpreted as requesting a [=license=] that makes available all the [=leaf keys=] associated with that [=root key=].
 
 Note: Intermediate layers of cryptographic keys may also exist between [=root keys=] and [=leaf keys=] but such layers are [=DRM system=] specific and only processed by the [=DRM system=], being transparent to the DASH client and the [=media platform=]. To a DASH client, only the [=root keys=] have meaning. To the [=media platform=], only the [=leaf keys=] have meaning.
 
 This layering enables the user's rights to content to be evaluated in two ways:
 
 1. Changing the [=root key=] invokes the full re-evaluation workflow as a new license request must be made by the DASH client.
-1. Changing the [=leaf key=] invokes an evaluation of the rights granted by the license for the [=root key=] and processing of any additional policy attached to the [=leaf key=]. If result of this evaluation indicates the [=leaf key=] cannot be used, the [=DRM system=] will signal playback failure to the DASH client.
+1. Changing the [=leaf key=] invokes an evaluation of the rights granted by the [=license=] for the [=root key=] and processing of any additional policy attached to the [=leaf key=]. If result of this evaluation indicates the [=leaf key=] cannot be used, the [=DRM system=] will signal playback failure to the DASH client.
 
 Changing the [=root key=] is equivalent to changing the [=content key=] in terms of MPD signaling, requiring a new period to be started. The [=leaf key=] can be changed in any media segment and does not require modification of the MPD. [=Leaf keys=] SHOULD NOT be changed within the same program. Changing [=leaf keys=] on a regular basis does not increase cryptographic security.
 
@@ -931,7 +931,7 @@ The mechanism by which a set of [=leaf keys=] is made available based on a reque
 
 When using a key hierarchy, the [=leaf keys=] are typically delivered in-band in the media segments, using `moof/pssh` boxes, together with additional/updated license policy constraints. The exact implementation is [=DRM system=] specific and transparent to a DASH client.
 
-A key hierarchy is useful for broadcast scenarios where license requests are not possible at arbitrary times (e.g. when the system operates by performing nightly license updates). In such a scenario, this mechanism enables user access rights to be cryptographically enforced at program boundaries while still allowing for the rights to be re-evaluated when license requests are possible.
+A key hierarchy is useful for broadcast scenarios where license requests are not possible at arbitrary times (e.g. when the system operates by performing nightly [=license=] updates). In such a scenario, this mechanism enables user access rights to be cryptographically enforced at program boundaries while still allowing for the rights to be re-evaluated when license requests are possible.
 
 ## Use of W3C Clear Key with DASH ## {#CPS-AdditionalConstraints-W3C}
 
