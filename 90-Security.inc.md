@@ -154,7 +154,7 @@ DASH media segments are composed of one or more CMAF fragments, where each CMAF 
 * For each sample grouping type (see [[!ISOBMFF]], typically one), exactly one `moof/traf/sbgp` "Sample to Group" box ([[!ISOBMFF]] 8.9.2 and [[!MPEGCENC]] section 6) which associates samples with sample groups.
     * Omitted if no parameters are overridden.
 
-[[#CPS-default_KID-hierarchy|Hierarchical key rotation]] is implemented by listing the `default_KID` in the `tenc` box of the initialization segment (identifying the root key) and then overriding the [=content key=] identifier in the `sgpd` boxes of media segments (identifying the leaf keys that apply to each media segment).
+[[#CPS-default_KID-hierarchy|Hierarchical key rotation]] is implemented by listing the `default_KID` in the `tenc` box of the initialization segment (identifying the root key) and then overriding the [=content key=] identifier in the `sgpd` boxes of media segments (identifying the leaf keys that apply to each media segment). The `moof/pssh` box is used to deliver/unlock new leaf keys.
 
 ## Encryption and DRM signaling in the MPD ## {#CPS-mpd}
 
