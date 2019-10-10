@@ -909,6 +909,11 @@ Note: Changing the [=content keys=] does not increase the cryptographic security
 
 Using a key hierarchy allows a single [=content key=] to selectively unlock only a subset of a DASH presentation and apply license policy updates without the need to perform license requests at every program boundary. This mechanism is a specialization of periodic re-authorization for scenarios where license requests at program boundaries are not always desirable or possible.
 
+<figure>
+	<img src="Diagrams/Security/KeyHierarchy.png" />
+	<figcaption>A key hierarchy establishes a [=DRM system=] specific relationship between a [=root key=] and a set of [=leaf keys=].</figcaption>
+</figure>
+
 A key hierarchy defines a multi-level structure of cryptographic keys, instead of a single [=content key=]:
 
 * <dfn>Root keys</dfn> take the place of [=content keys=] in DASH client workflows.
@@ -931,7 +936,17 @@ The mechanism by which a set of [=leaf keys=] is made available based on a reque
 
 When using a key hierarchy, the [=leaf keys=] are typically delivered in-band in the media segments, using `moof/pssh` boxes, together with additional/updated license policy constraints. The exact implementation is [=DRM system=] specific and transparent to a DASH client.
 
-A key hierarchy is useful for broadcast scenarios where license requests are not possible at arbitrary times (e.g. when the system operates by performing nightly [=license=] updates). In such a scenario, this mechanism enables user access rights to be cryptographically enforced at program boundaries while still allowing for the rights to be re-evaluated when license requests are possible.
+<figure>
+	<img src="Images/Security/KeyHierarchy-NightlyUpdates.png" />
+	<figcaption>Different rows indicate [=root key=] changes. Color alternations indicate [=leaf key=] changes. A key hierarchy enables per-program access control even in scenarios where a license request is only performed once per day. The single license request makes available all the [=leaf keys=] that the user is authorized to use during the next epoch.</figcaption>
+</figure>
+
+A key hierarchy is useful for broadcast scenarios where license requests are not possible at arbitrary times (e.g. when the system operates by performing nightly [=license=] updates). In such a scenario, this mechanism enables user access rights to be cryptographically enforced at program boundaries, defined on the fly by the service provider, while re-evaluating the access rights during moments when license requests are possible. At the same time, it enables the service provider to supply in-band updates to license policy (when supported by the [=DRM system=]).
+
+Similar functionality could be implemented without a key hierarchy by using a separate [=content key=] for each program and acquiring all relevant [=licenses=] in advance. The advantages of a key hierarchy are:
+
+* Greatly reduced license acquisition traffic and required license storage size, as [=DRM systems=] are optimized for efficient handling of large numbers of [=leaf keys=].
+* Ability for the service provider to adjust license policy at any time, not only during license request processing (if in-band policy updates are supported by the [=DRM system=]).
 
 ## Use of W3C Clear Key with DASH ## {#CPS-AdditionalConstraints-W3C}
 

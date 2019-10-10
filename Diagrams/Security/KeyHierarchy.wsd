@@ -1,0 +1,17 @@
+@startuml
+
+[Root key] as Root
+
+cloud "DRM system specific key association logic" as Mid
+
+[Leaf key] as Leaf1
+[Leaf key] as Leaf2
+[Leaf key] as Leaf3
+
+Root --> Mid
+
+Mid --> Leaf1
+Mid --> Leaf2
+Mid --> Leaf3
+
+@enduml
