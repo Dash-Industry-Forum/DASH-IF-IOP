@@ -17,6 +17,8 @@ A <dfn>content key</dfn> is a 128-bit key used by a [=DRM system=] to make conte
 Example `default_KID` in string format: `72c3ed2c-7a5f-4aad-902f-cbef1efe89a9`
 </div>
 
+A license is a data structure in [=DRM system=] specific format that contains one or more [=content keys=] and associates them with a policy that governs the usage of the [=content keys=] (e.g. expiration time). The encapsulated [=content keys=] are typically encrypted and only readable by the [=DRM system=].
+
 ## HTTPS and DASH ## {#CPS-HTTPS}
 
 Transport security in HTTP-based delivery may be achieved by using HTTP over TLS (HTTPS) as specified in [[!RFC8446]]. HTTPS is a protocol for secure communication which is widely used on the Internet and also increasingly used for content streaming, mainly for protecting:
@@ -134,7 +136,7 @@ Note: Placing the `pssh` boxes in the MPD has become common for purposes of oper
 
 Protected content MAY be published without any `pssh` boxes in both the MPD and media segments. All [=DRM system configuration=] can be provided at runtime, including the `pssh` box data. See also [[#CPS-mpd-drm-config]].
 
-Media segments MAY contain `moof/pssh` boxes ([[!MPEGCMAF]] 7.4.3) to provide updates to [=DRM system=] internal state (e.g. to supply new leaf keys in a key hierarchy). These state updates are transparent to the DASH client - the [=media platform=] is expected to intercept the `moof/pssh` boxes and supply them directly to the active [=DRM system=]. See [[#CPS-default_KID-hierarchy]] for an example.
+Media segments MAY contain `moof/pssh` boxes ([[!MPEGCMAF]] 7.4.3) to provide updates to [=DRM system=] internal state (e.g. to supply new [=leaf keys=] in a [[#CPS-KeyHierarchy|key hierarchy]]). These state updates are transparent to the DASH client - the [=media platform=] is expected to intercept the `moof/pssh` boxes and supply them directly to the active [=DRM system=]. See [[#CPS-default_KID-hierarchy]] for an example.
 
 ### Content protection data in CMAF containers ### {#CPS-cmaf-structure}
 
@@ -159,7 +161,9 @@ DASH media segments are composed of one or more CMAF fragments, where each CMAF 
 * For each sample grouping type (see [[!ISOBMFF]], typically one), exactly one `moof/traf/sbgp` "Sample to Group" box ([[!ISOBMFF]] 8.9.2 and [[!MPEGCENC]] section 6) which associates samples with sample groups.
     * Omitted if no parameters are overridden.
 
-[[#CPS-default_KID-hierarchy|Hierarchical key rotation]] is implemented by listing the `default_KID` in the `tenc` box of the initialization segment (identifying the root key) and then overriding the [=content key=] identifier in the `sgpd` boxes of media segments (identifying the leaf keys that apply to each media segment). The `moof/pssh` box is used to deliver/unlock new leaf keys.
+[[#CPS-KeyHierarchy|A key hierarchy]] is implemented by listing the `default_KID` in the `tenc` box of the initialization segment (identifying the [=root key=]) and then overriding the key identifier in the `sgpd` boxes of media segments (identifying the [=leaf keys=] that apply to each media segment). The `moof/pssh` box is used to deliver/unlock new [=leaf keys=] and associated license policy.
+
+When using CMAF chunks for delivery, each CMAF fragment may be split into multiple CMAF chunks, each of which has its own `moof` box. The presence of `moof/pssh` boxes SHALL be limited to only the first CMAF chunk of each CMAF fragment.
 
 ## Encryption and DRM signaling in the MPD ## {#CPS-mpd}
 
@@ -214,18 +218,16 @@ Note: This optimization might require support from platform APIs and/or [=DRM sy
 
 #### default_KID in hierarchical/derived/variant key scenarios #### {#CPS-default_KID-hierarchy}
 
-While it is common that `default_KID` identifies the actual [=content key=] used for encryption, a [=DRM system=] MAY make use of other keys in addition to the one signalled by the `default_KID` value but this SHALL be transparent to the client with only the `default_KID` being used in interactions between the DASH client and the [=DRM system=].
+While it is common that `default_KID` identifies the actual [=content key=] used for encryption, a [=DRM system=] MAY make use of other keys in addition to the one signalled by the `default_KID` value but this SHALL be transparent to the client with only the `default_KID` being used in interactions between the DASH client and the [=DRM system=]. See [[#CPS-KeyHierarchy]].
 
 <figure>
 	<img src="Diagrams/Security/KeyHierarchyAndDefaultKid.png" />
-	<figcaption>In a hierarchical key scenario, `default_KID` references the root key and only the sample descriptions reference the leaf keys.</figcaption>
+	<figcaption>In a [[#CPS-KeyHierarchy|hierarchical key scenario]], `default_KID` references the [=root key=] and only the sample group descriptions reference the [=leaf keys=].</figcaption>
 </figure>
 
-In a hierarchical key scenario, `default_KID` identifies the root-level key, not the leaf-level key used to encrypt media samples, and the handling of leaf keys is not exposed to a DASH client. As far as a DASH client knows, there is always only one [=content key=] identified by `default_KID`.
+In a [[#CPS-KeyHierarchy|hierarchical key scenario]], `default_KID` identifies the [=root key=], not the [=leaf key=] used to encrypt media samples, and the handling of [=leaf keys=] is not exposed to a DASH client. As far as a DASH client knows, there is always only one [=content key=] identified by `default_KID`.
 
-Note: A DASH service with a key hierarchy is sometimes referred to as using "internal key rotation".
-
-This logic applies to all scenarios that make use of additional keys, regardless whether they are based on the key hierarchy, key derivation or variant key concepts. For more information on the background and use cases, see [[#CPS-AdditionalConstraints-PeriodReauth-Implementation]].
+This logic applies to all scenarios that make use of additional keys, regardless whether they are based on the key hierarchy, key derivation or variant key concepts. For more information on the background and use cases, see [[#CPS-PeriodReauth]].
 
 ### Providing default DRM system configuration ### {#CPS-mpd-drm-config}
 
@@ -873,94 +875,65 @@ While the above algorithm is presented sequentially, authorization requests and 
 
 At the end of this algorithm, all pending license requests have been performed. However, it is not necessary that all license requests or authorization requests succeed! For example, even if one of the requests needed to obtain an HD quality level [=content key=] fails, other requests may still make SD quality level [=content keys=] available, leading to a successful playback if the HD quality level is deselected by the DASH client. Individual failing requests therefore do not indicate a fatal error. Rather, such error information should be collected and provided to the top-level error handler of the DRM system activation workflow, which can make use of this data to present user-friendly messages if it decides that meaningful playback cannot take place with the final set of available [=content keys=]. See also [[#CPS-unavailable-keys]].
 
-## Additional Constraints for Specific Use Cases ## {#CPS-AdditionalConstraints}
+#### Efficient license acquisition #### {#CPS-efficiency-in-license-requests}
 
-### Efficient license delivery ### {#CPS-efficiency-in-license-requests}
+In some situations a DASH client can foresee the need to make new [=content keys=] available for use or to renew the licenses that enable [=content keys=] to be used. For example:
 
-For efficient license delivery, it is recommended that clients:
+* Live DASH services can at any time introduce new periods that use different [=content keys=]. They can also alternmate between encrypted and clear content in different periods.
+* The license that enables a [=content key=] to be used can have an expiration time, after which a new license is required.
 
-* Request [=content keys=] on the initial processing of an MPD. This is intended to avoid a large number of simultaneous license requests at `MPD@availabilityStartTime`.
-* Request [=content keys=] for a new [=period=] in advance of its presentation time to allow license download and processing time and prevent interruption of continuous decryption and playback. Advanced requests will also help prevent a large number of simultaneous license requests during a live presentation at `Period@startTime`.
+DASH clients SHOULD perform license acquisition ahead of time, activating a [=DRM system=] before it is needed or renewing licenses before they expire. This provides the following benefits:
 
-Issue: Describe batching of license requests/responses
+* Playback can continue seamlessly when licenses are renewed, without pausing for license acquisition.
+* New [=content keys=] are already available when content needs them, again avoiding a pause for license acquisition.
 
-### Periodic Re-Authorization ### {#CPS-AdditionalConstraints-PeriodReauth}
+To avoid a huge number of concurrent license requests causing license server overload, a DASH client SHOULD perform a license request at a randomly selected time between the moment when it became aware of the need for the license request and the time when the license must be provided to a [=DRM system=] (minus some safety margin).
 
-This section explains different options and tradeoffs to enable change in [=content keys=] (a.k.a. key rotation) on a given piece of content.
+Multiple license requests to the same license server with the same [=authorization token=] SHOULD be batched into a single request if the [=media platform=] API supports this. See [[#CPS-activation-workflow]] for details.
 
-Note: The main motivation is to enable access rights changes at program boundaries, not as a measure to increase security of content encryption. The term *Periodic re-authorization* is therefore used here instead of *key rotation*. Note that periodic re-authorization is also one of the ways to implement counting of active streams as this triggers a connection to a license server.
+The possibility for ahead-of-time [=DRM system=] activation, seamless license renewal and license request batching depends on the specific [=DRM system=] and [=media platform=] implementations. Some implementations might not support optimal behavior.
 
-The following use cases are considered:
+## Periodic re-ruthorization ## {#CPS-PeriodReauth}
 
-* Consumption models such as live content, PPV, PVR, VOD, SVOD, live to VOD, network DVR. This includes cases where live content is converted into another consumption model for e.g. catch up TV.
-* Regional blackout where client location may be taken into account to deny access to content in a geographical area.
+In a live DASH presentation the rights of the user can be different for different programs included in the presentation. This chapter describes recommended mechanisms for enforcing rights to be re-evaluated at program boundaries.
 
-The following requirements are considered:
+The user's level of access to content is governed by the issuance (or not) of licenses with [=content keys=] and the policy configuration carried by the licenses. Therefore, to force the rights to be re-evaluated, the service provider needs to ensure that a new license request must be performed to continue playback across program boundaries.
 
-* Ability to force a client to re-authorize to verify that it is still authorized for content consumption.
-* Support seamless and uninterrupted playback when [=content keys=] are rotated by preventing storms of license requests from clients (these should be spread out temporally where possible to prevent spiking loads at isolated times), by allowing quick recovery (the system should be resilient if the server or many clients fail), and by providing to the clients visibility into the key rotation signaling.
-* Support of hybrid broadcast/unicast networks in which client may operate in broadcast-only mode at least some of the time, e.g. where clients may not  always be able to download licenses on demand through unicast.
+The license server is the authority on what rights are assigned to the user. To force re-evaluation of rights, a service must force a new license request to be made. This can be accomplished by changing the [=content key=] to one that is not yet available to DASH clients, thereby triggering [[#CPS-activation-workflow|DRM system activation]] for the new [=content key=]. Changing the [=content key=] is only possible on DASH period boundaries.
 
-This also should not require changes to DASH and the standard processing and validity of MPDs.
+Live DASH presentations SHOULD create a new period in which content is encrypted with new [=content keys=] to force re-evaluation of user's access rights.
 
-#### Periodic Re-Authorization Content Protections Constraints #### {#CPS-AdditionalConstraints-PeriodReauth-Constraints}
+Note: Changing the [=content keys=] does not increase the cryptographic security of content protection. The term *periodic re-authorization* is therefore used here instead of *key rotation*, to maintain focus on the goal and not the mechanism.
 
-Key rotation SHOULD not occur within individual segments. It is usually not necessary to rotate keys within individual segments. This is because segment durations are typically short in live streaming services (on the order of a few seconds), meaning that a segment boundary is usually never too far from the point where key rotation is otherwise desired to take effect.
+### Controlling access rights with a key hierarchy ### {#CPS-KeyHierarchy}
 
-When key hierarchy is used (see [[#CPS-AdditionalConstraints-PeriodReauth-Implementation]])
+Using a key hierarchy allows a single [=content key=] to selectively unlock only a subset of a DASH presentation and apply license policy updates without the need to perform license requests at every program boundary. This mechanism is a specialization of periodic re-authorization for scenarios where license requests at program boundaries are not always desirable or possible.
 
-* Each Movie Fragment box (`moof`) box SHOULD contain one `pssh` box per DRM system. This `pssh` box SHALL contains sufficient information for obtaining [=content keys=] for this fragment when combined with information, for this DRM system, from either the `pssh` box obtained from the Initialization Segment or the `cenc:pssh` element from the MPD and the `KID` value associated with each sample from the `seig` Sample Group Description box and `sbgp` Sample to Group box that lists all the samples that use a given `KID` value.
-* All DRM constraints and workflows defined in this document SHALL apply to the EMM/root license (one license is needed per Adaptation Set for each DRM system). Leaf licenses are internal to a DRM system and assumed to be handled by the DRM system directly once the [=media platform=] API delivers the `moof/pssh` to the DRM system.
+A key hierarchy defines a multi-level structure of cryptographic keys, instead of a single [=content key=]:
 
-Issue: To be reviewed in light of CMAF and segment/chunk and low latency.
+* <dfn>Root keys</dfn> take the place of [=content keys=] in DASH client workflows.
+* <dfn>Leaf keys</dfn> are used to encrypt the media samples.
 
-#### Implementation Options #### {#CPS-AdditionalConstraints-PeriodReauth-Implementation}
+A [=root key=] might not be an actual cryptographic key. Rather, it acts as a reference to identify the set of [=leaf keys=] that protect content. A DASH client requesting a license for a specific [=root key=] will be interpreted as requesting a license that makes available all the [=leaf keys=] associated with that [=root key=].
 
-This section describes recommended approaches for periodic re-authorization. They best cover the use cases and allow interoperable implementation.
+Note: Intermediate layers of cryptographic keys may also exist between [=root keys=] and [=leaf keys=] but such layers are [=DRM system=] specific and only processed by the [=DRM system=], being transparent to the DASH client and the [=media platform=]. To a DASH client, only the [=root keys=] have meaning. To the [=media platform=], only the [=leaf keys=] have meaning.
 
-Note: Other approaches are possible and may be considered by individual implementers. An example is explicit signaling using e.g. esmg messages, and a custom key rotation signal to indicate future KIDs.
+This layering enables the user's rights to content to be evaluated in two ways:
 
-**Period**: A `Period` element is used as the minimum [=content key=] duration interval. [=content key=] is rotated at the period boundary. This is a simple implementation and has limitations in the flexibility:
+1. Changing the [=root key=] invokes the full re-evaluation workflow as a new license request must be made by the DASH client.
+1. Changing the [=leaf key=] invokes an evaluation of the rights granted by the license for the [=root key=] and processing of any additional policy attached to the [=leaf key=]. If result of this evaluation indicates the [=leaf key=] cannot be used, the [=DRM system=] will signal playback failure to the DASH client.
 
-* The existing signaling in the MPD does not allow for early warning of change of the [=content key=] and associated decryption context, hence seamless transition between periods is not ensured.
-* The logic for the creation of the periods is decided by content creation not DRM systems, hence boundaries may not be suited properly and periods may be longer than the desired key interval.
+Changing the [=root key=] is equivalent to changing the [=content key=] in terms of MPD signaling, requiring a new period to be started. The [=leaf key=] can be changed in any media segment and does not require modification of the MPD. [=Leaf keys=] SHOULD NOT be changed within the same program. Changing [=leaf keys=] on a regular basis does not increase cryptographic security.
 
-**Key Hierarchy**: Each DRM system has its own key hierarchy. In general, the number of levels in the key hierarchy varies among DRM systems. For interoperability purposes, only two levels need to be considered:
+Note: A DASH service with a key hierarchy is sometimes referred to as using "internal key rotation".
 
-* Licenses for managing the rights of a user: This can be issued once for enforcing some scope of accessing content, such as a channel or library of shows (existing and future). It is cryptographically bound to one DRM system and is associated with one user ID. It enables access to licenses that control the [=content keys=] associated with each show it authorizes. There are many names for this type of licenses. In conditional access systems, a data construct of this type is called an entitlement management message (EMM). In the PlayReady DRM system, a license of this type is called a “root license”. There is no agreement on a common terminology.
-* Licenses for accessing the content: This is a license that contains [=content keys=] and can only be accessed by devices that have been authorized. While licenses for managing rights are most of the time unique per user, the licenses for accessing the content are not expected to be unique and are tied to the content and not a user, therefore these may be delivered with content in a broadcast distribution. In addition doing so allows real time license acquisition, and do not require repeating client authentication, authorization, and rebuilding the security context with each [=content key=] change in order to enable continuous playback without interruption cause be key acquisition or license processing. In conditional access systems, a data construct of this type is called an entitlement control message (ECM). In the PlayReady DRM system,  a license of this type is called a “leaf license”. There is no agreement on a common terminology.
+The mechanism by which a set of [=leaf keys=] is made available based on a request for a [=root key=] is [=DRM system=] specific. Nevertheless, different [=DRM systems=] may be interoperable as long as they can each make available the required set of [=leaf keys=] using their system-specific mechanisms, using the same [=root key=] as the identifier for the same set of [=leaf keys=].
 
-When using key hierarchy, the `@cenc:default_KID` value in the `ContentProtection` descriptor, which is also in the `tenc` box, is the ID of the key requested by the DRM client. These keys are delivered as part of acquisition of the rights for a user. The use of key hierarchy is optional and DRM system specific.
+When using a key hierarchy, the [=leaf keys=] are typically delivered in-band in the media segments, using `moof/pssh` boxes, together with additional/updated license policy constraints. The exact implementation is [=DRM system=] specific and transparent to a DASH client.
 
-Issue: For key hierarchy, add a sentence explaining that mixing DRM systems is possible with system constraints.
+A key hierarchy is useful for broadcast scenarios where license requests are not possible at arbitrary times (e.g. when the system operates by performing nightly license updates). In such a scenario, this mechanism enables user access rights to be cryptographically enforced at program boundaries while still allowing for the rights to be re-evaluated when license requests are possible.
 
-### Low Latency ### {#CPS-AdditionalConstraints-LowLatency}
-
-Low latency content delivery requires that all components of the end-to-end systems are optimized for reaching that goal. DRM systems and the mechanisms used for granting access also need to be used in specific manners to minimize the impact on the latency. DRM systems are involved in the access to content in several manners:
-
-* Device initialization
-* Device authorization
-* Content access granting
-
-Each of these steps can have from an impact on latency ranging from low to high. The following describes possible optimizations for minimizing the latency.
-
-#### Licenses Pre-Delivery #### {#CPS-AdditionalConstraints-LowLatency-Predelivery}
-
-In a standard playback session, a client, after receiving the DASH MPD, checks the `@cenc:default_KID` value (either part of the `mp4protection` element or part of a DRM system element). If the client already has a [=content key=] associated to this `KID` value, it can safely assume that it is able to get access to content. If it does not have such [=content key=], then a license request is triggered. This process is done every time a MPD is received (change of `Period`, change of Live service, notification of MPD change …). It would therefore be better that the client always has all keys associated to `@cenc:default_KID` values. One mechanism is license pre-delivery. Predelivery can be performed in different occasions:
-
-* When launching the application, the client needs to perform some initialization and refresh of data, it therefore connects to many servers for getting updated information. The license server SHOULD allow the client to receive licenses for accessing content the client is entitled to. Typically, for subscription services, all licenses for all Live services SHOULD be delivered during this initialization step. It is the DRM system client responsibility to properly store the received information.
-* The DRM system SHOULD have a notification mechanism allowing to trigger a client or a set of clients to out-of-band initiate licenses request, so that it is possible to perform license updates in advance. This typically allows pre-delivery of licenses when a change will occur at a `Period` boundary and, in this case, this also allow avoiding all clients connecting at almost the same time to the license server if not triggered in advance randomly.
-* In case a device needs nevertheless to retrieve a license, the DRM system MAY also batch responses into a single transaction allowing to provide additional licenses (as explained in Section [[#CPS-activation-workflow]]) that can be used in the future.
-
-#### Key Hierarchy and CMAF Chunked Content #### {#CPS-AdditionalConstraints-Low-chunkedContent}
-
-When a DRM system uses key hierarchy for protecting content, it adds DRM information in both possibly the Initialization Segment and in the content (in the `moof` box). The information in the `moof` box can allow the DRM client to know which root key to use decrypt the leaf license or to identify the already decrypted [=content key=] from a local protected storage. Most of the processing and logic is DRM system-specific and involves DRM system defined encryption and signaling. It may also include additional steps such as evaluating leaf license usage rules. Key hierarchy is one technique for enabling key rotation and it is not required to rotate [=content key=] at high frequency, typically broadcast TV has [=content key=] cryptoperiods of 10 seconds to few minutes.
-
-CMAF chunked Content introduces `moof` boxes at a high frequency as it appears within segments and not only at the beginning of a segment. One can therefore expect to have several `moof` boxes every second. Adding signaling SHOULD be done only in the `moof` box of the first chunk in a segment.
-
-Issue: To be completed. Look at encryption: Key available for license server “early” for been able to generate licenses (root or leaf licenses). Avoid the license server been on the critical path. Encourage license persistence in the client.
-
-### Use of W3C Clear Key with DASH ### {#CPS-AdditionalConstraints-W3C}
+## Use of W3C Clear Key with DASH ## {#CPS-AdditionalConstraints-W3C}
 
 Clear Key is a [=DRM system=] defined by W3C in [[!encrypted-media]]. It is intended primarily for client and [=media platform=] development/test purposes and does not perform the content protection and [=content key=] protection duties ordinarily expected from a [=DRM system=]. Nevertheless, in DASH client DRM workflows, it is equivalent to a real [=DRM system=].
 
@@ -968,9 +941,9 @@ A DRM system specific `ContentProtection` descriptor for Clear Key SHALL use the
 
 The `dashif:laurl` element SHOULD be used to indicate the license server URL. Legacy content MAY also use an equivalent `Laurl` element from the `http://dashif.org/guidelines/clearKey` namespace, as this was defined in previous versions of this document (the definition is now expanded to also cover non-clearkey scenarios). Clients SHOULD process the legacy element if it exists and `dashif:laurl` does not.
 
-W3C describes the use of the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` in [[!eme-initdata-cenc]] section 4 to indicate that tracks are encrypted with [[!MPEGCENC|Common Encryption]]. However, the presence of this "common" `pssh` box does not imply that Clear Key is to be used for decryption. DASH clients SHALL NOT interpret a `pssh` box with the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` as an indication that the Clear Key mechanism is to be used (nor as an indication of anything else beyond the use of Common Encryption).
+The license request and response format is defined in [[!encrypted-media]].
 
-One or more `laurl` elements MAY be added under the `ContentProtection` descriptor. This element specifies the URL for a license server allowing to receive a license. The license request and response format is defined in [[!encrypted-media]].
+W3C describes the use of the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` in [[!eme-initdata-cenc]] section 4 to indicate that tracks are encrypted with [[!MPEGCENC|Common Encryption]]. However, the presence of this "common" `pssh` box does not imply that Clear Key is to be used for decryption. DASH clients SHALL NOT interpret a `pssh` box with the system ID `1077efec-c0b2-4d02-ace3-3c1e52e2fb4b` as an indication that the Clear Key mechanism is to be used (nor as an indication of anything else beyond the use of Common Encryption).
 
 <div class="example">
 
