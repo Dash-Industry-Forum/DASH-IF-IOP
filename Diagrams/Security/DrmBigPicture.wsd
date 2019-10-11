@@ -5,7 +5,7 @@
 [DASH client] as Client
 
 node "Data protected by DRM system" {
-    [Content key] as Key
+    [Content keys] as Key
 
     [Media platform] as MediaPlatform
     [DRM system] as DRM
