@@ -590,7 +590,7 @@ To present encrypted content a DASH client needs to:
 1. [[#CPS-selection-workflow|Select a DRM system that is capable of decrypting the content.]]
     * During selection, [[#CPS-system-capabilities|the set of desired DRM system capabilities and the supported capabilities is examined]] to identify suitable candidate systems.
 1. [[#CPS-activation-workflow|Activate the selected DRM system and configure it to decrypt content.]]
-    * During activation, [[#CPS-license-request-workflow|acquire any missing [=content keys=] and the [=licenses=] that govern their use]].
+    * During activation, [[#CPS-license-request-workflow|acquire any missing content keys and the [=licenses=] that govern their use]].
 
 A client also needs to take observations at runtime to detect the need for different [=content keys=] to be used (e.g. in live services that change the [=content keys=] periodically) and to detect [=content keys=] becoming unavailable (e.g. due to expiration of access rights).
 
