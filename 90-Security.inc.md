@@ -590,7 +590,7 @@ To present encrypted content a DASH client needs to:
 1. [[#CPS-selection-workflow|Select a DRM system that is capable of decrypting the content.]]
     * During selection, [[#CPS-system-capabilities|the set of desired DRM system capabilities and the supported capabilities is examined]] to identify suitable candidate systems.
 1. [[#CPS-activation-workflow|Activate the selected DRM system and configure it to decrypt content.]]
-    * During activation, [[#CPS-license-request-workflow|acquire any missing content keys and the [=licenses=] that govern their use]].
+    * During activation, [[#CPS-license-request-workflow|acquire any missing content keys and the licenses that govern their use]].
 
 A client also needs to take observations at runtime to detect the need for different [=content keys=] to be used (e.g. in live services that change the [=content keys=] periodically) and to detect [=content keys=] becoming unavailable (e.g. due to expiration of access rights).
 
@@ -806,6 +806,26 @@ Note: The DASH client should still download the data into intermediate buffers f
 If a [=content key=] expires during playback, it is common for a [=media platform=] to pause playback until the [=content key=] can be refreshed with a new [=license=] or until data encrypted with the now-unusable [=content key=] is removed from buffers. DASH clients SHOULD acquire new [=licenses=] in advance of [=license=] expiration. Alternatively, DASH clients should implement appropriate recovery/fallback behavior to ensure a minimally disrupted user experience in situations where some [=content keys=] remain available.
 
 Issue: EME has no good way to trigger a license request if the key is still available but about to expire, does it? It will only make license requests once the key is no longer available. This makes it hard to proactively refresh [=licenses=].
+
+#### Content protection policies #### {#CPS-protection-policies}
+
+When [=content keys=] are acquired, the [=license=] that delivers them also supplies a policy for the [=DRM system=], instructing it how to protect the content that is made accessible by the [=content keys=].
+
+<div class="example">
+
+Protection policy may define the following example requirements:
+
+* All connected displays must support HDCP 2.2 or newer.
+* The video display area must be no more than 1280x720 pixels.
+* Minimum [=DRM system=] [=robustness level=] is "800".
+
+</div>
+
+<b>Typical [=DRM systems=] will enforce the most restrictive protection policy from among all active [=content keys=] and will refuse to start playback if <u>any</u> of the constraints cannot be satisfied!</b> As a result, it can be the case that even though only the constraints for a UHD video stream cannot be satisfied, playback of even the lower quality levels is blocked.
+
+In many cases, it might be more desirable to instead exclude the UHD quality level from the set of adaptation sets selected for playback and [=DRM system=] activation. Alternatively, there may be a different [=DRM system=] implementation available on the device that is capable of satisfying the constraints. It is not possible for a DASH client to resolve these constraints as it has no knowledge of what policy applies nor of the capabilities of the different [=DRM system=] implementations.
+
+[=Solution-specific logic and configuration=] SHOULD be used to select the most suitable [=DRM system=], taking into consideration the protection policy, and to preemptively exclude adaptation sets from playback if it can be foreseen that the protection policy for their [=content keys=] cannot be satisfied. Likewise, license servers SHOULD NOT provide [=content keys=] if it can be foreseen that the recipient will be unable to satisfy their protection policy.
 
 ### Performing license requests ### {#CPS-license-request-workflow}
 
