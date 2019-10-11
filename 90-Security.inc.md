@@ -99,7 +99,10 @@ A hypothetical [=DRM system=] might define the following [=robustness levels=]:
 
 </div>
 
-Playback policy associated with content can require a [=DRM system=] implementation to conform to a certain [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. The license server is what enforces this policy by refusing to provide [=content keys=] to implementations with unacceptable [=robustness levels=].
+Policy associated with content can require a [=DRM system=] implementation to conform to a certain [=robustness level=], thereby ensuring that valuable content does not get presented on potentially vulnerable implementations. This policy can be enforced on different levels, depending on the [=DRM system=]:
+
+1. A license server may refuse to provide [=content keys=] to implementations with unacceptable [=robustness levels=].
+1. The [=DRM system=] may refuse to use [=content keys=] whose [=license=] requires a higher [=robustness level=] than the implementation provides.
 
 Multiple implementations of a [=DRM system=] may be available to a DASH client, potentially at different [=robustness levels=]. The DASH client must choose at media load time which [=DRM system=] implementation to use. However, the required [=robustness level=] may be different for different device types and is not expressed in the MPD! This decision is a matter of policy and is impossible for a DASH client to determine on its own. Therefore, [=solution-specific logic and configuration=] must inform the DASH client of the correct choice.
 
