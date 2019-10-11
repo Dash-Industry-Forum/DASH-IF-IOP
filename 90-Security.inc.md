@@ -213,7 +213,11 @@ A DASH client interacts with one or more [=DRM systems=] during playback in orde
 
 The scope of each of these interactions is defined by the `default_KID`. Each distinct `default_KID` identifies exactly one [=content key=]. The impact of this is further outlined in [[#CPS-client-workflows]].
 
-When activating a [=DRM system=], a DASH client SHALL determine the required set of [=content keys=] based on the `default_KID` values of [=adaptation sets=] selected for playback. Upon determining that one or more required [=content keys=] (as identified by `default_KID` values) are not available the client SHOULD interact with the [=DRM system=] and request it to make availabe the missing [=content keys=]. Clients SHALL explicitly request the [=DRM system=] to make available all `default_KIDs` signaled in the MPD and SHALL NOT assume that making one [=content key=] from this set available will implicitly make others available.
+When activating a [=DRM system=], a DASH client SHALL determine the required set of [=content keys=] based on the `default_KID` values of [=adaptation sets=] selected for playback. This set of [=content keys=] is used to activate the [=DRM system=], after which zero or more of the [=content keys=] from this set are available for playback.
+
+Clients SHALL provide all `default_KIDs` of the selected adaptation sets to the [=DRM system=] during activation and SHALL NOT assume that activating a [=DRM system=] with one [=content key=] will implicitly enable the use of any other [=content key=].
+
+Note: An occasionally encountered anti-pattern is to activate a [=DRM system=] for only key X but to configure the license server to always provide both keys X and Y when key X is requested. This is not inteoperable behavior.
 
 The DASH client and/or [=DRM system=] MAY batch license requests for different `default_KIDs` (and the respective responses) into a single transaction (for example, to reduce the chattiness of license acquisition traffic).
 
