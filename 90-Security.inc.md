@@ -803,8 +803,6 @@ Note: The DASH client should still download the data into intermediate buffers f
 
 If a [=content key=] expires during playback, it is common for a [=media platform=] to pause playback until the [=content key=] can be refreshed with a new [=license=] or until data encrypted with the now-unusable [=content key=] is removed from buffers. DASH clients SHOULD acquire new [=licenses=] in advance of [=license=] expiration. Alternatively, DASH clients should implement appropriate recovery/fallback behavior to ensure a minimally disrupted user experience in situations where some [=content keys=] remain available.
 
-Issue: EME has no good way to trigger a license request if the key is still available but about to expire, does it? It will only make license requests once the key is no longer available. This makes it hard to proactively refresh [=licenses=].
-
 #### Content protection policies #### {#CPS-protection-policies}
 
 When [=content keys=] are acquired, the [=license=] that delivers them also supplies a policy for the [=DRM system=], instructing it how to protect the content that is made accessible by the [=content keys=].
