@@ -286,10 +286,6 @@ To maintain the `default_KID` association, a DASH client that exposes APIs/callb
 
 Some DRM systems support live updates to DRM system internal state (e.g. to deliver new leaf keys in a key hierarchy). These updates SHALL NOT be present in the MPD and SHALL be delivered by `moof/pssh` boxes in media segments.
 
-These state updates are transparent to the DASH client - the [=media platform=] is expected to intercept the `moof/pssh` boxes and supply them directly to the active [=DRM system=].
-
-Issue: How does this update mechanism materialize in the EME API? Does the DASH client need to do something to ensure the right logic is triggered?
-
 ## DASH-IF interoperable license request model ## {#CPS-lr-model}
 
 The interactions involved in acquiring [=licenses=] and [=content keys=] in DRM workflows have historically been proprietary, requiring a DASH client to be customized in order to achieve compatibility with specific [=DRM systems=] or license server implementations. This chapter defines an interoperable model to encourage the creation of solutions that do not require custom code in the DASH client in order to play back encrypted content. Use of this model is optional but recommended.
