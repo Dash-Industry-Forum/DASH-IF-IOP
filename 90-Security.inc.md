@@ -106,7 +106,7 @@ Policy associated with content can require a [=DRM system=] implementation to co
 
 Multiple implementations of a [=DRM system=] may be available to a DASH client, potentially at different [=robustness levels=]. The DASH client must choose at media load time which [=DRM system=] implementation to use. However, the required [=robustness level=] may be different for different device types and is not expressed in the MPD! This decision is a matter of policy and is impossible for a DASH client to determine on its own. Therefore, [=solution-specific logic and configuration=] must inform the DASH client of the correct choice.
 
-A DASH client SHOULD enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
+A DASH client SHALL enable [=solution-specific logic and configuration=] to specify the required [=robustness level=]. Depending on which [=DRM system=] is used, this can be implemented by:
 
 1. Changing the mapping of [=DRM system=] to [=key system=] in EME-based implementations (see [[#CPS-EME]]).
 1. Specifying a minimum [=robustness level=] during capability detection (see [[#CPS-system-capabilities]]).
@@ -147,7 +147,7 @@ This chapter describes the structure of content protection data in CMAF containe
 
 DASH initialization segments contain:
 
-* Zero or more `moov/pssh` "Protection System Specific Header" boxes ([[!MPEGCENC]] 8.1) which provide [=DRM system=] initialization data in [=DRM system=] specific format. This usage is deprecated in favor of providing this data in the MPD. See [[#CPS-mpd-drm-config]].
+* Zero or more `moov/pssh` "Protection System Specific Header" boxes ([[!MPEGCENC]] 8.1) which provide [=DRM system=] initialization data in [=DRM system=] specific format. This usage is deprecated in favor of providing this data in the MPD. If both are present, the value in the MPD is used. See [[#CPS-mpd-drm-config]].
 * Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schm` "Scheme Type" box ([[!ISOBMFF]] 8.12.5) identifying the [=protection scheme=]. See [[!MPEGCENC]] section 4.
 * Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schi/tenc` "Track Encryption" box ([[!MPEGCENC]] 8.2) which contains default encryption parameters for samples. These default parameters may be overridden in media segments (see below)
 
@@ -246,9 +246,9 @@ A `ContentProtection` descriptor providing a default [=DRM system configuration=
 
 Note: W3C defines the Clear Key mechanism ([[!encrypted-media]] 9.1), which is a "dummy" DRM system implementation intended for client and platform development/testing purposes. **Understand that Clear Key does not fulfill the content protection and content key protection duties ordinarily expected from a DRM system.** For more guidelines on Clear Key usage, see [[#CPS-AdditionalConstraints-W3C]].
 
-Each DRM system specific `ContentProtection` descriptor can contain a mix of XML elements and attributes defined by [[!MPEGCENC|Common Encryption]], the [=DRM system=] author, DASH-IF or any other party.
+Each DRM system specific `ContentProtection` descriptor can contain a mix of XML elements and attributes defined by [[!MPEGCENC]], the [=DRM system=] author, DASH-IF or any other party.
 
-For [=DRM systems=] initialized by supplying `pssh` boxes [[!ISOBMFF]], the `cenc:pssh` element SHOULD be present under the `ContentProtection` descriptor if the value is known at MPD authoring time. The base64 encoded contents of the element SHALL be equivalent to a complete `pssh` box including its length and header fields. See also [[#CPS-cmaf]].
+For [=DRM systems=] initialized by supplying `pssh` boxes [[!MPEGCENC]], the `cenc:pssh` element SHOULD be present under the `ContentProtection` descriptor if the value is known at MPD authoring time. The base64 encoded contents of the element SHALL be equivalent to a complete `pssh` box including its length and header fields. See also [[#CPS-cmaf]].
 
 [=DRM systems=] generally use the concept of license requests as the mechanism for obtaining [=content keys=] and associated usage constraints (see [[#CPS-license-request-workflow]]). For [=DRM systems=] that use this concept, one or more `dashif:laurl` elements SHOULD be present under the `ContentProtection` descriptor, with the value of the element being the default URL to send license requests to. This URL MAY contain [[#CPS-lr-model-contentid|content identifiers]].
 
@@ -916,7 +916,7 @@ Multiple license requests to the same license server with the same [=authorizati
 
 The possibility for ahead-of-time [=DRM system=] activation, seamless [=license=] renewal and license request batching depends on the specific [=DRM system=] and [=media platform=] implementations. Some implementations might not support optimal behavior.
 
-## Periodic re-ruthorization ## {#CPS-PeriodReauth}
+## Periodic re-authorization ## {#CPS-PeriodReauth}
 
 In a live DASH presentation the rights of the user can be different for different programs included in the presentation. This chapter describes recommended mechanisms for enforcing rights to be re-evaluated at program boundaries.
 
