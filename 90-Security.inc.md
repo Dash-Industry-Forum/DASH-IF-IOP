@@ -695,7 +695,7 @@ The set of [=adaptation sets=] considered during selection does not need to be c
 
 In live services new [=periods=] may be added over time, with potentially different [=DRM system configuration=] and [=required capability sets=], making it necessary to re-execute the selection process.
 
-Note: If a new [=period=] has significantly different requirements in terms of [=DRM system configuiration=] or the [=required capability sets=], the media pipeline may need to be re-initialized to play the new [=period=]. This may result in a glitch/pause at the period boundary. The specifics are implementation-dependant.
+Note: If a new [=period=] has significantly different requirements in terms of [=DRM system configuration=] or the [=required capability sets=], the media pipeline may need to be re-initialized to play the new [=period=]. This may result in a glitch/pause at the period boundary. The specifics are implementation-dependant.
 
 The default [=DRM system configuration=] in the MPD of a live service can change over time. DASH clients are not expected to re-execute DRM workflows if the default [=DRM system configuration=] in the [=MPD=] changes for an [=adaptation set=] that has already been processed in the past. Such changes will only affect clients that are starting playback.
 
