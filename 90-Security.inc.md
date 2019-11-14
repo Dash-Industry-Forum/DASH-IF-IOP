@@ -250,13 +250,13 @@ Each DRM system specific `ContentProtection` descriptor can contain a mix of XML
 
 For [=DRM systems=] initialized by supplying `pssh` boxes [[!MPEGCENC]], the `cenc:pssh` element SHOULD be present under the `ContentProtection` descriptor if the value is known at MPD authoring time. The base64 encoded contents of the element SHALL be equivalent to a complete `pssh` box including its length and header fields. See also [[#CPS-cmaf]].
 
-[=DRM systems=] generally use the concept of license requests as the mechanism for obtaining [=content keys=] and associated usage constraints (see [[#CPS-license-request-workflow]]). For [=DRM systems=] that use this concept, one or more `dashif:laurl` elements SHOULD be present under the `ContentProtection` descriptor, with the value of the element being the default URL to send license requests to. This URL MAY contain [[#CPS-lr-model-contentid|content identifiers]].
+[=DRM systems=] generally use the concept of license requests as the mechanism for obtaining [=content keys=] and associated usage constraints (see [[#CPS-license-request-workflow]]). For [=DRM systems=] that use this concept, one or more `dashif:laurl` elements SHOULD be present under the `ContentProtection` descriptor, with the value of the element being the URL to send license requests to. This URL MAY contain [[#CPS-lr-model-contentid|content identifiers]].
 
 Multiple mechanisms have historically been used to provide the license server URL in the MPD (e.g. embedding in the `cenc:pssh` data or passing by deprecated DRM system specific DASH-IF `Laurl` elements). A DASH client SHALL prefer `dashif:laurl` if multiple data sources for the URL are present in the MPD.
 
 For [=DRM systems=] that require proof of authorization to be attached to the license request in a manner conforming to [[#CPS-lr-model]], one or more `dashif:authzurl` elements SHOULD be present under the `ContentProtection` descriptor, containing the default URL to send authorization requests to (see [[#CPS-license-request-workflow]]).
 
-Multiple `dashif:laurl` or `dashif:authzurl` elements define sets of equivalent alternatives for the DASH client to choose from. A DASH client SHOULD select a random item from the set every time the value of such an element is used.
+Multiple `dashif:laurl` or `dashif:authzurl` elements under the same `ContentProtection` descriptor define sets of equivalent alternatives for the DASH client to choose from. A DASH client SHOULD select a random item from the set every time the value of such an element is used.
 
 Issue: The above paragraph on URL handling should be generalized to all sets of alternative URLs but there does not seem to be a suitable chapter in v4.3 If such a chapter is created in v5, we could replace the above paragraph with a reference to the general URL handling guidelines.
 
@@ -367,7 +367,7 @@ Note: Path or query string parameters in the authorization service URL can be us
 
 DASH clients SHOULD cache and reuse [=authorization tokens=] up to the moment specified in the token's `exp` "Expiration Time" claim (defaulting to "never expires"). DASH clients SHALL discard the [=authorization token=] and request a new one if the license server indicates that the [=authorization token=] was rejected (for any reason), even if the "Expiration Time" claim is not present or the expiration time is in the future (see [[#CPS-lr-model-errors]]).
 
-Before requesting an [=authorization token=], a DASH client SHALL take the authorization service URL and add or replace the `kids` query string parameter containing a comma-separated list in ascending alphanumeric order of `default_KID` values obtained from the MPD. This list SHALL contain every `default_KID` for which proof of authorization is requested from this authorization service (i.e. every distinct `default_KID` for which the same URL was specified in `dashif:authzurl`).
+Before requesting an [=authorization token=], a DASH client SHALL take the authorization service URL and add or replace the `kids` query string parameter containing a comma-separated list in ascending alphanumeric order of `default_KID` values obtained from the MPD. This list SHALL contain every `default_KID` for which proof of authorization is requested from this authorization service (i.e. every distinct `default_KID` for which the same set of URLs was specified using `dashif:authzurl` elements).
 
 To request an [=authorization token=], a DASH client SHALL make an HTTP GET request to this modified URL, attaching to the request any standard contextual information used by the underlying platform and allowed by active security policy (e.g. HTTP cookies). This data can be used by the authorization service to identify the user and device and assess their access rights.
 
@@ -457,7 +457,7 @@ The same [=authorization token=] MAY be used with multiple license requests but 
 
 A DASH client SHALL NOT make license requests for [=content keys=] that are configured as requiring an [=authorization token=] but for which the DASH client has failed to acquire an [=authorization token=].
 
-Note: A [=content key=] requires an [=authorization token=] if there is a `dashif:authzurl` in the MPD or if this element  is added by [=solution-specific logic and configuration=].
+Note: A [=content key=] requires an [=authorization token=] if there is at least one `dashif:authzurl` in the MPD or if this element is added by [=solution-specific logic and configuration=].
 
 ### Problem signaling and handling ### {#CPS-lr-model-errors}
 
@@ -656,7 +656,9 @@ An [=adaptation set=] encrypted with a key identified by `34e5db32-8625-47cd-ba0
         value="FirstDrm 2.0">
         <cenc:pssh>YmFzZTY0IGVuY29kZWQgY29udGVudHMgb2YgkXBzc2iSIGJveCB3aXRoIHRoaXMgU3lzdGVtSUQ=</cenc:pssh>
         <dashif:authzurl>https://example.com/tenants/5341/authorize?mode=firstDRM</dashif:authzurl>
+        <dashif:authzurl>https://alternative.example.com/tenants/5341/authorize?mode=firstDRM</dashif:authzurl>
         <dashif:laurl>https://example.com/AcquireLicense</dashif:laurl>
+        <dashif:laurl>https://alternative.example.com/AcquireLicense</dashif:laurl>
     </ContentProtection>
     <ContentProtection
         schemeIdUri="urn:uuid:eb3841cf-d7e4-4ec4-a3c5-a8b7f9f4f55b"
@@ -672,7 +674,7 @@ An [=adaptation set=] encrypted with a key identified by `34e5db32-8625-47cd-ba0
 
 The MPD provides [=DRM system configuration=] for [=DRM systems=]:
 
-* For `FirstDRM`, the MPD provides complete [=DRM system configuration=], including the optional `dashif:authzurl`.
+* For `FirstDRM`, the MPD provides complete [=DRM system configuration=], including the optional `dashif:authzurl`. Two equivalent alternative URLs are provided for accessing the associated services.
 * For `SecondDRM`, the MPD does not provide the license server URL. It must be supplied at runtime.
 
 There are two encrypted [=representations=] in the [=adaptation set=], each with a different codecs string. Both codecs strings are included in the [=required capability set=] of this [=adaptation set=]. A [=DRM system=] must support playback of both [=representations=] in order to present this [=adaptation set=].
@@ -842,7 +844,7 @@ The license request workflow defined here exists to enable the following goals t
 1. Execute the license request workflow driven purely by the MPD, without any need for [=solution-specific logic and configuration=].
 1. Detect common error scenarios and present an understandable message to the user.
 
-The proof of authorization is optional and the need to attach it to a license request is indicated by the presence of `dashif:authzurl` in the [=DRM system configuration=]. The proof of authorization is a [[!jwt|JSON Web Token]] in compact encoding (the `aaa.bbb.ccc` form) returned as the HTTP response body when the DASH client performs a GET request to this URL. The token is attached to a license request in the HTTP `Authorization` header with the `Bearer` type. For details, see [[#CPS-lr-model]].
+The proof of authorization is optional and the need to attach it to a license request is indicated by the presence of at least one `dashif:authzurl` in the [=DRM system configuration=]. The proof of authorization is a [[!jwt|JSON Web Token]] in compact encoding (the `aaa.bbb.ccc` form) returned as the HTTP response body when the DASH client performs a GET request to this URL. The token is attached to a license request in the HTTP `Authorization` header with the `Bearer` type. For details, see [[#CPS-lr-model]].
 
 Error responses from both the authorization service and the license server SHOULD be returned as [[rfc7807]] compatible responses with a 4xx or 5xx status code and `Content-Type: application/problem+json`.
 
@@ -858,29 +860,30 @@ To process license requests queued during execution of the [[#CPS-activation-wor
 1. Let <var>retry_requests</var> be an empty set. It will contain the set of license requests that are to be retried due to transient failure.
 1. Let <var>pending_authz_requests</var> be a map of `URL -> GUID[]`, with the keys being authorization service URLs and the values being lists of `default_KIDs`. The map is initially empty.
 1. For each <var>request</var> in <var>pending_license_requests</var>:
-    1. If the [=DRM system configuration=] does not contain a value for `dashif:authzurl`, skip to the next loop iteration. This means that no [=authorization token=] is to be attached to this license request.
-    1. Create/update the entry in <var>pending_authz_requests</var> with the key being the `dashif:authzurl` value; add the `default_KID` to the list in the map entry value.
+    1. If the [=DRM system configuration=] does not contain at least one value for `dashif:authzurl`, skip to the next loop iteration. This means that no [=authorization token=] is to be attached to this license request.
+    1. Create/update the entry in <var>pending_authz_requests</var> with the key being the set of `dashif:authzurl` values; add the `default_KID` to the list in the map entry value.
 1. Let <var>authz_tokens</var> be a map of `GUID -> string`, with the keys being `default_KIDs` and the values being the associated [=authorization tokens=]. The map is initially empty.
-1. For each <var>authz_url</var> and <var>kids</var> pair in <var>pending_authz_requests</var>:
-    1. Create a comma-separated list from <var>kids</var> in ascending alphanumeric (ASCII) order.
-    1. Let <var>authz_url_with_kids</var> be <var>authz_url</var> with an additional query string parameter named `kids` with the value from <var>kids</var>.
-        * <var>authz_url</var> may already include query string parameters, which should be preserved!
-    1. If the DASH client has a cached [=authorization token=] previously acquired from <var>authz_url_with_kids</var> that still remains valid according to its `exp` "Expiration Time" claim:
+1. For each <var>authz_url_set</var> and <var>kids</var> pair in <var>pending_authz_requests</var>:
+    1. If the DASH client has a cached [=authorization token=] previously acquired for the same <var>authz_url_set</var> and <var>kids</var> combination that still remains valid according to its `exp` "Expiration Time" claim:
         1. Let <var>authz_token</var> be the cached [=authorization token=].
     1. Else:
+        1. Create a comma-separated list from <var>kids</var> in ascending alphanumeric (ASCII) order.
+        1. Let <var>authz_url</var> be a random item from <var>authz_url_set</var>.
+        1. Let <var>authz_url_with_kids</var> be <var>authz_url</var> with an additional query string parameter named `kids` with the value from <var>kids</var>.
+            * <var>authz_url</var> may already include query string parameters, which should be preserved!
         1. Perform an HTTP GET request to <var>authz_url_with_kids</var> (following redirects).
             * Include any relevant HTTP cookies.
             * Allow [=solution-specific logic and configuration=] to intercept the request and inspect/modify it as needed (e.g. provide additional HTTP request headers to enable user identification).
         1. If the response status code [[#CPS-lr-model-errors|indicates failure]], make a note of any error information for later processing and skip to the next <var>authz_url</var>.
         1. Let <var>authz_token</var> be the HTTP response body.
-        1. Submit <var>authz_token</var> into the DASH client cache, with the cache key being <var>authz_url_with_kids</var> and the expiration being defined by the `exp` "Expiration Time" claim in the [=authorization token=] (defaulting to never expires).
+        1. Submit <var>authz_token</var> into the DASH client cache, with the cache key being a combination of <var>authz_url_set</var> and <var>kids</var>, and the cache entry expiration being defined by the `exp` "Expiration Time" claim in the [=authorization token=] (defaulting to never expires).
     1. For each <var>kid</var> in <var>kids</var>, add an entry to <var>authz_tokens</var> with the key <var>kid</var> and the value being <var>authz_token</var>.
 1. For each <var>request</var> in <var>pending_license_requests</var>:
     1. If the [=DRM system configuration=] from <var>request</var> contains an authorization service URL but there is no entry in <var>authz_tokens</var> keyed on the `default_KID` from <var>request</var>, skip to the next loop iteration.
         * This occurs when an [=authorization token=] is required but cannot be obtained for this license request.
     1. Execute an HTTP POST request with the following parameters:
         * Request body is the license request body from <var>request</var>.
-        * Request URL is defined by [=DRM system configuration=].
+        * Request URL is defined by [=DRM system configuration=]. If multiple license server URLs are defined, select a random URL from the set.
         * If <var>authz_tokens</var> contains an entry with the key being the `default_KID` from <var>request</var>, add the `Authorization` header with the value being the string `Bearer` concatenated with a space and the [=authorization token=] from <var>authz_tokens</var> (e.g. `Bearer aaa.bbb.ccc`).
     1. If the response status code [[#CPS-lr-model-errors|indicates failure]]:
         1. Expel the used [=authorization token=] (if any) from the DASH client cache to force a new token to be used for any future license requests.
