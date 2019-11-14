@@ -68,7 +68,7 @@ The guidelines in this document define recommended workflows and default behavio
 
 ## Content encryption and DRM ## {#CPS-encryption-and-drm}
 
-A DASH presentation MAY provide some or all [=adaptation sets=] in encrypted form, requiring the use of a <dfn>DRM system</dfn> to decrypt the content for playback. The duty of a [=DRM system=] is to decrypt content while preventing disclosure of the [=content key=] and misuse of the decrypted content (e.g. recording via screen capture).
+A DASH presentation MAY provide some or all [=adaptation sets=] in encrypted form, requiring the use of a <dfn>DRM system</dfn> to decrypt the content for playback. The duty of a [=DRM system=] is to decrypt content while preventing disclosure of the [=content key=] and misuse of the decrypted content (e.g. recording via screen capture software).
 
 In a DASH presentation, every [=representation=] in an [=adaptation set=] SHALL be protected using the same [=content key=] (identified by the same `default_KID`).
 
@@ -92,7 +92,7 @@ Note: None of the CMAF presentation profiles defined in [[MPEGCMAF]] allow the p
 
 A hypothetical [=DRM system=] might define the following [=robustness levels=]:
 
-* High - All cryptographic operations are performed on a separate CPU not accessible to the device's primary operating system. Decrypted data only exists in a memory region not accessible to the device's primary operating system.
+* High - All cryptographic operations are performed on a separate CPU not accessible to the device's primary operating system (often called a trusted execution environment). Decrypted data only exists in a memory region not accessible to the device's primary operating system (often called a secure media path).
 * Medium - All cryptographic operations are performed on a separate CPU not accessible to the device's primary operating system. Decrypted data may be passed to the primary operating system's [=media platform=] APIs.
 * Low - All operations are performed in software that can be inspected and modified by the user. Obfuscation must be used to protect against analysis.
 * None - For development only. Implementation does not resist attacks.
@@ -691,9 +691,13 @@ The purpose of the [=DRM system=] selection workflow is to select a single [=DRM
 
 It may be that the selected [=DRM system=] is only able to decrypt a subset of the encrypted [=adaptation sets=] selected for playback. See also [[#CPS-unavailable-keys]].
 
-The set of [=adaptation sets=] considered during selection does not need to be constrained to a single [=period=], potentially enabling seamless transitions to a new [=period=] with a different set of [=content keys=]. Furthermore, in live services new [=periods=] may be added over time, with potentially different [=DRM system configuration=] and [=required capability sets=], making it necessary to re-execute the selection process.
+The set of [=adaptation sets=] considered during selection does not need to be constrained to a single [=period=], potentially enabling seamless transitions to a new [=period=] with a different set of [=content keys=].
 
-Note: DASH clients are not expected to re-execute DRM workflows if the default [=DRM system configuration=] in the [=MPD=] changes for an [=adaptation set=] that has already been processed in the past. Such changes will only affect clients that are starting playback.
+In live services new [=periods=] may be added over time, with potentially different [=DRM system configuration=] and [=required capability sets=], making it necessary to re-execute the selection process.
+
+Note: If a new [=period=] has significantly different requirements in terms of [=DRM system configuiration=] or the [=required capability sets=], the media pipeline may need to be re-initialized to play the new [=period=]. This may result in a glitch/pause at the period boundary. The specifics are implementation-dependant.
+
+The default [=DRM system configuration=] in the MPD of a live service can change over time. DASH clients are not expected to re-execute DRM workflows if the default [=DRM system configuration=] in the [=MPD=] changes for an [=adaptation set=] that has already been processed in the past. Such changes will only affect clients that are starting playback.
 
 When encrypted [=adaptation sets=] are initially selected for playback or when the selected set of encrypted [=adaptation sets=] changes (e.g. because a new [=period=] was added to a live service), a DASH client SHOULD execute the following algorithm for [=DRM system=] selection:
 
