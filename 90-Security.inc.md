@@ -921,17 +921,18 @@ The possibility for ahead-of-time [=DRM system=] activation, seamless [=license=
 
 ## Periodic re-authorization ## {#CPS-PeriodReauth}
 
-In a live DASH presentation the rights of the user can be different for different programs included in the presentation. This chapter describes recommended mechanisms for enforcing rights to be re-evaluated at program boundaries.
+In a live DASH presentation the rights of the user can be different for different programs included in the presentation. This chapter describes recommended mechanisms for forcing rights to be re-evaluated at program boundaries.
 
-The user's level of access to content is governed by the issuance (or not) of [=licenses=] with [=content keys=] and the policy configuration carried by the [=licenses=]. Therefore, to force the rights to be re-evaluated, the service provider needs to ensure that a new license request must be performed to continue playback across program boundaries.
+The user's level of access to content is governed by the issuance (or not) of [=licenses=] with [=content keys=] and the policy configuration carried by the [=licenses=]. The license server is the authority on what rights are assigned to the user. To force re-evaluation of rights, a service must force a new license request to be made. This can be accomplished by:
 
-The license server is the authority on what rights are assigned to the user. To force re-evaluation of rights, a service must force a new license request to be made. This can be accomplished by changing the [=content key=] to one that is not yet available to DASH clients, thereby triggering [[#CPS-activation-workflow|DRM system activation]] for the new [=content key=]. Changing the [=content key=] is only possible on DASH period boundaries.
+1. Defining an expiration time on the license.
+1. Changing the [=content key=] to one that is not yet available to DASH clients, thereby triggering [[#CPS-activation-workflow|DRM system activation]] for the new [=content key=].
 
-Live DASH presentations SHOULD create a new period in which content is encrypted with new [=content keys=] to force re-evaluation of user's access rights.
+Not every [=DRM system=] supports real-time license expiration - some widely used implementations only check license validity at activation time. Therefore the latter option is a more universally applicable method to force re-evaluation of access rights. As changing the [=content key=] is only possible on DASH period boundaries, live DASH presentations SHOULD create a new period in which content is encrypted with new [=content keys=] to force re-evaluation of user's access rights.
 
 Note: Changing the [=content keys=] does not increase the cryptographic security of content protection. The term *periodic re-authorization* is therefore used here instead of *key rotation*, to maintain focus on the goal and not the mechanism.
 
-### Controlling access rights with a key hierarchy ### {#CPS-KeyHierarchy}
+## Controlling access rights with a key hierarchy ## {#CPS-KeyHierarchy}
 
 Using a key hierarchy allows a single [=content key=] to selectively unlock only a subset of a DASH presentation and apply license policy updates without the need to perform license requests at every program boundary. This mechanism is a specialization of periodic re-authorization for scenarios where license requests at program boundaries are not always desirable or possible.
 
