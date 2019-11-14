@@ -56,5 +56,10 @@
     "MPEGDASHCMAFPROFILE": {
         "title": "N18641 WD of ISO/IEC 23009-1 4th edition AMD 1 Client event and timed metadata processing",
         "publisher": "ISO/IEC JTC1/SC29/WG11 MPEG"
+    },
+    "MSPR-EncryptionModes": {
+        "title": "PlayReady Content Encryption Modes",
+        "publisher": "Microsoft",
+        "href": "https://docs.microsoft.com/en-us/playready/packaging/content-encryption-modes"
     }
 }

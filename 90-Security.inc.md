@@ -82,7 +82,7 @@ Some [=DRM system=] implementations support both [=protection schemes=]. Even wh
 
 Note: None of the CMAF presentation profiles defined in [[MPEGCMAF]] allow the presence of both `cenc` and `cbcs` content in the same period. While this is permitted by the DASH-IF guidelines - to allow DASH clients to choose between alternative [=protection schemes=] - such content would not be conforming to the presentation profiles defined in [[MPEGCMAF]].
 
-[=Representations=] that contain the same media content using different [=protection schemes=] SHALL use a different [=content key=]. This protects against some cryptographic attacks.
+[=Representations=] that contain the same media content using different [=protection schemes=] SHALL use different [=content keys=]. This protects against some cryptographic attacks [[MSPR-EncryptionModes]].
 
 ### Robustness ### {#CPS-robustness}
 
