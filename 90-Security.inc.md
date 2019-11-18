@@ -166,7 +166,9 @@ DASH media segments are composed of one or more CMAF fragments, where each CMAF 
 
 [[#CPS-KeyHierarchy|A key hierarchy]] is implemented by listing the `default_KID` in the `tenc` box of the initialization segment (identifying the [=root key=]) and then overriding the key identifier in the `sgpd` boxes of media segments (identifying the [=leaf keys=] that apply to each media segment). The `moof/pssh` box is used to deliver/unlock new [=leaf keys=] and provide the associated license policy.
 
-When using CMAF chunks for delivery, each CMAF fragment may be split into multiple CMAF chunks, each of which has its own `moof` box. The presence of `moof/pssh` boxes SHALL be limited to only the first CMAF chunk of each CMAF fragment.
+When using CMAF chunks for delivery, each CMAF fragment may be split into multiple CMAF chunks. If the CMAF fragment contained any `moof/pssh` boxes, copies of these boxes SHALL be present in each CMAF chunk that starts with an independent media sample.
+
+Note: While DASH only requires the presence of `moof/pssh` in the first CMAF chunk, the requirement is more extensive in the interest of HLS interoperability.
 
 ## Encryption and DRM signaling in the MPD ## {#CPS-mpd}
 
