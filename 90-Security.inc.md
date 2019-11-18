@@ -236,7 +236,7 @@ While it is common that `default_KID` identifies the actual [=content key=] used
 
 In a [[#CPS-KeyHierarchy|hierarchical key scenario]], `default_KID` identifies the [=root key=], not the [=leaf key=] used to encrypt media samples, and the handling of [=leaf keys=] is not exposed to a DASH client. As far as a DASH client knows, there is always only one [=content key=] identified by `default_KID`.
 
-This logic applies to all scenarios that make use of additional keys, regardless whether they are based on the key hierarchy, key derivation or variant key concepts. For more information on the background and use cases, see [[#CPS-PeriodReauth]].
+This logic applies to all scenarios that make use of additional keys, regardless of whether they are based on the key hierarchy, key derivation or variant key ([[iso23001-12]]) concepts.
 
 ### Providing default DRM system configuration ### {#CPS-mpd-drm-config}
 
