@@ -149,7 +149,7 @@ DASH initialization segments contain:
 
 * Zero or more `moov/pssh` "Protection System Specific Header" boxes ([[!MPEGCENC]] 8.1) which provide [=DRM system=] initialization data in [=DRM system=] specific format. This usage is deprecated in favor of providing this data in the MPD. If both are present, the value in the MPD is used. See [[#CPS-mpd-drm-config]].
 * Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schm` "Scheme Type" box ([[!ISOBMFF]] 8.12.5) identifying the [=protection scheme=]. See [[!MPEGCENC]] section 4.
-* Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schi/tenc` "Track Encryption" box ([[!MPEGCENC]] 8.2) which contains default encryption parameters for samples. These default parameters may be overridden in media segments (see below)
+* Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schi/tenc` "Track Encryption" box ([[!MPEGCENC]] 8.2) which contains default encryption parameters for samples. These default parameters may be overridden in media segments (see below).
 
 DASH media segments are composed of one or more CMAF fragments, where each CMAF fragment contains:
 
