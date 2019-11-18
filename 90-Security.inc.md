@@ -337,7 +337,7 @@ JWT body with list of authorized [=content key=] IDs (an example field that coul
 }
 </xmp>
 
-The above data sets are serialized and digitally signed to arrive at the final form of the [=authorization token=]: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6IjE1MTYyMzkwMjIifQ.eyJhdXRob3JpemVkX2tpZHMiOlsiMTYxMWYwYzgtNDg3Yy00NGQ0LTliMTktODJlNWE2ZDU1MDg0IiwiZGIyZGFlOTctNmI0MS00ZTk5LTgyMTAtNDkzNTAzZDU2ODFiIl19.HJA7CGSEHkU9WtcX0e9IEBzhxwoiRxicnaZ5QW5wEfM`
+The above data sets are serialized and digitally signed to arrive at the final form of the [=authorization token=]: `eyJhbGciOiJIUzI1NiIsImV4cCI6IjE1MTYyMzkwMjIifQ.eyJhdXRob3JpemVkX2tpZHMiOlsiMTYxMWYwYzgtNDg3Yy00NGQ0LTliMTktODJlNWE2ZDU1MDg0IiwiZGIyZGFlOTctNmI0MS00ZTk5LTgyMTAtNDkzNTAzZDU2ODFiIl19.tBvW6XVPHBRp1JEwItsVnbHwIqoqnQAVQfTV9PGMkIU`
 </div>
 
 [=Authorization tokens=] are issued by an authorization service, which is part of a solution's business logic. The authorization service has access to project-specific context that it needs to make its decisions (e.g. the active session, user identification and database of purchases/entitlements). A single authorization service can be used to issue [=authorization tokens=] for multiple license servers, simplifying architecture in solutions where multiple license server vendors are used.
@@ -429,7 +429,7 @@ JWT body with list of authorized [=content key=] IDs (an example field that coul
 }
 </xmp>
 
-Serialized and digitally signed: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImV4cCI6IjE1MTYyMzkwMjIifQ.eyJhdXRob3JpemVkX2tpZHMiOlsiMTYxMWYwYzgtNDg3Yy00NGQ0LTliMTktODJlNWE2ZDU1MDg0IiwiZGIyZGFlOTctNmI0MS00ZTk5LTgyMTAtNDkzNTAzZDU2ODFiIl19.HJA7CGSEHkU9WtcX0e9IEBzhxwoiRxicnaZ5QW5wEfM`
+Serialized and digitally signed: `eyJhbGciOiJIUzI1NiIsImV4cCI6IjE1MTYyMzkwMjIifQ.eyJhdXRob3JpemVkX2tpZHMiOlsiMTYxMWYwYzgtNDg3Yy00NGQ0LTliMTktODJlNWE2ZDU1MDg0IiwiZGIyZGFlOTctNmI0MS00ZTk5LTgyMTAtNDkzNTAzZDU2ODFiIl19.tBvW6XVPHBRp1JEwItsVnbHwIqoqnQAVQfTV9PGMkIU`
 </div>
 
 An authorization service SHALL NOT issue [=authorization tokens=] that authorize the use of [=content keys=] that are not in the set of requested [=content keys=] (as defined in the request's `kids` query string parameter). An authorization service MAY issue [=authorization tokens=] that authorize the use of only a subset of the requested [=content keys=], provided that at least one [=content key=] is authorized. If no [=content keys=] are authorized for use, an authorization service SHALL [[#CPS-lr-model-errors|signal a failure]].
