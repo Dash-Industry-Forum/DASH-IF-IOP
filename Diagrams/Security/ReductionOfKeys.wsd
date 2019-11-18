@@ -13,11 +13,11 @@ note left of Authz: User has not purchased 4K quality\nservice plan - cannot use
 Authz -> Client : Keys 1, 2, 4 and 5 authorized\nKey 3 (4K video) not authorized
 
 Client -> LS : Request licenses
-note left of LS: User's mobile device is not secure enough\nfor HD quality - will not release HD key
+note left of LS: User's DRM system implementation is not robust enough\nfor HD quality - will not release HD key
 LS -> Client : Licenses for keys 1 (SD), 4 (stereo) and 5 (7.1 audio)
 
 Client -> DRM : Ingest licenses
 note over DRM: Device does not have sufficiently secure 7.1\noutput - will not decrypt using the 7.1 audio key
-DRM -> Client: Configuration complete\nAvailable keys: 1, 4
+DRM -> Client: Configuration complete\nAvailable keys: 1 (SD), 4 (stereo)
 
 @enduml

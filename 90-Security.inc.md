@@ -434,7 +434,7 @@ Serialized and digitally signed: `eyJhbGciOiJIUzI1NiIsImV4cCI6IjE1MTYyMzkwMjIifQ
 
 An authorization service SHALL NOT issue [=authorization tokens=] that authorize the use of [=content keys=] that are not in the set of requested [=content keys=] (as defined in the request's `kids` query string parameter). An authorization service MAY issue [=authorization tokens=] that authorize the use of only a subset of the requested [=content keys=], provided that at least one [=content key=] is authorized. If no [=content keys=] are authorized for use, an authorization service SHALL [[#CPS-lr-model-errors|signal a failure]].
 
-Note: During [=license=] issuance, the license server may further constrain the set of available [=content keys=] (e.g. as a result of examining the device's security level). See [[#CPS-unavailable-keys]].
+Note: During [=license=] issuance, the license server may further constrain the set of available [=content keys=] (e.g. as a result of examining the [=robustness level=] of the [=DRM system=] implementation requesting the [=license=]). See [[#CPS-unavailable-keys]].
 
 [=Authorization tokens=] SHALL be returned by an authorization service using JWS Compact Serialization [[!jws]] (the `aaa.bbb.ccc` format). The serialized form of an [=authorization token=] SHOULD NOT exceed 5000 characters to ensure that a license server does not reject a license request carrying the token due to excessive HTTP header size.
 
@@ -790,7 +790,7 @@ Note: The batching may, for example, be accomplished by concatenating all the `p
 
 #### Handling unavailability of [=content keys=] #### {#CPS-unavailable-keys}
 
-It is possible that not all of the encrypted [=adaptation sets=] selected for playback can actually be played back (e.g. because a [=content key=] for ultra-HD content is only authorized for use on high-security devices). The unavailability of one or more [=content keys=] SHOULD NOT be considered a fatal error condition as long as at least one audio and at least one video [=adaptation set=] remains available for playback (assuming both content types are initially selected for playback). This logic MAY be overridden by solution specific business logic to better reflect end-user expectations.
+It is possible that not all of the encrypted [=adaptation sets=] selected for playback can actually be played back (e.g. because a [=content key=] for ultra-HD content is only authorized for use by implementations with a high [=robustness level=]). The unavailability of one or more [=content keys=] SHOULD NOT be considered a fatal error condition as long as at least one audio and at least one video [=adaptation set=] remains available for playback (assuming both content types are initially selected for playback). This logic MAY be overridden by solution specific business logic to better reflect end-user expectations.
 
 The set of available [=content keys=] can change over time (e.g. due to [=license=] expiration or due to new [=periods=] in the presentation requiring different content keys). A DASH client SHALL monitor the set of `default_KID` values that are required for playback and either request the [=DRM system=] to make these [=content keys=] available or deselect the affected [=adaptation sets=] when the [=content keys=] become unavailable. Conceptually, any such change can be handled by re-executing the [[#CPS-selection-workflow|DRM system selection]] and [[#CPS-activation-workflow|activation workflows]], although platform APIs may also offer more fine-grained update capabilities.
 
@@ -801,9 +801,11 @@ A DASH client can request a [=DRM system=] to enable decryption using any set of
 	<figcaption>The set of [=content keys=] made available for use can be far smaller than the set requested by a DASH client. Example workflow indicating potential instances of [=content keys=] being removed from scope.</figcaption>
 </figure>
 
-Advisement: [=Media platform=] APIs often refuse to start playback if the [=DRM system=] is not able to decrypt all the data already in [=media platform=] buffers.
+The set of available [=content keys=] is only known at the end of executing the activation workflow and may decrease over time (e.g. due to [=license=] expiration). The proper handling of unavailable keys depends on the limitations imposed by the platform APIs.
 
-The set of available [=content keys=] is only known at the end of executing the activation workflow and may decrease over time (e.g. due to [=license=] expiration). The proper handling of unavailable keys depends on the limitations imposed by the platform APIs. It may be appropriate for a DASH client to avoid buffering data for encrypted [=adaptation sets=] until the required [=content key=] is known to be available. This allows the client to avoid potentially expensive buffer resets and rebuffering if unusable data needs to be removed from buffers.
+Advisement: [=Media platform=] APIs often refuse to start or continue playback if the [=DRM system=] is not able to decrypt all the data already in [=media platform=] buffers.
+
+It may be appropriate for a DASH client to avoid buffering data for encrypted [=adaptation sets=] until the required [=content key=] is known to be available. This allows the client to avoid potentially expensive buffer resets and rebuffering if unusable data needs to be removed from buffers.
 
 Note: The DASH client should still download the data into intermediate buffers for faster startup and simply defer submitting it to the [=media platform=] API until key availability is confirmed.
 
