@@ -168,7 +168,7 @@ DASH media segments are composed of one or more CMAF fragments, where each CMAF 
 
 When using CMAF chunks for delivery, each CMAF fragment may be split into multiple CMAF chunks. If the CMAF fragment contained any `moof/pssh` boxes, copies of these boxes SHALL be present in each CMAF chunk that starts with an independent media sample.
 
-Note: While DASH only requires the presence of `moof/pssh` in the first CMAF chunk, the requirement is more extensive in the interest of HLS interoperability.
+Note: While DASH only requires the presence of `moof/pssh` in the first CMAF chunk, the requirement is more extensive in the interest of HLS interoperability [[HLS-LowLatency]].
 
 ## Encryption and DRM signaling in the MPD ## {#CPS-mpd}
 

@@ -61,5 +61,10 @@
         "title": "PlayReady Content Encryption Modes",
         "publisher": "Microsoft",
         "href": "https://docs.microsoft.com/en-us/playready/packaging/content-encryption-modes"
+    },
+    "HLS-LowLatency": {
+        "title": "Protocol Extension for Low-Latency HLS (Preliminary Specification)",
+        "publisher": "Apple",
+        "href": "https://developer.apple.com/documentation/http_live_streaming/protocol_extension_for_low-latency_hls_preliminary_specification"
     }
 }
