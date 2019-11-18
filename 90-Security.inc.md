@@ -322,7 +322,6 @@ JWT headers, specifying digital signature algorithm and expiration time (general
 <xmp highlight="json">
 {
     "alg": "HS256",
-    "typ": "JWT",
     "exp": "1516239022"
 }
 </xmp>
@@ -415,7 +414,6 @@ JWT headers, specifying digital signature algorithm and expiration time:
 <xmp highlight="json">
 {
     "alg": "HS256",
-    "typ": "JWT",
     "exp": "1516239022"
 }
 </xmp>
