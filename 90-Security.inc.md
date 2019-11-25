@@ -151,7 +151,7 @@ DASH initialization segments contain:
 * Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schm` "Scheme Type" box ([[!ISOBMFF]] 8.12.5) identifying the [=protection scheme=]. See [[!MPEGCENC]] section 4.
 * Exactly one `moov/trak/mdia/minf/stbl/stsd/sinf/schi/tenc` "Track Encryption" box ([[!MPEGCENC]] 8.2) which contains default encryption parameters for samples. These default parameters may be overridden in media segments (see below).
 
-DASH media segments are composed of one or more CMAF fragments, where each CMAF fragment contains:
+DASH media segments are composed of a single CMAF fragment that contains:
 
 * Exactly one `moof/traf/senc` "Sample Encryption" box ([[!MPEGCENC]] 7.2) which stores initialization vectors (IVs) and, optionally, subsample encryption ranges for samples in the same CMAF fragment.
 * Zero or one `moof/traf/saiz` "Sample Auxiliary Information Size" boxes ([[!ISOBMFF]] 8.7.8) which references the sizes of the per-sample data stored in the `moof/traf/senc` box ([[!MPEGCMAF]] 8.2.2 and [[!MPEGCENC]] section 7).
