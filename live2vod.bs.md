@@ -3,12 +3,12 @@
 <!-- Document metadata follows. The below sections are used by the document compiler and are not directly visible. -->
 
 <pre class="metadata">
-Revision: 5.0
+Revision: 0.1
 
 Title: DASH-IF implementation guidelines: restricted timing model
 Status: LS-COMMIT
-Shortname: dash-timing
-URL: https://dashif-documents.azurewebsites.net/Guidelines-TimingModel/master/live2vod.html
+Shortname: live2vod
+URL: https://dashif.org/Guidelines/master/live2vod.html
 Issue Tracking: GitHub https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues
 Repository: https://github.com/Dash-Industry-Forum/DASH-IF-IOP GitHub
 Editor: DASH Industry Forum
