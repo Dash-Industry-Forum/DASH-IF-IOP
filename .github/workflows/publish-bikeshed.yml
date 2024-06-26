@@ -1,0 +1,34 @@
+name: Publish Bikeshed Document
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Bikeshed
+      run: |
+        pip install bikeshed
+        bikeshed update
+
+    - name: Generate Bikeshed Document
+      run: bikeshed spec
+
+    - name: Publish to GitHub Pages
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        keep_files: true
+        commit_message: 'Deploy Bikeshed document'
