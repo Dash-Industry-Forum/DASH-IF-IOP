@@ -7,7 +7,7 @@ Revision: 0.1
 
 <!-- Feature Tags: Status, Contributors, Last Updated, version, classification (live, DRM, on-demand, Ad Insertion), related features, githubs for issues.-->
 
-Title: DASH-IF implementation guidelines: restricted timing model
+Title: DASH-IF implementation guidelines: Live to VoD Conversion
 Status: LS-COMMIT
 Shortname: live2vod
 URL: https://dashif.org/Guidelines/master/live2vod.html
