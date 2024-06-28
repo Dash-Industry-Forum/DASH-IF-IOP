@@ -70,9 +70,10 @@ In the scenario, for which a part from the live service extracted and made avail
 
 ### Transition between Live and On-Demand
 In the case of transitioning the services, the content offering should take into account the following guidelines. Generally, in particular in 24/7 live service, or if the VOD service starts before the live service ends, it is discouraged that the the same MPD URL is used for live and On-Demand content. It is preferred to create a new MPD URL for the On-demand content to not confuse clients when transitioning from live to VoD MPD. Note that the same Segments may and should be shared across live and VOD MPD. 
-       
+
 However, there are cases for which a transition from live to On-demand content can be considered at the end of a live service and re-using the existing MPD URL, in particular when the live service follows the specific restrictions in section [[#corr:scheduled]].
 
+#### the remainder still needs some updates
 In this transitioning phase. as a first action, once the URL and publish time of the last Segment is known for the live service, and the duration of the service is known as well, the live MPD should be changed as follows as defined in clause 4.4.3.1, i.e.,
 
 
@@ -139,7 +140,7 @@ DASH clients should support the transition from **<code>MPD@type</code></strong>
 
 
 
-### **1.1.3.**             **Client Behavior**
+## Client Behavior
 
 For a DASH client, there is basically no difference on whether the content was generated from a live service or the content is provided as On-Demand. However, there are some aspects that may be “left-overs” from a live service distribution that a DASH client should be aware of:
 
@@ -153,14 +154,18 @@ For a DASH client, there is basically no difference on whether the content was g
 
 
 
+# Examples 
+* Add some MPD examples
+
+# Reference Tools
+* Dash.js
+* Live Sim 
+* Test Vectors
+* JCCP
+
+# Additional Information
 
  
-
-
----
-
- [[RM1]](https://qualcomm-my.sharepoint.com/personal/tsto_qti_qualcomm_com/Documents/Standards/DASH-IF/Meetings/2024-06-MWS/IOP23044r4-proposal_iop_live_2_vod.docx#_msoanchor_1)I suggest to remove this as the Period@start will be removed
-
 
 
 
