@@ -5,7 +5,7 @@
 <pre class="metadata">
 Revision: 0.1
 
-<!-- Feature Tags: Status, Contributors, Last Updated, version, classification (live, DRM, on-demand, Ad Insertion), related features, githubs for issues.-->
+<!-- Feature Tags: *Status*, *Contributors*, Last Updated, version, classification (live, DRM, on-demand, Ad Insertion), related features, *githubs for issues*.-->
 
 Title: DASH-IF implementation guidelines: Live to VoD Conversion
 Status: LS-COMMIT
@@ -15,6 +15,8 @@ Issue Tracking: GitHub https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues
 Repository: https://github.com/Dash-Industry-Forum/DASH-IF-IOP GitHub
 Editor: DASH Industry Forum
 Contributors: Thomas Stockhammer, Rufael Mekuria
+Key Words: Live, VoD
+Related Features: 
 
 Default Highlight: text
 <!-- Enabling line numbers breaks code blocks in PDF! (2018-10-02) -->
