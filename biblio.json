@@ -1,0 +1,39 @@
+{
+  "ATSC3": {
+    "href": "https://https://www.atsc.org/wp-content/uploads/2017/10/A300-2017-ATSC-3-System-Standard-1.pdf",
+    "title": "ATSC Standard: A/300:2017 �ATSC3.0 System�",
+    "publisher": "ATSC"
+  },
+  "DASH-CMAF": {
+    "aliasOf": "iso23009-1-cdamd1"
+  },
+  "DASH-SystemIDs": {
+		"href": "https://dashif.org/identifiers/content_protection/",
+		"title": "DASH-IF registry of DRM System IDs",
+		"publisher": "DASH Industry Forum"
+	},
+  "HLS": {
+    "aliasOf": "rfc8216"
+  },
+  "DASH": {
+    "aliasOf": "MPEGDASH"
+  },
+  "CMAF": {
+    "aliasOf": "MPEGCMAF"
+  },
+  "LEAP-SECONDS": {
+    "href": "https://datacenter.iers.org/data/latestVersion/16_BULLETIN_C16.txt",
+    "title": "IERS Bulletin C (leap second announcements)",
+    "publisher": "IERS"
+  },
+  "IOP43": {
+    "href": "https://dash-industry-forum.github.io/docs/DASH-IF-IOP-v4.3.pdf",
+    "title": "Guidelines for Implementation: DASH-IF Interoperability Points",
+    "publisher": "DASH-IF"
+  },
+  "IOP5-PART5": {
+    "href": "https://dashif.org/guidelines/iop-v5#part-5-ad-insertion",
+    "title": "DASH-IF-IOP-Part5-v5.0.0: Ad Insertion",
+    "publisher": "DASH-IF"
+  }
+}
