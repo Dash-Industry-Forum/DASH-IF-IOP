@@ -1,0 +1,16 @@
+<pre class="metadata">
+Revision: 0.1
+Title: DASH-IF implementation guidelines: MPD Patch
+Status: LS-COMMIT
+Shortname: mpd-patch
+URL: https://dashif.org/Guidelines/master/mpd-patch.html
+Local Boilerplate: logo yes, defaults yes
+
+!Contributor:
+!Key Word:
+!Related Features:
+</pre>
+
+<pre class=include>
+path: 01-live2vod.inc.md
+</pre>
