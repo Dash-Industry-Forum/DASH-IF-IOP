@@ -14,9 +14,9 @@ URL: https://dashif.org/Guidelines/master/live2vod.html
 Issue Tracking: GitHub https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues
 Repository: https://github.com/Dash-Industry-Forum/DASH-IF-IOP GitHub
 Editor: DASH Industry Forum
-Contributors: Thomas Stockhammer, Rufael Mekuria
-Key Words: Live, VoD
-Related Features: 
+Contributors: [Thomas Stockhammer](https://linkedin.com/in/stockhammer), Rufael Mekuria
+Key Words: Live, VoD, Transition
+Related Features: Live
 
 Default Highlight: text
 <!-- Enabling line numbers breaks code blocks in PDF! (2018-10-02) -->
