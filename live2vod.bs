@@ -18,5 +18,5 @@ Group: dashif
 </pre>
 
 <pre class=include>
-path: 01-live2vod.inc.md
+path: live2vod/01-live2vod.inc.md
 </pre>

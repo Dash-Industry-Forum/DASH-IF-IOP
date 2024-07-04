@@ -11,6 +11,3 @@ Group: dashif
 !Related Features:
 </pre>
 
-<pre class=include>
-path: 01-live2vod.inc.md
-</pre>
