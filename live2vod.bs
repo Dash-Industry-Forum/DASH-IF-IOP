@@ -8,6 +8,7 @@ Issue Tracking: GitHub https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues
 Repository: https://github.com/Dash-Industry-Forum/DASH-IF-IOP GitHub
 Editor: DASH Industry Forum
 Local Boilerplate: logo yes, defaults yes
+Group: dashif
 
 !Contributors: [Thomas Stockhammer](https://linkedin.com/in/stockhammer)
 !Contributor: Rufael Mekuria
