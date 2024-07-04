@@ -28,6 +28,11 @@ $(SPECS): %: $(OUT)/%.html $(OUT)/%.pdf
 .PHONY: $(SPECS:%=%.html)
 $(SPECS:%=%.html): %: $(OUT)/%
 
+# Watch an individual spec as html
+# i.e make live2vod-watch
+.PHONY: $(SPECS:%=%-watch)
+$(SPECS:%=%-watch): %: $(OUT)/%
+
 # Build an individual spec as pdf
 # i.e make live2vod.pdf
 .PHONY: $(SPECS:%=%.pdf)
@@ -52,6 +57,11 @@ spec-sources = $(shell find . -type f -iname \*-$*.inc.md)
 $(OUT)/%.html: $(OUT)/Images %.bs $${spec-sources}
 	@echo "Compile $*.bs -> $(OUT)/$*.html. Deps $^"
 	@bikeshed spec $*.bs $(OUT)/$*.html
+
+
+$(OUT)/%-watch: $(OUT)/Images %.bs $${spec-sources}
+	@echo "Watch $*.bs -> $(OUT)/$*.html. Deps $^"
+	@bikeshed watch $*.bs $(OUT)/$*.html
 
 # Run wkhtmltopdf to create a PDF from the already generated html page
 $(OUT)/%.pdf: $(OUT)/%.html
