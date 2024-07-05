@@ -63,9 +63,9 @@ $(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images
 
 .PHONY: $(OUT)/%-watch
 $(OUT)/%-watch: $${spec-file} $${spec-sources} $(OUT)/%/Images
-	@echo "Watch $< -> $(OUT)/$*/index.html. Deps $^ to $@"
+	@echo "Watch $< -> $(OUT)/$*/index.html. Deps $^"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
-	bikeshed --allow-nonlocal-files watch $< $@
+	bikeshed --allow-nonlocal-files watch $< $(OUT)/$*/index.html
 
 # Run wkhtmltopdf to create a PDF from the already generated html page
 $(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
