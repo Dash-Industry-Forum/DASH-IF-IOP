@@ -1,32 +1,26 @@
 .SECONDEXPANSION:
+# We do not want any implicit deletion of outputs
+.SECONDARY:
 
-# We collect all the spec names from their .bs files, i.e live2vod.bs is
-# found and turned into live2vods
-SPECS = $(patsubst %.bs, %, $(shell ls *.bs))
+# We collect all the spec names from the folders in the
+# specs directory
+SPECS = $(patsubst %.bs, %, $(shell ls specs))
 
 # This is our target folder
 OUT = dist
 
 # default target to build everything
-all: html pdf
-
-# Build all specs as html
-.PHONY: html
-html: $(foreach src, $(SPECS), $(OUT)/$(src).html)
-
-# Build all specs as pdf
-.PHONY: pdf
-pdf: $(foreach src, $(SPECS), $(OUT)/$(src).pdf)
+all: $(SPECS)
 
 # Build an individual spec as both html and pdf
 # i.e make live2vod
 .PHONY: $(SPECS)
-$(SPECS): %: $(OUT)/%.html $(OUT)/%.pdf
+$(SPECS): %: $(OUT)/%/index.html $(OUT)/%.pdf
 
 # Build an individual spec as html
 # i.e make live2vod.html
 .PHONY: $(SPECS:%=%.html)
-$(SPECS:%=%.html): %: $(OUT)/%
+$(SPECS:%=%.html): %: $(OUT)/$$(subst .html,,%)/index.html
 
 # Watch an individual spec as html
 # i.e make live2vod-watch
@@ -41,7 +35,15 @@ $(SPECS:%=%.pdf): %: $(OUT)/%
 # This is a helper that we use in the prerequisits with SECONDEXPANSION
 # to find _all_ the source dependencies for a spec.
 # This assumes that $* evaluates to the name of the spec
-spec-sources = $(shell find . -type f -iname \*-$*.inc.md)
+spec-sources = $(shell find specs/$*/ -type f -iname \*.md)
+
+# This is a helper that we use in the prerequisits with SECONDEXPANSION
+# to extract the name of the spec folder
+spec-name = $(shell echo "$*" | cut -d/ -f1 )
+
+# This is a helper that we use in the prerequisits with SECONDEXPANSION
+# to find the spec file
+spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
 
 # Run bikeshed to generate html outout
 # We need to use SECONDEXPANSION because we are not only depending
@@ -54,26 +56,39 @@ spec-sources = $(shell find . -type f -iname \*-$*.inc.md)
 #  - the Images are available in the output folder (order matters)
 #  - the .bs file that we pass to bikeshed
 #  - all .inc.md files that belong to this spec
-$(OUT)/%.html: $(OUT)/Images %.bs $${spec-sources}
-	@echo "Compile $*.bs -> $(OUT)/$*.html. Deps $^"
-	@bikeshed spec $*.bs $(OUT)/$*.html
+$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images
+	@echo "Compile $< -> $(OUT)/$*/index.html. Deps $^ to $@"
+	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
+	bikeshed --allow-nonlocal-files spec $< $@
 
-
-$(OUT)/%-watch: $(OUT)/Images %.bs $${spec-sources}
-	@echo "Watch $*.bs -> $(OUT)/$*.html. Deps $^"
-	@bikeshed watch $*.bs $(OUT)/$*.html
+.PHONY: $(OUT)/%-watch
+$(OUT)/%-watch: $${spec-file} $${spec-sources} $(OUT)/%/Images
+	@echo "Watch $< -> $(OUT)/$*/index.html. Deps $^ to $@"
+	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
+	bikeshed --allow-nonlocal-files watch $< $@
 
 # Run wkhtmltopdf to create a PDF from the already generated html page
-$(OUT)/%.pdf: $(OUT)/%.html
-	@echo "Compile $(OUT)/$*.html -> $(OUT)/$*.pdf"
-	@wkhtmltopdf --enable-local-file-access $(OUT)/$*.html $(OUT)/$*.pdf
+$(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
+	@echo "Compile $< -> $@"
+	@chromium  \
+		--no-sandbox \
+		--headless=new \
+		--disable-gpu \
+		--print-to-pdf=$@ \
+		--no-margine \
+		--run-all-compositor-stages-before-draw \
+		--no-pdf-header-footer \
+		--virtual-time-budget=20000 \
+		$< 2>&1 | grep -v "bus.cc"
 
 # This one could maybe be done in a different way, but for now
 # we are linking the Images folder to the outout folder
-$(OUT)/Images:
-	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	@echo "Linking Images -> $(OUT)/Images"
-	@ln -sf ../Images $@
+$(OUT)/%/Images:
+	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
+	@if [ -d "specs/$*/Images" ]; then \
+		echo "Copy specs/$*/Images -> $(OUT)/$*/Images"; \
+		cp -r specs/$*/Images $(OUT)/$*/Images; \
+	fi
 
 # Helper to clean up
 .PHONY: clean
@@ -88,10 +103,9 @@ help:
 	@echo
 	@echo "help\t\t\tThis help message"
 	@echo "all\t\t\tBuild all specs in this folder as both html and pdf. This is the default target"
-	@echo "html\t\t\tBuild all specs in this folder as html"
-	@echo "pdf\t\t\tBuild all specs in this folder as pdf"
 	@for s in $(SPECS) ; do \
   	echo "$${s}\t\tBuild $$s in all variants"; \
 		echo "$${s}.html\t\tBuild $$s as html"; \
 		echo "$${s}.pdf\t\tBuild $$s as pdf"; \
+		echo "$${s}-watch\t\tBuild $$s as html and keep watching for changes"; \
 	done

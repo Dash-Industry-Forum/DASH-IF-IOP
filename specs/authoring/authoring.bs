@@ -1,0 +1,19 @@
+<pre class="metadata">
+Revision: 0.1
+Title: DASH-IF implementation guidelines: Live to VoD Conversion
+Status: LS-COMMIT
+Shortname: live2vod
+URL: https://dashif.org/Guidelines/master/live2vod.html
+Group: dashif
+
+!Contributor: Thomas Stockhammer
+!Contributor: Rufael Mekuria
+!Key Word: VoD
+!Key Word: Live
+!Related Features:
+</pre>
+
+<pre class=include>
+path: 01-authoring.inc.md
+</pre>
+
