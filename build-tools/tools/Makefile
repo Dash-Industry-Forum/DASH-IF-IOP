@@ -9,7 +9,7 @@ SPECS = $(patsubst %.bs, %, $(shell ls specs))
 # This is our target folder
 OUT = dist
 
-DIAGRAM_IMAGES = $(subst $(OUT),$(OUT),$(patsubst %.wsd, %.png, $(shell find specs/ -type f -iname '*.wsd')))
+#DIAGRAM_IMAGES = $(subst $(OUT),$(OUT),$(patsubst %.wsd, %.png, $(shell find specs/ -type f -iname '*.wsd')))
 
 # default target to build everything
 all: $(SPECS)
@@ -49,11 +49,11 @@ spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
 
 # This is a helper that we use in the prerequisits with SECONDEXPANSION
 # to find all diagram files
-spec-diagrams = $(subst .wsd,.png,$(shell find specs/$*/Diagrams -type f -iname \*.wsd))
+#spec-diagrams = $(subst .wsd,.png,$(shell find specs/$*/Diagrams -type f -iname \*.wsd))
 
 # This is a helper that we use in the prerequisits with SECONDEXPANSION
 # to find all diagram files
-spec-diagram-source = $(subst $(OUT),specs,$*).wsd
+#spec-diagram-source = $(subst $(OUT),specs,$*).wsd
 
 # Run bikeshed to generate html outout
 # We need to use SECONDEXPANSION because we are not only depending
@@ -66,7 +66,7 @@ spec-diagram-source = $(subst $(OUT),specs,$*).wsd
 #  - the Images are available in the output folder (order matters)
 #  - the .bs file that we pass to bikeshed
 #  - all .inc.md files that belong to this spec
-$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images $(OUT)/%/Diagrams
+$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images
 	@echo "Compile $< -> $(OUT)/$*/index.html. Deps $^ to $@"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
 	bikeshed --allow-nonlocal-files spec $< $@
@@ -101,14 +101,14 @@ $(OUT)/%/Images:
 		cp -r specs/$*/Images $(OUT)/$*/Images; \
 	fi
 
-$(DIAGRAM_IMAGES): %.png: %.wsd
-	@echo "Compile Diagram $< -> $@"
-	@plantuml $<
+# $(DIAGRAM_IMAGES): %.png: %.wsd
+# 	@echo "Compile Diagram $< -> $@"
+# 	@plantuml $<
 
-$(OUT)/%/Diagrams: $${spec-diagrams}
-	@echo "Move Diagrams $? -> $@"
-	@[ -d $@ ] || mkdir -p $@
-	@mv $? $@
+# $(OUT)/%/Diagrams: $${spec-diagrams}
+# 	@echo "Move Diagrams $? -> $@"
+# 	@[ -d $@ ] || mkdir -p $@
+# 	@mv $? $@
 
 # Helper to clean up
 .PHONY: clean
