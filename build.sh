@@ -7,4 +7,5 @@
 #
 
 # Run the docker container and pass all the arguments
-docker run --rm -ti -v `pwd`:/data dashif-specs:latest $@
+IMG=thasso/dashif-specs:latest
+docker run --rm -ti -v `pwd`:/data ${IMG} $@

@@ -3,7 +3,7 @@ name: Publish Bikeshed Document
 on:
   push:
     branches:
-      - main
+      - bikeshed-builds
 
 jobs:
   build:
@@ -11,24 +11,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - name: Setup
+      run: ./setup.sh
+    - name: Build
+      run: ./build.sh
+    - uses: actions/upload-pages-artifact@v3
       with:
-        python-version: '3.x'
+        path: dist
 
-    - name: Install Bikeshed
-      run: |
-        pip install bikeshed
-        bikeshed update
-
-    - name: Generate Bikeshed Document
-      run: bikeshed spec
-
-    - name: Publish to GitHub Pages
-      if: success()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        keep_files: true
-        commit_message: 'Deploy Bikeshed document'
+  publish:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+        - name: Deploy to GitHub Pages
+          uses: actions/deploy-pages@v4
