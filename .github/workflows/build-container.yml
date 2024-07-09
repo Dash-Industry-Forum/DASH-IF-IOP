@@ -3,7 +3,7 @@ name: Build Container
 on:
   push:
     branches:
-      - bikeshed-builds
+      - master
     paths:
       - 'build-tools/**'
       - '.github/workflows/build-container.yml'
