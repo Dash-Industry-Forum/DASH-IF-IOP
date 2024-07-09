@@ -14,6 +14,10 @@ jobs:
     - name: Setup
       run: ./setup.sh
     - name: Build
+      env:
+        # Reset OPTS to empty to make sure we are not using
+        # interactive mode in CI
+        OPTS:
       run: ./build.sh
     - uses: actions/upload-pages-artifact@v3
       with:

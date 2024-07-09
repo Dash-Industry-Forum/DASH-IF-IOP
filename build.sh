@@ -8,4 +8,14 @@
 
 # Run the docker container and pass all the arguments
 IMG=thasso/dashif-specs:latest
-docker run --rm -ti -v `pwd`:/data ${IMG} $@
+
+# Allow to overwrite additional options from the outside.
+# We use tty and interactive by default since this makes it easier
+# to deal with watch mode and Ctrl-C etc but we can not use this
+# for instance in CI mode
+if [ -z ${OPTS+x} ]; then
+  OPTS=-ti
+fi
+
+
+docker run --rm ${OPTS} -v `pwd`:/data ${IMG} $@
