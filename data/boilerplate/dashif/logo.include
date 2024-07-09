@@ -2,16 +2,3 @@
   <img src="https://dashif.org/img/dashif-logo-283x100_new.jpg"
        width="283" height="100" alt="DASH-IF Logo">
 </a>
-
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$', '$$']]
-    },
-    svg: {
-      fontCache: 'global'
-    }
-  };
-</script>
-<script id="MathJax-script"  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>

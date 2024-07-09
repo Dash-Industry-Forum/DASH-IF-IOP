@@ -1,7 +1,7 @@
 <pre class="metadata">
 Revision: 0.1
 Title: DASH-IF IOP Document Authoring
-Status: LS
+Status: LD
 Shortname: authoring
 URL: https://dashif.org/Guidelines/master/authoring.html
 Group: dashif
@@ -11,7 +11,86 @@ Group: dashif
 !Related Features:
 </pre>
 
+# Document Authoring
+
+This document describes the approach behind the authoring tools that are used
+for this repository.
+
+Note: This is still work in progress.
+
+## Concepts and Basic Tooling
+
+We are using the following set of tools that are enabled and levaraged by this
+pipeline:
+
+ * [Bikeshed](https://speced.github.io/bikeshed/) to write the primary text and
+   documents
+ * [Mermaid](https://mermaid.js.org/) For diagramming
+ * [PlantUML](https://plantuml.com/) for diagramming (*not implemented yet)
+ * [Docker](https://www.docker.com/) to run the builds and create the resulting
+   documents
+
+## Basic structure
+
+The repository is organized in the following way. Note that the folder structure
+is important for some of the tooling to work as expected.
+
+- `specs` This folder contains sub-folders, one for each document that is
+  managed and maintained as part of this repository.
+- `build-tools` This folder container the build tools and describes the Docker
+  container that we use.
+- `data` This folder contains boilerplate data that is used by all documented.
+  For example, the common header or the logo snippet.
+- `dist` This folder is explicitly excluded from the git repository but this is
+  where all the output of a build will be written to.
+- `biblio.json` is a JSON file with custom [SpecRef](https://www.specref.org/)
+  references. Note that is is much better to submit a missing ref to SpecRef
+  instead of using custom references.
+
+Any spec document folder should contain the following files or folders.
+
+- A `.bs` file that is the actual Bikeshed file and will be used as an entry
+  point. Note that there should be only one `.bs` file in each specs sub-folder.
+- Any number of additional `*.md` files. Note that these files are not processed
+  by default, but can be [included](#included) in a bikeshed source.
+- `Images` folder. This folder will be copied as is to the resulting document
+  structure. Add any images that you want to include here.
+- `Diagrams` folder. Files in this folder will be pushed through `plantuml` to
+  generate images that in turn can be included in the document.
+
+
+### Include Markdown Documented ### {#included}
+
+If you decide to split the main document into smaller markdown documents, you
+have to explicitly include these files in the bikeshed spec. For example, add
+the following to your bikeshed document:
+
+```
+<pre class=include>
+path: 01-chapter-1.md
+</pre>
+```
+
+to include the `01-chapter-1.md` file that resides next to the bikeshed
+document.
+
 # How to write documents
+
+<style>
+</style>
+
+  <pre class="mermaid">
+    graph TD
+    A[Client] --> B[Load Balancer]
+    B --> C[Server01]
+    B --> D[Server02]
+  </pre>
+
+<figure>
+  <figcaption>Example for Live Content preparation.</figcaption>
+</figure>
+
+
 
 * Document text.
 * Images.

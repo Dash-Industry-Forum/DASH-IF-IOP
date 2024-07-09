@@ -1,0 +1,10 @@
+@startuml
+
+package "GitHub account of document owner" {
+    [Document repository\naka <b>upstream</b> repository] as Upstream
+    [master branch] as Master
+
+    Upstream - Master
+}
+
+@enduml

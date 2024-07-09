@@ -9,6 +9,8 @@ SPECS = $(patsubst %.bs, %, $(shell ls specs))
 # This is our target folder
 OUT = dist
 
+DIAGRAM_IMAGES = $(subst $(OUT),$(OUT),$(patsubst %.wsd, %.png, $(shell find specs/ -type f -iname '*.wsd')))
+
 # default target to build everything
 all: $(SPECS)
 
@@ -45,6 +47,14 @@ spec-name = $(shell echo "$*" | cut -d/ -f1 )
 # to find the spec file
 spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
 
+# This is a helper that we use in the prerequisits with SECONDEXPANSION
+# to find all diagram files
+spec-diagrams = $(subst .wsd,.png,$(shell find specs/$*/Diagrams -type f -iname \*.wsd))
+
+# This is a helper that we use in the prerequisits with SECONDEXPANSION
+# to find all diagram files
+spec-diagram-source = $(subst $(OUT),specs,$*).wsd
+
 # Run bikeshed to generate html outout
 # We need to use SECONDEXPANSION because we are not only depending
 # on the .bs file, but also on all the .inc.md files that belong to this
@@ -56,7 +66,7 @@ spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
 #  - the Images are available in the output folder (order matters)
 #  - the .bs file that we pass to bikeshed
 #  - all .inc.md files that belong to this spec
-$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images
+$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images $(OUT)/%/Diagrams
 	@echo "Compile $< -> $(OUT)/$*/index.html. Deps $^ to $@"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
 	bikeshed --allow-nonlocal-files spec $< $@
@@ -67,14 +77,15 @@ $(OUT)/%-watch: $${spec-file} $${spec-sources} $(OUT)/%/Images
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
 	bikeshed --allow-nonlocal-files watch $< $(OUT)/$*/index.html
 
-# Run wkhtmltopdf to create a PDF from the already generated html page
+# Run chromium to create a PDF from the already generated html page
 $(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
-	@echo "Compile $< -> $@"
+	@echo "Compile $< -> $(OUT)/$*/$*.pdf"
 	@chromium  \
 		--no-sandbox \
 		--headless=new \
 		--disable-gpu \
-		--print-to-pdf=$@ \
+		--disable-sync \
+		--print-to-pdf=$(OUT)/$*/$*.pdf \
 		--no-margine \
 		--run-all-compositor-stages-before-draw \
 		--no-pdf-header-footer \
@@ -89,6 +100,15 @@ $(OUT)/%/Images:
 		echo "Copy specs/$*/Images -> $(OUT)/$*/Images"; \
 		cp -r specs/$*/Images $(OUT)/$*/Images; \
 	fi
+
+$(DIAGRAM_IMAGES): %.png: %.wsd
+	@echo "Compile Diagram $< -> $@"
+	@plantuml $<
+
+$(OUT)/%/Diagrams: $${spec-diagrams}
+	@echo "Move Diagrams $? -> $@"
+	@[ -d $@ ] || mkdir -p $@
+	@mv $? $@
 
 # Helper to clean up
 .PHONY: clean

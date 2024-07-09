@@ -6,10 +6,9 @@ RUN apt update -y && apt install -y \
     python3.12 \
     python3-pip \
     make \
+    plantuml \
     git && \
     rm -rf /var/lib/apt/lists/*
-
-#    plantuml \
 
 RUN add-apt-repository ppa:xtradeb/apps -y && \
     apt update && \
