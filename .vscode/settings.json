@@ -1,0 +1,21 @@
+{
+    "editor.renderWhitespace": "all",
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "spellright.language": [
+      "en"
+    ],
+    "spellright.documentTypes": [
+      "bikeshed",
+      "markdown",
+      "latex",
+      "plaintext"
+    ],
+    "files.associations": {
+        "*.bs.md": "bikeshed",
+        "*.inc.md": "markdown"
+    },
+    "cSpell.enabled": false,
+}

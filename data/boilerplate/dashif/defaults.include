@@ -1,0 +1,12 @@
+{
+  "Issue Tracking": "GitHub https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues",
+  "Repository": "https://github.com/Dash-Industry-Forum/DASH-IF-IOP GitHub",
+  "Editor": "DASH Industry Forum",
+
+  "Default Highlight": "text",
+  "Line Numbers": "off",
+  "Markup Shorthands": "markdown yes, biblio yes",
+  "Boilerplate": "copyright off, abstract off",
+  "Abstract": "None",
+  "Indent": "2"
+}

@@ -1,0 +1,5 @@
+.DS_Store
+.idea
+.python-version
+*.html
+dist/
