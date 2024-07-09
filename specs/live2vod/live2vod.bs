@@ -4,10 +4,6 @@ Title: DASH-IF implementation guidelines: Live to VoD Conversion
 Status: LS-COMMIT
 Shortname: live2vod
 URL: https://dashif.org/Guidelines/master/live2vod.html
-Issue Tracking: GitHub https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues
-Repository: https://github.com/Dash-Industry-Forum/DASH-IF-IOP GitHub
-Editor: DASH Industry Forum
-Local Boilerplate: logo yes, defaults yes
 Group: dashif
 
 !Contributors: [Thomas Stockhammer](https://linkedin.com/in/stockhammer)
