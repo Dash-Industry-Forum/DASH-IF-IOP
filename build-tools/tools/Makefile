@@ -121,11 +121,11 @@ help:
 	@echo "Bikeshed build script"
 	@echo "The following make targets are available"
 	@echo
-	@echo "help\t\t\tThis help message"
-	@echo "all\t\t\tBuild all specs in this folder as both html and pdf. This is the default target"
+	@echo "help				This help message"
+	@echo "all				Build all specs in this folder as both html and pdf. This is the default target"
 	@for s in $(SPECS) ; do \
-  	echo "$${s}\t\tBuild $$s in all variants"; \
-		echo "$${s}.html\t\tBuild $$s as html"; \
-		echo "$${s}.pdf\t\tBuild $$s as pdf"; \
-		echo "$${s}-watch\t\tBuild $$s as html and keep watching for changes"; \
+		echo "$${s}			Build $$s in all variants"; \
+		echo "$${s}.html			Build $$s as html"; \
+		echo "$${s}.pdf			Build $$s as pdf"; \
+		echo "$${s}-watch			Build $$s as html and keep watching for changes"; \
 	done
