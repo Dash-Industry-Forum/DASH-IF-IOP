@@ -7,7 +7,7 @@
 #
 
 # Run the docker container and pass all the arguments
-IMG=thasso/dashif-specs:latest
+IMG=dashif/specs-builder:latest
 
 # Allow to overwrite additional options from the outside.
 # We use tty and interactive by default since this makes it easier

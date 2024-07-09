@@ -1,5 +1,5 @@
 #!/bin/bash
 
 # Pull the latest build image
-IMG=thasso/dashif-specs:latest
+IMG=dashif/specs-builder:latest
 docker pull ${IMG}
