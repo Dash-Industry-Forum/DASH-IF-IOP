@@ -3,7 +3,7 @@
 ## Introduction ## {#live2vod:introduction}
 
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]],
-clause 4.6. It obsoletes this clause.
+clause 4.6. It obsoletes clause 4.6 of DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 
 ## Scenarios ## {#live2vod:scenarios}
 
@@ -198,7 +198,9 @@ aspects in clause [[#live2vod:content-offering-common-aspects]] apply.
 ### Transition between Live and On-Demand ### {#live2vod:content-offering-transition}
 
 In the case of transitioning the services, the content offering should take into
-account the following guidelines. Generally, in particular in 24/7 live service,
+account the following guidelines. 
+
+Generally, in particular in 24/7 live service,
 or if the VOD service starts before the live service ends, it is discouraged
 that the the same MPD URL is used for live and On-Demand content. It is
 preferred to create a new MPD URL for the On-demand content to not confuse
@@ -210,12 +212,10 @@ can be considered at the end of a live service and re-using the existing MPD
 URL, in particular when the live service follows the specific restrictions in
 section [[#live2vod:content-offering-scheduled-and-bounded]].
 
-#### the remainder still needs some updates #### {#live2vod:needs-update}
-
-In this transitioning phase. as a first action, once the URL and publish time of
+In this transitioning phase, as a first action, once the URL and publish time of
 the last Segment is known for the live service, and the duration of the service
 is known as well, the live MPD should be changed as follows as defined in clause
-4.4.3.1, i.e.,
+4.4.3.1 of [[!IOP43]],, i.e.,
 
   * adds the attribute `MPD@mediaPresentationDuration`
 
@@ -223,16 +223,16 @@ is known as well, the live MPD should be changed as follows as defined in clause
 
 This action is the normal action when terminating a live service.
 
-In this case now, all Segments are available and clients playing the live
+In this case and at this time, all Segments are available and clients playing the live
 service can complete the playback of the service until the end. Clients may also
-use the time shift buffer to go back to earlier media times. The beneficial
+use the timeshift buffer to go back to earlier media times. The beneficial
 aspect of this action is, that the DASH clients are expected stop updating the
 MPD for operational reasons.
 
 However, clients joining the service for the first time seeing the above MPD
 will see the type `dynamic` and will attempt to access the live edge, but the
 live edge does not exist. For this case, the client is expected to only show the
-last few video frames of the last segment.
+last few video frames of the last segment, but this user experience less preferred.
 
 In order for clients to join at the start of the live service, the `MPD@type`
 needs to change from `dynamic` to `static`. While this change may confuse
@@ -242,22 +242,18 @@ play back, MPD updates are expected to not happen anymore after the MPD change
 from `@minimumUpdatePeriod` to `@mediaPresentationDuration` has been done, with
 some grace period. The grace period can be estimated as the value of
 `@minimumUpdatePeriod` plus the value of the `@maxSegmentDuration`. After this
-time, it is expected that only clients will update the MPD that have paused
-playback of live.
+time, it is expected that only clients would update the MPD that have paused
+playback of live, and have not implemented MPD updates in pause state.
 
 Hence, it is recommended that in the general case, service providers are
 permitted to change the MPD and replace the `@type` to be `static` and apply all
 of the modifications as documented in clause 4.6.2.
 
-In the specific service offering above for which the `@availabilityStartTime` is
+In the specific service offering above for which the `MPD@availabilityStartTime` is
 set to a value that is aligned with the start of the live presentation, and for
 which the `Period@start` of the first Period is set to 0, none of the Period
 modifications described in 4.6.2 need to be done and the MPD can be used as is.
 In this case, the change from `static` to `dynamic` may happen even earlier.
-
-DASH clients should support the transition from `MPD@type` being `dynamic` to
-`static` in the case when the `@minimumUpdatePeriod` is no longer present in the
-MPD, as long as the Period structure is not changed.
 
 ## Client Behavior ## {#live2vod:client}
 
@@ -281,12 +277,17 @@ that a DASH client should be aware of:
     first time will start from the live edge (unless a specific start time is
     chosen using an MPD anchor).
 
+DASH clients should support the transition from `MPD@type` being `dynamic` to
+`static` in the case when the `@minimumUpdatePeriod` is no longer present in the
+MPD, as long as the Period structure is not changed.
+
 # Examples # {#live2vod:examples}
 
-Issue: Add some MPD examples
+NOTE: Add some MPD examples
 
 # Reference Tools # {#live2vod:reference-tools}
 
+NOTE: provide status for the following functionalities
   * Dash.js
   * Live Sim
   * Test Vectors
@@ -294,31 +295,5 @@ Issue: Add some MPD examples
 
 # Additional Information # {#live2vod:additional-information}
 
-Issue:
-[TS 7](https://qualcomm-my.sharepoint.com/personal/tsto_qti_qualcomm_com/Documents/Standards/DASH-IF/Meetings/2024-06-MWS/IOP23044r4-proposal_iop_live_2_vod.docx#_msoanchor_7) PeriodStart
 
-Issue:
-[TS 8](https://qualcomm-my.sharepoint.com/personal/tsto_qti_qualcomm_com/Documents/Standards/DASH-IF/Meetings/2024-06-MWS/IOP23044r4-proposal_iop_live_2_vod.docx#_msoanchor_8) PeriodStart
-
-Issue: [TS 9](https://qualcomm-my.sharepoint.com/personal/tsto_qti_qualcomm_com/Documents/Standards/DASH-IF/Meetings/2024-06-MWS/IOP23044r4-proposal_iop_live_2_vod.docx#_msoanchor_9) Precedence
-
-Issue: [TS 10](https://qualcomm-my.sharepoint.com/personal/tsto_qti_qualcomm_com/Documents/Standards/DASH-IF/Meetings/2024-06-MWS/IOP23044r4-proposal_iop_live_2_vod.docx#_msoanchor_10) Needs to be moved up and separated out
-
-Issue: [TS 11](https://qualcomm-my.sharepoint.com/personal/tsto_qti_qualcomm_com/Documents/Standards/DASH-IF/Meetings/2024-06-MWS/IOP23044r4-proposal_iop_live_2_vod.docx#_msoanchor_11) Maybe not
-
-
-## References ## {#document-references}
-
-There is a shortcut syntax for cross references to chapters in the same
-document: [[#live2vod:introduction]]
-
-There is a shortcut syntax for referencing well-known documents (RFCs etc) that
-are published on [SpecRef](https://www.specref.org/). For example, [[rfc2324]]
-is an important one.
-
-Note: You can also change the reference text and just call it
-[[rfc2324|the coffee pot RFC]].
-
-There is a slightly different shortcut syntax for normative references
-[[!DASH-SystemIDs]].
 
