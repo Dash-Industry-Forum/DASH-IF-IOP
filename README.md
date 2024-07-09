@@ -13,6 +13,9 @@ and proposals as issues.
 * [MPD Patch](https://dashif.org/DASH-IF-IOP/mpd-patch/)
   - [MPD Patch - PDF Version](https://dashif.org/DASH-IF-IOP/mpd-patch/mpd-patch.pdf)
 
+* [Content Steering](https://dashif.org/DASH-IF-IOP/content-steering/)
+  - [Content Steering - PDF Version](https://dashif.org/DASH-IF-IOP/content-steering/content-steering.pdf)
+
 Some chapters of the document are maintained in their own separate repositories:
 
 * [DASH-IF implementation guidelines: the DASH timing model](https://github.com/Dash-Industry-Forum/Guidelines-TimingModel)
