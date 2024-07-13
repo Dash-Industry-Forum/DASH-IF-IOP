@@ -6,7 +6,7 @@
   "Default Highlight": "text",
   "Line Numbers": "off",
   "Markup Shorthands": "markdown yes, biblio yes",
-  "Boilerplate": "copyright off, abstract off",
+  "Boilerplate": "copyright off, abstract off, conformance off",
   "Abstract": "None",
   "Indent": "2"
 }
