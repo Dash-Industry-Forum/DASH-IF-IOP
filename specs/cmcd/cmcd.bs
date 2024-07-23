@@ -1,13 +1,13 @@
 <pre class="metadata">
 Revision: 0.1
 Title: DASH-IF implementation guidelines: Common Media Client Metadata (CMCD) in DASH
-Status: LS-COMMIT
+Status: LD
 Shortname: cmcd
 URL: https://dashif.org/Guidelines/master/cmcd.html
 Group: dashif
 
 !Contributor:
-!Key Word:
+!Key Word: CMCD
 !Related Features:
 </pre>
 
