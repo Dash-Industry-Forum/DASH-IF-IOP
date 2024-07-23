@@ -281,11 +281,11 @@ DASH clients should support the transition from `MPD@type` being `dynamic` to
 `static` in the case when the `@minimumUpdatePeriod` is no longer present in the
 MPD, as long as the Period structure is not changed.
 
-# Examples # {#live2vod:examples}
+## Examples ## {#live2vod:examples}
 
 NOTE: Add some MPD examples
 
-# Reference Tools # {#live2vod:reference-tools}
+## Reference Tools ## {#live2vod:reference-tools}
 
 NOTE: provide status for the following functionalities
   * Dash.js
@@ -293,7 +293,7 @@ NOTE: provide status for the following functionalities
   * Test Vectors
   * JCCP
 
-# Additional Information # {#live2vod:additional-information}
+## Additional Information ## {#live2vod:additional-information}
 
 
 
