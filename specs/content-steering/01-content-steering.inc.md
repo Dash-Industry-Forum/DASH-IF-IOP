@@ -15,11 +15,11 @@ It adds an additional features.
 
 
 
-## Examples # {#content-steering:examples}
+## Examples ## {#content-steering:examples}
 
 NOTE: Add some MPD examples
 
-## Reference Tools # {#content-steering:reference-tools}
+## Reference Tools ## {#content-steering:reference-tools}
 
 NOTE: provide status for the following functionalities
   * Dash.js
@@ -27,7 +27,7 @@ NOTE: provide status for the following functionalities
   * Test Vectors
   * JCCP
 
-## Additional Information # {#content-steering:additional-information}
+## Additional Information ## {#content-steering:additional-information}
 
 
 
