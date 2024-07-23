@@ -29,7 +29,7 @@ documents. Below is an overview of the tools we use:
    our build process is reliable and that the final documents are generated
    accurately every time.
 
-# Getting Started # {#getting-started}
+# Local Editing Setup # {#local-setup}
 
 The primary idea is to wrap to make editing of content easy within a GitHub Pull
 Request based workflow. This means that all the primary text is written as

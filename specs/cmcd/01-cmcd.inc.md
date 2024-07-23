@@ -1,4 +1,4 @@
-# Common Media Client Metdata in DASH # {#cmcd}
+# Common Media Client Metadata in DASH # {#cmcd}
 
 ## Introduction ## {#cmcd:introduction}
 
@@ -22,6 +22,7 @@ NOTE: Add some MPD examples
 ## Reference Tools ## {#cmcd:reference-tools}
 
 NOTE: provide status for the following functionalities
+
   * Dash.js
   * Live Sim
   * Test Vectors
