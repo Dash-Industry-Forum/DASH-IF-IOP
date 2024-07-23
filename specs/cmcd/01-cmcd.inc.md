@@ -1,25 +1,25 @@
-# MPD Patch {#mpd-patch}
+# Common Media Client Metdata in DASH {#cmcd}
 
-## Introduction {#mpd-patch:introduction}
+## Introduction {#cmcd:introduction}
 
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]].
-It adds an additional features.
+It adds an additional feature.
 
-## Scenarios {#mpd-patch:scenarios}
-
-
-## Content Offering Requirements and Recommendations {#mpd-patch:content-offering}
+## Scenarios {#cmcd:scenarios}
 
 
-## Client Implementation Requirements and Guidelines {#mpd-patch:client}
+## Content Offering Requirements and Recommendations {#cmcd:content-offering}
+
+
+## Client Implementation Requirements and Guidelines {#cmcd:client}
 
 
 
-## Examples {#mpd-patch:examples}
+## Examples {#cmcd:examples}
 
 NOTE: Add some MPD examples
 
-## Reference Tools {#mpd-patch:reference-tools}
+## Reference Tools {#cmcd:reference-tools}
 
 NOTE: provide status for the following functionalities
   * Dash.js
@@ -27,7 +27,7 @@ NOTE: provide status for the following functionalities
   * Test Vectors
   * JCCP
 
-## Additional Information {#mpd-patch:additional-information}
+## Additional Information {#cmcd:additional-information}
 
 
 
