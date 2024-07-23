@@ -1,9 +1,9 @@
 <pre class="metadata">
 Revision: 0.1
-Title: DASH-IF implementation guidelines: MPD Patch
+Title: DASH-IF implementation guidelines: Common Media Client Metadata (CMCD) in DASH
 Status: LS-COMMIT
-Shortname: mpd-patch
-URL: https://dashif.org/Guidelines/master/mpd-patch.html
+Shortname: cmcd
+URL: https://dashif.org/Guidelines/master/cmcd.html
 Group: dashif
 
 !Contributor:
@@ -12,5 +12,5 @@ Group: dashif
 </pre>
 
 <pre class=include>
-path: 01-mpd-patch.inc.md
+path: 01-cmcd.inc.md
 </pre>
