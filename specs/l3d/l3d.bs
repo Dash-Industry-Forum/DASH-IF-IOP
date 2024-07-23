@@ -1,10 +1,12 @@
 <pre class="metadata">
 Revision: 0.1
-Title: DASH-IF Implementation Guidelines: Lower Latency and Start for DASH (L3D) 
+Title: DASH-IF Implementation Guidelines: Lower Latency, Startup and Switching for DASH (L3D) 
 Status: LS-COMMIT
 Shortname: l3d
 URL: https://dashif.org/Guidelines/master/l3d.html
 Group: dashif
+Editor: DASH-IF
+Abstract: Lower Latency, Startup and Switching for DASH (L3D) 
 !Contributors: [Alex Giladi](https://www.linkedin.com/in/agiladi/)
 !Contributors: [Thomas Stockhammer](https://www.linkedin.com/in/stockhammer/)
 </pre>
