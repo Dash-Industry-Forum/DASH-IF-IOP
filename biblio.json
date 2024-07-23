@@ -36,4 +36,9 @@
     "title": "DASH-IF-IOP-Part5-v5.0.0: Ad Insertion",
     "publisher": "DASH-IF"
   }
+  "IOP5-PART4-LL": {
+    "href": "https://dashif.org/guidelines/iop-v5/#part-Live-and-low-latency-services",
+    "title": "Prepublished v5 on Low-Latency Modes for DASH",
+    "publisher": "DASH-IF"
+  }
 }
