@@ -5,7 +5,8 @@ Status: LS-COMMIT
 Shortname: l3d
 URL: https://dashif.org/Guidelines/master/l3d.html
 Group: dashif
-!Contributors: [Alex Giladi](https://www.linkedin.com/in/agiladi/), [Thomas Stockhammer](https://www.linkedin.com/in/stockhammer/)
+!Contributors: [Alex Giladi](https://www.linkedin.com/in/agiladi/)
+!Contributors: [Thomas Stockhammer](https://www.linkedin.com/in/stockhammer/)
 </pre>
 
 <pre class=include>
