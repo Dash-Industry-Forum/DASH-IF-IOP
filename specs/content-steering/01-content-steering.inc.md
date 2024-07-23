@@ -13,8 +13,6 @@ It adds an additional features.
 
 ## Client Implementation Requirements and Guidelines ## {#content-steering:client}
 
-
-
 ## Examples ## {#content-steering:examples}
 
 NOTE: Add some MPD examples
@@ -28,6 +26,3 @@ NOTE: provide status for the following functionalities
   * JCCP
 
 ## Additional Information ## {#content-steering:additional-information}
-
-
-
