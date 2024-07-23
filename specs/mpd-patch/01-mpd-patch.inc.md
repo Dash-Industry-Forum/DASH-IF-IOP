@@ -1,6 +1,6 @@
 # MPD Patch # {#mpd-patch}
 
-## Introduction # {#mpd-patch:introduction}
+## Introduction ## {#mpd-patch:introduction}
 
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 It adds an additional features.
