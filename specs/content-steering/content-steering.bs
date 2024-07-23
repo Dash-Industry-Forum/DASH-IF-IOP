@@ -1,7 +1,7 @@
 <pre class="metadata">
 Revision: 0.1
 Title: DASH-IF Implementation Guidelines: Content Steering
-Status: LS-COMMIT
+Status: LD
 Shortname: content-steering
 URL: https://dashif.org/Guidelines/master/content-steering.html
 Group: dashif
