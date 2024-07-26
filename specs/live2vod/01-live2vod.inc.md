@@ -5,7 +5,7 @@
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]],
 clause 4.6. It obsoletes clause 4.6 of DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 
-## Scenarios ## {#live2vod:scenarios}
+## Scenarios and Motivation ## {#live2vod:scenarios}
 
 ### Common aspects ### {#live2vod:scenario-common-aspects}
 
@@ -17,15 +17,15 @@ the following is the
     used for the On-Demand case. This avoids reformatting and also permits to
     reuse the Segments that are already cached.
 
-  * the re-use of the live MPD, but requiring some modifications
+  * the re-use of the live MPD, obviously with some modifications
 
-  * Problems from live delivery may be solved, e.g. variable segment durations,
-    or issues of segment unavailability.
+  * Problems from live delivery may be addressed, e.g. variable segment durations are signaled,
+    or unavailable Segments are marked properly or replaced.
 
   * The content may be augmented with ads.
 
-In both cases, the VoD asset is defined by a time window in the live
-presentation, whereby each, the start time and end time are defined a Period in
+In all cases, the VoD asset is defined by a time window of the live
+presentation, whereby each, the start time and end time are defined by a Period in
 the MPD and a media time within the Period. Specifically,
 
   * the first media presentation time of the new On-Demand presentation is
@@ -38,23 +38,29 @@ the MPD and a media time within the Period. Specifically,
     <em>P<sub>1</sub></em> of the live service, and the media presentation time
     <em>T<sub>1</sub></em> within this Period <em>P<sub>1</sub></em>.
 
+NOTE: Add a diagram
+
 ### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod:scenario-scheduled-and-bounded}
 
 A first scenario for Live Content being converted to VOD is the case that a
 scheduled live event starting at a known date and time is also made available
-for On-Demand offering after the live program is completed.
+for On-Demand offering after the live program is completed. This case is 
+well known from sports events, for example football matches (for which the duration
+can be relatively easily predicted) or tennis matches (for which the duration may
+be quite arbitrary).
 
 ### Extracting a time period from continuous live ### {#live2vod:scenario-extraction}
 
-In the second scenario, the content is trimmed from a longer, e.g. 24/7 stream,
+In the second scenario, the content is extracted from a longer, e.g. 24/7 stream,
 at the beginning, the end, or in between. This allows that the content is
-offered in a recorded fashion to users. For this purpose, it is assumed that
-there is a start time and end time defined in the live asset.
+offered in a recorded fashion to users. The On-demand content again is defined as 
+a start and end time in the live content. 
 
 ### Transition between Live and On-Demand ### {#live2vod:scenario-transition}
 
-There may be scenarios, for which service provided in live and on-demand
-concurrently, or there may be a transition phase. Assume towards the end of a
+Extending the first scenario, the live service may be converted to a VOD service
+in a seamless manner. To allows this, the service is provided in live and on-demand
+concurrently in a transition phase. Assume towards the end of a
 live service, the content and service remains on the portal, but the clients are
 no longer experience the joining of the live service at the live edge, but the
 On-Demand service from the start.
@@ -69,12 +75,12 @@ to `dynamic`. In addition, the MPD may be updated by having the
 profiles, including multi-Period content, number-based or time-based templating,
 as well using `@duration` or Segment Timeline based signaling. The live service
 may include events in the MPD and/or Inband Event Streams. Segments get
-available over time, signaled by the sum of the `MPD@availabilityStartTime`, the
-start of the Period provided in *PeriodStart* as defined in [[!DASH]], clause
+available over time, whereby the latest segment availability start time can be 
+determined by information in the MPD as the sum of the `MPD@availabilityStartTime`, 
+the start of the Period provided in *PeriodStart* as defined in [[!DASH]], clause
 5.3.2.
 
-In order to provide live content as On-Demand in the above scenario, the
-following is recommended:
+In order to provide live content as On-Demand, the following is recommended:
 
   * The same Segments as generated for the live distribution are reused also for
     VoD distribution.
@@ -166,9 +172,9 @@ Specifically on the timing of the Periods,
     `Period@start` attribute for each Period and setting the `Period@duration`
     attribute to *PeriodDuration*. However, setting the `Period@start`attribute
     may also be used. Also, to signal the *PeriodDuration* of the last Period,
-    the `MPD@mediaPresentationDuration` attribute may be used.
-
-    Note: Check precedence here
+    the `MPD@mediaPresentationDuration` attribute may be used. According to
+    ISO/IEC 23009-1 [[!DASH]], Annex A.3.2, the `MPD@mediaPresentationDuration`
+    attribute takes precendence over the *PeriodDuration*.
 
 ### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod:content-offering-scheduled-and-bounded}
 
