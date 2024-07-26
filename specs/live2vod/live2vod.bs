@@ -1,6 +1,6 @@
 <pre class="metadata">
 Revision: 0.1
-Title: DASH-IF implementation guidelines: Live to VoD Conversion
+Title: Conversion of Live Services to VoD
 Status: LD
 Shortname: live2vod
 URL: https://dashif.org/Guidelines/master/live2vod.html
