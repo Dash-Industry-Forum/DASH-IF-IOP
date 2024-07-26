@@ -1,6 +1,6 @@
 <pre class="metadata">
 Revision: 0.1
-Title: DASH-IF Implementation Guidelines: Lower Latency, Startup and Switching for DASH (L3D)
+Title: Lower Latency, Startup and Switching for DASH (L3D)
 Status: LD
 Shortname: l3d
 URL: https://dashif.org/Guidelines/master/l3d.html
