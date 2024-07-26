@@ -40,5 +40,10 @@
     "href": "https://dashif.org/guidelines/iop-v5/#part-Live-and-low-latency-services",
     "title": "Prepublished v5 on Low-Latency Modes for DASH",
     "publisher": "DASH-IF"
+  },
+  "LL-REPORT": {
+    "href": "https://dash-industry-forum.github.io/docs/Report%20on%20Low%20Latency%20DASH.pdf",
+    "title": "DASH-IF/DVB Report on Low-Latency Live Service with DASH",
+    "publisher": "DASH-IF"
   }
 }
