@@ -39,7 +39,7 @@ the MPD and a media time within the Period. Specifically,
     <em>T<sub>1</sub></em> within this Period <em>P<sub>1</sub></em>.
 
 <figure>
-  <img src="Images/live2vod.png">
+  <img src="Images/Live2VoD.png">
   <figcaption>Different Live to VoD Scenarios</figcaption>
 </figure>
 
