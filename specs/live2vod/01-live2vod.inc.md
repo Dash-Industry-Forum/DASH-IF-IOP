@@ -38,7 +38,10 @@ the MPD and a media time within the Period. Specifically,
     <em>P<sub>1</sub></em> of the live service, and the media presentation time
     <em>T<sub>1</sub></em> within this Period <em>P<sub>1</sub></em>.
 
-NOTE: Add a diagram
+<figure>
+  <img src="Images/live2vod.png">
+  <figcaption>Different Live to VoD Scenarios</figcaption>
+</figure>
 
 ### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod:scenario-scheduled-and-bounded}
 
