@@ -1,6 +1,7 @@
 name: Build Container
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
