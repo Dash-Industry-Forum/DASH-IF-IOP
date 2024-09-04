@@ -2,7 +2,6 @@
 Revision: 0.1.0
 Title: DASH-IF Implementation Guidelines: Content Steering
 Status: LD
-Issue Tracking: "GitHub https://github.com/Dash-Industry-Forum/Content-Steering/issues",
 Shortname: content-steering
 URL: https://dashif.org/Guidelines/master/content-steering.html
 Group: dashif
