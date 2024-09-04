@@ -17,5 +17,13 @@
         "*.bs.md": "bikeshed",
         "*.inc.md": "markdown"
     },
-    "cSpell.enabled": false,
+    "cSpell.enabled": true,
+    "cSpell.words": [
+      "advisements",
+      "biblio",
+      "bikeshed",
+      "Codespaces",
+      "dashif",
+      "plantuml"
+    ],
 }

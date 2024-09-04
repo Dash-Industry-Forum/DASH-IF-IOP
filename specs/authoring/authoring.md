@@ -57,7 +57,7 @@ your edits locally is to:
    * `build.bat` on Windows
 
 You might notice that the first build run will take a moment since the
-respective container needs to be dowloaded. Subsequent runs will be faster after
+respective container needs to be downloaded. Subsequent runs will be faster after
 that initial bootstrap.
 
 With the above command, _all_ the documents will be generated and you find the
@@ -75,51 +75,32 @@ commands. For example for `authoring`:
   browser page and you will see the updated version. This process will keep on\
   running until you terminate it with `Ctrl-C`.
 
-# Remote Editing setup # {#remote-editing}
+# Remote Editing Setup # {#remote-editing}
 
-The fastes way to edit text in the browser is to use the [github.dev](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor)
-code editor. When you are in the repository, simply hit `.` to open the editor.
-You will get VSCode in the browser and can start editing right away. You will
-also be able to create branches, commit, and create pull requests.
+To quickly edit text in a GitHub repository, you can use the [github.dev](https://docs.github.com/en/codespacesthe-githubdev-web-based-editor)
+browser-based editor. Simply press `.` while viewing the repository to open the
+editor in your browser. This will launch a lightweight version of VSCode where
+you can edit files, create branches, commit changes, and open pull requests
+directly from the browser.
 
-While this is already a very good start to edit markdown text, you will not be
-able to preview the rendered HTML since you can not run the build in this
-environment directly.
+However, note that this method doesn’t allow you to preview rendered HTML since
+the environment doesn’t support running builds.
 
-One way how you can edit the documents and get run a build to check the results
-quickly is by using a GitHub Codespace. Please note though that this is not a
-free service! That said, you have a quota of free minutes that are available
-every month.
+If you need to edit documents and preview them, you can use GitHub Codespaces,
+which provides a full development environment in the cloud. While not entirely
+free, GitHub offers a monthly quota of free minutes for Codespaces usage.
 
-Once yor codespace is available, you can run a build (using the `build.sh`
-script in the root foldeer), and take a look at the resulting html. There are 
-a few ways to do that.
+Once your Codespaces is set up, you can run the build using the `build.sh`
+script located in the root folder. To preview the generated HTML, install the
+"Live Preview" extension by Microsoft. After running the build, expand the
+`dist` folder, right-click on one of the generated HTML files, and select
+"Show Preview." This will launch an internal server and allow you to view the
+results in a browser window.
 
-You can run an http server inside the codespace. For that install one, for
-example:
-
-```
-npm install -g http-server
-```
-
-and now run the server in the right location:
-
-```
-cd dist/authoring
-http-server
-```
-
-The codespace will detect the server that opened a port and prompt you to
-open the page in a browsers.
-
-Alternatively there is also an extension for Live Preview from Micorsoft that
-you can install in the codespace and use to preview the generated html documents.
-Note that other preview extensions will not do the job since the HTML pages that
-are generated do load remote resources and and are best served by a browser.
-
-The benefit of a codespace here is that you have the benefit of the local setup
-but do not need to have the tooling installed locally. The downside is that it
-is not for free (!!) and that you need to like VSCode as an Editor.
+The key advantage of using Codespaces is that it simulates a local development
+environment without needing to install any tools on your machine. However, be
+mindful that Codespaces usage may incur costs after your free minutes are
+exhausted, and it requires working within VSCode.
 
 # Creating and Editing a Document # {#editing}
 
