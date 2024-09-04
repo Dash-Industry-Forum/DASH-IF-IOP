@@ -74,6 +74,41 @@ commands. For example for `authoring`:
   browser page and you will see the updated version. This process will keep on\
   running until you terminate it with `Ctrl-C`.
 
+# Remote Editing setup # {#remote-editing}
+
+One way how you can edit the documents and get run a build to check the results
+quickly is by using a GitHub Codespace. Please note that this is not a free
+service!
+
+You can start a codespace, run a build (using the `build.sh` script in the root
+foldeer), and take a look at the resulting html. There are a few ways to do that.
+
+You can run an http server inside the codespace. For that install one, for
+example:
+
+```
+npm install -g http-server
+```
+
+and now run the server in the right location:
+
+```
+cd dist/authoring
+http-server
+```
+
+The codespace will detect the server that opened a port and prompt you to
+open the page in a browsers.
+
+Alternatively there is also an extension for Live Preview from Micorsoft that
+you can install in the codespace and use to preview the generated html documents.
+Note that other preview extensions will not do the job since the HTML pages that
+are generated do load remote resources and and are best served by a browser.
+
+The benefit of a codespace here is that you have the benefit of the local setup
+but do not need to have the tooling installed locally. The downside is that it
+is not for free (!!) and that you need to like VSCode as an Editor.
+
 # Creating and Editing a Document # {#editing}
 
 As described in [[#structure]], you will find individual documents in folders
