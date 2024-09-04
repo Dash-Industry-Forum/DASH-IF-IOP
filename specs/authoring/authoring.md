@@ -18,7 +18,8 @@ documents. Below is an overview of the tools we use:
    and relationships through a variety of diagram types, such as flowcharts,
    sequence diagrams, and class diagrams. The integration of Mermaid enhances
    the readability and comprehension of our documentation, making intricate
-   concepts more accessible to our audience. Mermaid is also supported by GitHub markdown rendering directly.
+   concepts more accessible to our audience. Mermaid is also supported by GitHub
+   markdown rendering directly.
  * [PlantUML](https://plantuml.com/) is another tool that will be part of the
    stack and allow us to create visualizations.
 
@@ -76,12 +77,23 @@ commands. For example for `authoring`:
 
 # Remote Editing setup # {#remote-editing}
 
-One way how you can edit the documents and get run a build to check the results
-quickly is by using a GitHub Codespace. Please note that this is not a free
-service!
+The fastes way to edit text in the browser is to use the [github.dev](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor)
+code editor. When you are in the repository, simply hit `.` to open the editor.
+You will get VSCode in the browser and can start editing right away. You will
+also be able to create branches, commit, and create pull requests.
 
-You can start a codespace, run a build (using the `build.sh` script in the root
-foldeer), and take a look at the resulting html. There are a few ways to do that.
+While this is already a very good start to edit markdown text, you will not be
+able to preview the rendered HTML since you can not run the build in this
+environment directly.
+
+One way how you can edit the documents and get run a build to check the results
+quickly is by using a GitHub Codespace. Please note though that this is not a
+free service! That said, you have a quota of free minutes that are available
+every month.
+
+Once yor codespace is available, you can run a build (using the `build.sh`
+script in the root foldeer), and take a look at the resulting html. There are 
+a few ways to do that.
 
 You can run an http server inside the codespace. For that install one, for
 example:
