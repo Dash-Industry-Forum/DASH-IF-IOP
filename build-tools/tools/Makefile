@@ -4,7 +4,7 @@
 
 # We collect all the spec names from the folders in the
 # specs directory
-SPECS = $(patsubst %.bs, %, $(shell ls specs))
+SPECS = $(patsubst %.bs, %, $(shell if [ -d "specs" ]; then ls specs; fi))
 
 # This is our target folder
 OUT = dist
@@ -79,13 +79,13 @@ $(OUT)/%-watch: $${spec-file} $${spec-sources} $(OUT)/%/Images
 
 # Run chromium to create a PDF from the already generated html page
 $(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
-	@echo "Compile $< -> $(OUT)/$*/$*.pdf"
+	@echo "Compile $< -> $@"
 	@chromium  \
 		--no-sandbox \
 		--headless=new \
 		--disable-gpu \
 		--disable-sync \
-		--print-to-pdf=$(OUT)/$*/$*.pdf \
+		--print-to-pdf=$@ \
 		--no-margine \
 		--run-all-compositor-stages-before-draw \
 		--no-pdf-header-footer \
@@ -110,6 +110,54 @@ $(OUT)/%/Images:
 # 	@[ -d $@ ] || mkdir -p $@
 # 	@mv $? $@
 
+SRC =
+NAME=
+
+.PHONY: spec
+spec: spec.html spec.pdf
+
+.PHONY: spec.html
+spec.html: ${OUT}/index.html
+
+.PHONY: spec.pdf
+spec.pdf: ${OUT}/${NAME}.pdf
+
+$(OUT)/index.html: ${SRC} $(OUT)/Images
+	@echo "Compile $< -> $(OUT)/index.html. Deps $^ to $@"
+	@[ -d $(OUT) ] || mkdir -p $(OUT)
+	bikeshed --allow-nonlocal-files spec $< $@
+
+$(OUT)/Images: Images/
+	@[ -d $(OUT) ] || mkdir -p $(OUT)
+	@if [ -d "Images" ]; then \
+		echo "Copy Images -> $(OUT)/Images"; \
+		cp -r Images $(OUT)/Images; \
+	fi
+
+$(OUT)/${NAME}.pdf: $(OUT)/index.html
+	@echo "Compile $< -> $@"
+	@chromium  \
+		--no-sandbox \
+		--headless=new \
+		--disable-gpu \
+		--disable-sync \
+		--print-to-pdf=$@ \
+		--no-margine \
+		--run-all-compositor-stages-before-draw \
+		--no-pdf-header-footer \
+		--virtual-time-budget=20000 \
+		$< 2>&1 | grep -v "bus.cc"
+
+.PHONY: spec-watch
+spec-watch: ${SRC} $(OUT)/Images
+	@[ -d $(OUT) ] || mkdir -p $(OUT)
+	bikeshed --allow-nonlocal-files watch $< $(OUT)/index.html
+
+.PHONY: spec-serve
+spec-serve: ${SRC} $(OUT)/Images
+	@[ -d $(OUT) ] || mkdir -p $(OUT)
+	bikeshed --allow-nonlocal-files serve $< $(OUT)/index.html
+
 # Helper to clean up
 .PHONY: clean
 clean:
@@ -119,6 +167,15 @@ clean:
 .PHONY: help
 help:
 	@echo "Bikeshed build script"
+	@echo ""
+	@echo "This makefile is looking for a specs folder and provides"
+	@echo "build tasks for each subfolder there."
+	@echo ""
+	@echo "In addition, you can also run this for a spec that is hosted"
+	@echo "as a single source file in the repo. For this, make sure you"
+	@echo "set the SRC and NAME variables correctly. Then use the spec"
+	@echo "targets."
+	@echo ""
 	@echo "The following make targets are available"
 	@echo
 	@echo "help				This help message"
@@ -129,3 +186,10 @@ help:
 		echo "$${s}.pdf			Build $$s as pdf"; \
 		echo "$${s}-watch			Build $$s as html and keep watching for changes"; \
 	done
+	@echo ""
+	@echo "spec				Build a single spec from SRC. Make sure you set the source file with SRC and provide a NAME that will be used for the PDF, i.e. make spec SRC=myspec.bs NAME=myspec"
+	@echo "spec.html			Build a single spec HTML from SRC. See above how to set SRC and NAME."
+	@echo "spec.pdf			Build a single spec HTML from SRC. See above how to set SRC and NAME."
+	@echo "spec-watch			Watch a single spec HTML from SRC. See above how to set SRC and NAME."
+	@echo "spec-serve			Watch and serve a single spec HTML from SRC. See above how to set SRC and NAME."
+
