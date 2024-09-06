@@ -18,7 +18,8 @@ documents. Below is an overview of the tools we use:
    and relationships through a variety of diagram types, such as flowcharts,
    sequence diagrams, and class diagrams. The integration of Mermaid enhances
    the readability and comprehension of our documentation, making intricate
-   concepts more accessible to our audience. Mermaid is also supported by GitHub markdown rendering directly.
+   concepts more accessible to our audience. Mermaid is also supported by GitHub
+   markdown rendering directly.
  * [PlantUML](https://plantuml.com/) is another tool that will be part of the
    stack and allow us to create visualizations.
 
@@ -56,7 +57,7 @@ your edits locally is to:
    * `build.bat` on Windows
 
 You might notice that the first build run will take a moment since the
-respective container needs to be dowloaded. Subsequent runs will be faster after
+respective container needs to be downloaded. Subsequent runs will be faster after
 that initial bootstrap.
 
 With the above command, _all_ the documents will be generated and you find the
@@ -73,6 +74,33 @@ commands. For example for `authoring`:
   of the included markdown files and save, the page is re-generated. Reload the
   browser page and you will see the updated version. This process will keep on\
   running until you terminate it with `Ctrl-C`.
+
+# Remote Editing Setup # {#remote-editing}
+
+To quickly edit text in a GitHub repository, you can use the [github.dev](https://docs.github.com/en/codespacesthe-githubdev-web-based-editor)
+browser-based editor. Simply press `.` while viewing the repository to open the
+editor in your browser. This will launch a lightweight version of VSCode where
+you can edit files, create branches, commit changes, and open pull requests
+directly from the browser.
+
+However, note that this method doesn’t allow you to preview rendered HTML since
+the environment doesn’t support running builds.
+
+If you need to edit documents and preview them, you can use GitHub Codespaces,
+which provides a full development environment in the cloud. While not entirely
+free, GitHub offers a monthly quota of free minutes for Codespaces usage.
+
+Once your Codespaces is set up, you can run the build using the `build.sh`
+script located in the root folder. To preview the generated HTML, install the
+"Live Preview" extension by Microsoft. After running the build, expand the
+`dist` folder, right-click on one of the generated HTML files, and select
+"Show Preview." This will launch an internal server and allow you to view the
+results in a browser window.
+
+The key advantage of using Codespaces is that it simulates a local development
+environment without needing to install any tools on your machine. However, be
+mindful that Codespaces usage may incur costs after your free minutes are
+exhausted, and it requires working within VSCode.
 
 # Creating and Editing a Document # {#editing}
 
