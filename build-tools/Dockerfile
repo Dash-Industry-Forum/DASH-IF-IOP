@@ -4,7 +4,7 @@ RUN apk add --no-cache \
       chromium-swiftshader \
       git \
       make \
-      #  plantuml \
+      plantuml \
       py-pip \
       && pip install --break-system-packages bikeshed \
       && bikeshed update

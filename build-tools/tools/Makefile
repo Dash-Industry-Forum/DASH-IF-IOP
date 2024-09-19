@@ -9,7 +9,11 @@ SPECS = $(patsubst %.bs, %, $(shell if [ -d "specs" ]; then ls specs; fi))
 # This is our target folder
 OUT = dist
 
-#DIAGRAM_IMAGES = $(subst $(OUT),$(OUT),$(patsubst %.wsd, %.png, $(shell find specs/ -type f -iname '*.wsd')))
+# DIAGRAM_IMAGES = $(subst $(OUT),$(OUT),$(patsubst %.wsd, %.png, $(shell find specs/ -type f -iname '*.wsd')))
+DIAGRAMS_SPEC = $(patsubst %.wsd, %, $(shell if [ -d "Diagrams" ]; then ls Diagrams/*.wsd; fi))
+
+DIAGRAMS_SPEC_SOURCES := $(wildcard Diagrams/*.wsd)
+DIAGRAMS_SPEC_IMAGES := $(addprefix $(OUT)/, $(DIAGRAMS_SPEC_SOURCES:.wsd=.png))
 
 # default target to build everything
 all: $(SPECS)
@@ -39,6 +43,14 @@ $(SPECS:%=%.pdf): %: $(OUT)/%
 # This assumes that $* evaluates to the name of the spec
 spec-sources = $(shell find specs/$*/ -type f -iname \*.md)
 
+# This helper is used to find all the plantuml diagrams per spec
+# and transforms the results to the target files that should match that
+spec-diagrams = $(patsubst specs/%,$(OUT)/%,$(patsubst %.wsd,%.png,$(shell find specs/$*/ -type f -iname \*.wsd)))
+
+# This helper finds the spec files for a single spec and then transforms them to
+# the respective output path
+single-spec-diagrams = $(addprefix ${OUT}/,$(patsubst %.wsd, %.png, $(shell if [ -d "Diagrams" ]; then ls Diagrams/*.wsd; fi)))
+
 # This is a helper that we use in the prerequisits with SECONDEXPANSION
 # to extract the name of the spec folder
 spec-name = $(shell echo "$*" | cut -d/ -f1 )
@@ -46,10 +58,6 @@ spec-name = $(shell echo "$*" | cut -d/ -f1 )
 # This is a helper that we use in the prerequisits with SECONDEXPANSION
 # to find the spec file
 spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
-
-# This is a helper that we use in the prerequisits with SECONDEXPANSION
-# to find all diagram files
-#spec-diagrams = $(subst .wsd,.png,$(shell find specs/$*/Diagrams -type f -iname \*.wsd))
 
 # This is a helper that we use in the prerequisits with SECONDEXPANSION
 # to find all diagram files
@@ -66,16 +74,16 @@ spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
 #  - the Images are available in the output folder (order matters)
 #  - the .bs file that we pass to bikeshed
 #  - all .inc.md files that belong to this spec
-$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images
-	@echo "Compile $< -> $(OUT)/$*/index.html. Deps $^ to $@"
+$(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images $${spec-diagrams}
+	@echo "Compile $< -> $(OUT)/$*/index.html"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
-	bikeshed --allow-nonlocal-files spec $< $@
+	@bikeshed --allow-nonlocal-files spec $< $@
 
 .PHONY: $(OUT)/%-watch
 $(OUT)/%-watch: $${spec-file} $${spec-sources} $(OUT)/%/Images
 	@echo "Watch $< -> $(OUT)/$*/index.html. Deps $^"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
-	bikeshed --allow-nonlocal-files watch $< $(OUT)/$*/index.html
+	@bikeshed --allow-nonlocal-files watch $< $(OUT)/$*/index.html
 
 # Run chromium to create a PDF from the already generated html page
 $(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
@@ -92,6 +100,12 @@ $(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
 		--virtual-time-budget=20000 \
 		$< 2>&1 | grep -v "bus.cc"
 
+# Target that compiles the plantuml diagrams on a per spec bases
+$(OUT)/%.png: specs/%.wsd
+	@echo "Compile $< -> $@"
+	@[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
+	@plantuml $< -o $(shell pwd)/$(shell dirname $@);
+
 # This one could maybe be done in a different way, but for now
 # we are linking the Images folder to the outout folder
 $(OUT)/%/Images:
@@ -100,15 +114,6 @@ $(OUT)/%/Images:
 		echo "Copy specs/$*/Images -> $(OUT)/$*/Images"; \
 		cp -r specs/$*/Images $(OUT)/$*/Images; \
 	fi
-
-# $(DIAGRAM_IMAGES): %.png: %.wsd
-# 	@echo "Compile Diagram $< -> $@"
-# 	@plantuml $<
-
-# $(OUT)/%/Diagrams: $${spec-diagrams}
-# 	@echo "Move Diagrams $? -> $@"
-# 	@[ -d $@ ] || mkdir -p $@
-# 	@mv $? $@
 
 SRC =
 NAME=
@@ -122,10 +127,10 @@ spec.html: ${OUT}/index.html
 .PHONY: spec.pdf
 spec.pdf: ${OUT}/${NAME}.pdf
 
-$(OUT)/index.html: ${SRC} $(OUT)/Images
-	@echo "Compile $< -> $(OUT)/index.html. Deps $^ to $@"
+$(OUT)/index.html: ${SRC} ${OUT}/Images $${single-spec-diagrams}
+	@echo "Compile $< -> $(OUT)/index.html"
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	bikeshed --allow-nonlocal-files spec $< $@
+	@bikeshed --allow-nonlocal-files spec $< $@
 
 $(OUT)/Images: Images/
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
@@ -133,6 +138,13 @@ $(OUT)/Images: Images/
 		echo "Copy Images -> $(OUT)/Images"; \
 		cp -r Images $(OUT)/Images; \
 	fi
+
+# Target to create the diagrams from plantUML files for a single
+# spec that resides in the root folder.
+$(OUT)/Diagrams/%.png: Diagrams/%.wsd
+	@echo "Compile $< -> $@"
+	@[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
+	@plantuml $< -o $(shell pwd)/$(shell dirname $@);
 
 $(OUT)/${NAME}.pdf: $(OUT)/index.html
 	@echo "Compile $< -> $@"
@@ -151,12 +163,12 @@ $(OUT)/${NAME}.pdf: $(OUT)/index.html
 .PHONY: spec-watch
 spec-watch: ${SRC} $(OUT)/Images
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	bikeshed --allow-nonlocal-files watch $< $(OUT)/index.html
+	@bikeshed --allow-nonlocal-files watch $< $(OUT)/index.html
 
 .PHONY: spec-serve
 spec-serve: ${SRC} $(OUT)/Images
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	bikeshed --allow-nonlocal-files serve $< $(OUT)/index.html
+	@bikeshed --allow-nonlocal-files serve $< $(OUT)/index.html
 
 # Helper to clean up
 .PHONY: clean
