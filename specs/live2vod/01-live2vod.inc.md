@@ -11,7 +11,7 @@ clause 4.6. It obsoletes clause 4.6 of DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 
 A common scenario for DASH distribution is that a live distributed content is
 also made available On-Demand. Different use cases exist and are discussed in
-the following. Common to the different use cases presented are the following 
+the following. Common to the different use cases presented are the following
 aspects when converting a live service to VoD:
 
   * desire to re-use the Segments as generated for the live service are also
@@ -41,7 +41,7 @@ the MPD and a media time within the Period. Specifically,
 
 <a href="#fig:live2vod">The figure below</a> provides an overview of the scenarios.
 
-<figure id="fig:live2vod>
+<figure id="fig:live2vod">
   <img src="Images/Live2VoD.png">
   <figcaption>Different Live to VoD Scenarios</figcaption>
 </figure>
@@ -50,7 +50,7 @@ the MPD and a media time within the Period. Specifically,
 
 A first scenario for Live Content being converted to VOD is the case that a
 scheduled live event starting at a known date and time is also made available
-for On-Demand offering after the live program is completed. This case is 
+for On-Demand offering after the live program is completed. This case is
 well-known from sports events, for example football matches (for which the duration
 can be relatively easily predicted) or tennis matches (for which the duration may
 be quite arbitrary).
@@ -59,8 +59,8 @@ be quite arbitrary).
 
 In the second scenario, the content is extracted from a longer, e.g. 24/7 stream,
 at the beginning, the end, or in between. This allows that the content is
-offered in a recorded fashion to users. The On-demand content again is defined by a 
-start and an end time in the live content. 
+offered in a recorded fashion to users. The On-demand content again is defined by a
+start and an end time in the live content.
 
 ### Transition between Live and On-Demand ### {#live2vod:scenario-transition}
 
@@ -79,10 +79,10 @@ A live service is offered with an MPD, where for the MPD the `MPD@type` is set
 to `dynamic`. In addition, the MPD may be updated by having the
 `MPD@minimumUpdatePeriod` present. The live service may use different types of
 profiles, including multi-Period content, number-based or time-based templating,
-as well using `@duration` or Segment Timeline based segment duration signaling. 
+as well using `@duration` or Segment Timeline based segment duration signaling.
 The live service may include events in the MPD and/or Inband Event Streams. Segments get
-available over time, whereby the latest segment availability start time can be 
-determined by information in the MPD as the sum of the `MPD@availabilityStartTime`, 
+available over time, whereby the latest segment availability start time can be
+determined by information in the MPD as the sum of the `MPD@availabilityStartTime`,
 the start of the Period provided in *PeriodStart* as defined in [[!DASH]], clause
 5.3.2.
 
@@ -142,9 +142,9 @@ In order to provide live content as On-Demand, the following is recommended:
 
     * MPD validity expiration events should not be present in the MPD. However,
       it is not recommended that `emsg` boxes are removed from Segments as this
-      would result in change of Segments and invalidate caches. It is expected that 
-	  by removal of the corresponding `InbandEventStream` element in the MPD, the
-	  DASH client will ignore the `emsg` boxes.
+      would result in change of Segments and invalidate caches. It is expected that
+      by removal of the corresponding `InbandEventStream` element in the MPD, the
+      DASH client will ignore the `emsg` boxes.
 
 Specifically on the timing signaling of the Periods in the VoD offering,
 
@@ -212,22 +212,22 @@ aspects in clause [[#live2vod:content-offering-common-aspects]] apply.
 ### Transition between Live and On-Demand ### {#live2vod:content-offering-transition}
 
 In the case of transitioning the services, the content offering should take into
-account the following guidelines. 
+account the following guidelines.
 
 Generally, in particular in 24/7 live service,
 or if the VOD service starts before the live service ends, it is discouraged
 that the the same MPD URL is used for live and On-Demand content. It is
 preferred to create a new MPD URL for the On-demand content to not confuse
-clients when transitioning from live to VoD MPD. Note that the same Segments 
+clients when transitioning from live to VoD MPD. Note that the same Segments
 with the same Segment URLs may and should be shared across live and VOD MPD.
 
 However, there are relevant use cases for which a transition from live to On-demand content
-at the end of a live service and re-using the existing MPD URL, in particular when the live 
+at the end of a live service and re-using the existing MPD URL, in particular when the live
 service follows the specific restrictions in section [[#live2vod:content-offering-scheduled-and-bounded]].
 
-In this transitioning phase when the live service comes to an end, as a first action, 
-once the URL and publish time of the last Segment is known for the live service, 
-and the duration of the service is known as well, the live MPD should be changed 
+In this transitioning phase when the live service comes to an end, as a first action,
+once the URL and publish time of the last Segment is known for the live service,
+and the duration of the service is known as well, the live MPD should be changed
 as defined in clause 4.4.3.1 of [[!IOP43]],, i.e.,
 
   * adding the attribute `MPD@mediaPresentationDuration` to match the duration of the service
@@ -239,7 +239,7 @@ This action is the normal action when terminating a live service.
 In this case and at this time, all Segments are available and clients playing the live
 service can complete the playback of the service until the end. However, some clients may also
 use the timeshift buffer to go back to earlier media times, or play the live service with some
-delay. The beneficial aspect of the action above is that the DASH clients are expected stop 
+delay. The beneficial aspect of the action above is that the DASH clients are expected stop
 updating the MPD for operational reasons.
 
 However, clients joining the service for the first time seeing the above MPD
@@ -265,8 +265,8 @@ of the modifications as documented in section [[#live2vod:content-offering-commo
 In the specific service offering above for which the `MPD@availabilityStartTime` is
 set to a value that is aligned with the start of the live presentation, and for
 which the `Period@start` of the first Period is set to 0, none of the Period
-modifications described in section [[#live2vod:content-offering-common-aspects]] 
-need to be done and the MPD can be used as is. In this case, the change 
+modifications described in section [[#live2vod:content-offering-common-aspects]]
+need to be done and the MPD can be used as is. In this case, the change
 from type `dynamic` to `static` may happen even earlier.
 
 ## Client Behavior ## {#live2vod:client}
@@ -287,16 +287,16 @@ that a DASH client should be aware of:
 
   * clients that access an MPD with `MPD@type='static'` for first time should
     start playback from the beginning (unless a specific start time is chosen
-    using an MPD anchor). 
-	
+    using an MPD anchor).
+
   * clients that access an `MPD@type='dynamic'` for the
     first time should start from the live edge (unless a specific start time is
-    chosen using an MPD anchor). If the live edge is close to the end or past the end 
-	of the media presentation, the DASH client should play the last few seconds
-	of the live service in order for the user to provide the impression of 
-	joining the service. The DASH client should also update the MPD and should expect 
-	that the type changes from `dynamic` to `static`.
-	
+    chosen using an MPD anchor). If the live edge is close to the end or past the end
+    of the media presentation, the DASH client should play the last few seconds
+    of the live service in order for the user to provide the impression of
+    joining the service. The DASH client should also update the MPD and should expect
+    that the type changes from `dynamic` to `static`.
+
 DASH clients should support the transition from `MPD@type` being `dynamic` to
 `static` in the case when the `@minimumUpdatePeriod` is no longer present in the
 MPD, as long as the Period structure is not changed.
