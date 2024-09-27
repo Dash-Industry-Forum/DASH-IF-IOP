@@ -77,7 +77,7 @@ commands. For example for `authoring`:
 
 # Remote Editing Setup # {#remote-editing}
 
-To quickly edit text in a GitHub repository, you can use the [github.dev](https://docs.github.com/en/codespacesthe-githubdev-web-based-editor)
+To quickly edit text in a GitHub repository, you can use the [github.dev](https://docs.github.com/en/codespaces/the-githubdev-web-based-editor)
 browser-based editor. Simply press `.` while viewing the repository to open the
 editor in your browser. This will launch a lightweight version of VSCode where
 you can edit files, create branches, commit changes, and open pull requests
