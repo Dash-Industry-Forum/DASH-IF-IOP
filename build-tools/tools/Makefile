@@ -77,13 +77,13 @@ spec-file = $(shell find specs/$*/ -type f -iname \*.bs | head -n 1)
 $(OUT)/%/index.html: $${spec-file} $${spec-sources} $(OUT)/%/Images $${spec-diagrams}
 	@echo "Compile $< -> $(OUT)/$*/index.html"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
-	@bikeshed --allow-nonlocal-files spec $< $@
+	@bikeshed --no-update --allow-nonlocal-files spec $< $@
 
 .PHONY: $(OUT)/%-watch
 $(OUT)/%-watch: $${spec-file} $${spec-sources} $(OUT)/%/Images
 	@echo "Watch $< -> $(OUT)/$*/index.html. Deps $^"
 	@[ -d $(OUT)/$* ] || mkdir -p $(OUT)/$*
-	@bikeshed --allow-nonlocal-files watch $< $(OUT)/$*/index.html
+	@bikeshed --no-update --allow-nonlocal-files watch $< $(OUT)/$*/index.html
 
 # Run chromium to create a PDF from the already generated html page
 $(OUT)/%.pdf: $(OUT)/$${spec-name}/index.html
@@ -130,7 +130,7 @@ spec.pdf: ${OUT}/${NAME}.pdf
 $(OUT)/index.html: ${SRC} ${OUT}/Images $${single-spec-diagrams}
 	@echo "Compile $< -> $(OUT)/index.html"
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	@bikeshed --allow-nonlocal-files spec $< $@
+	@bikeshed --no-update --allow-nonlocal-files spec $< $@
 
 $(OUT)/Images: Images/
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
@@ -163,12 +163,12 @@ $(OUT)/${NAME}.pdf: $(OUT)/index.html
 .PHONY: spec-watch
 spec-watch: ${SRC} $(OUT)/Images
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	@bikeshed --allow-nonlocal-files watch $< $(OUT)/index.html
+	@bikeshed --no-update --allow-nonlocal-files watch $< $(OUT)/index.html
 
 .PHONY: spec-serve
 spec-serve: ${SRC} $(OUT)/Images
 	@[ -d $(OUT) ] || mkdir -p $(OUT)
-	@bikeshed --allow-nonlocal-files serve $< $(OUT)/index.html
+	@bikeshed --no-update --allow-nonlocal-files serve $< $(OUT)/index.html
 
 # Helper to clean up
 .PHONY: clean
