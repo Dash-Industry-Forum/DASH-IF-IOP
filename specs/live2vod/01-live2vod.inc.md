@@ -5,7 +5,7 @@
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]],
 clause 4.6. It obsoletes clause 4.6 of DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 
-[[#live2vod]]
+[[#live2vod:scenarios]]
 
 ## Scenarios and Motivation ## {#live2vod:scenarios}
 
