@@ -203,10 +203,13 @@ follows:
 
   * changing the `MPD@type` from `dynamic` to `static`
 
+Note that these changes may happen all at the same time, or the first two 
+may be applied first and the second change only in yet another update.
+
 ### Extracting a time period from continuous live ### {#live2vod_content-offering-extraction}
 
-In the scenario, for which a part from the live service extracted and made
-available as On-Demand content, basically all recommendations from the common
+In the scenario, for which a part from the live service is extracted and made
+available as On-Demand content, all recommendations from the common
 aspects in clause [[#live2vod_content-offering-common-aspects]] apply.
 
 ### Transition between Live and On-Demand ### {#live2vod_content-offering-transition}
@@ -216,12 +219,12 @@ account the following guidelines.
 
 Generally, in particular in 24/7 live service,
 or if the VOD service starts before the live service ends, it is discouraged
-that the the same MPD URL is used for live and On-Demand content. It is
-preferred to create a new MPD URL for the On-demand content to not confuse
-clients when transitioning from live to VoD MPD. Note that the same Segments
+that the the same MPD URL is used for live and on-demand content. It is
+preferred to create a new MPD URL for the on-demand content to not confuse
+clients when transitioning from live to on-demand MPD. Note that the same Segments
 with the same Segment URLs may and should be shared across live and VOD MPD.
 
-However, there are relevant use cases for which a transition from live to On-demand content
+However, there are relevant use cases to support a transition from live to on-demand content
 at the end of a live service and re-using the existing MPD URL, in particular when the live
 service follows the specific restrictions in section [[#live2vod_content-offering-scheduled-and-bounded]].
 
@@ -236,16 +239,20 @@ as defined in clause 4.4.3.1 of [[!IOP43]],, i.e.,
 
 This action is the normal action when terminating a live service.
 
-In this case and at this time, all Segments are available and clients playing the live
-service can complete the playback of the service until the end. However, some clients may also
-use the timeshift buffer to go back to earlier media times, or play the live service with some
-delay. The beneficial aspect of the action above is that the DASH clients are expected stop
-updating the MPD for operational reasons.
+In this case and at this time, all Segments URLs are known and clients playing the live
+service can complete the playback of the service until the end without updating the MPD. 
+However, some clients may also use the timeshift buffer to go back to earlier media times, 
+or play the live service with some delay. The beneficial aspect of the action above, i.e. 
+removing the the attribute `MPD@minimumUpdatePeriod` is that the DASH clients are expected 
+to stop updating the MPD for operational reasons.
 
 However, clients joining the service for the first time seeing the above MPD
-will see the type `dynamic` and will attempt to access the live edge, but the
-live edge does not exist. For this case, the client is expected to only show the
-last few video frames of the last segment, but this user experience less preferred.
+will see the type `dynamic` and will attempt to access the live edge, but no content
+is available as the live edge, as this is past the scheduled presentation. 
+For this case, the client is expected to provide an indication to the user that it 
+joined at the end of the media presentation, for example by playing the
+last few video frames of the last segment. However, such user experience to join 
+terminated services is less preferred.
 
 In order for clients to join at the start of the live service, the `MPD@type`
 needs to change from `dynamic` to `static`. While this change may confuse
