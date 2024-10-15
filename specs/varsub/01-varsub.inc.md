@@ -1,4 +1,4 @@
-# Common Media Client Metadata in DASH # {#cmcd}
+# {} # {#cmcd}
 
 ## Introduction ## {#cmcd_introduction}
 
