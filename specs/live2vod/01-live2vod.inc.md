@@ -312,6 +312,103 @@ MPD, as long as the Period structure is not changed.
 
 NOTE: Add some MPD examples
 
+```xml
+<MPD
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns="urn:mpeg:dash:schema:mpd:2011" 
+xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd"
+type="dynamic" minimumUpdatePeriod="PT10S" 
+timeShiftBufferDepth="PT600S" 
+minBufferTime="PT2S" 
+profiles="urn:mpeg:dash:profile:isoff-main:2011"
+publishTime="2014-10-17T17:17:05Z" 
+availabilityStartTime="2014-10-17T17:17:05Z">
+  <Period id="1" start="PT0S">
+   <BaseURL> http://example.com/1/</BaseURL> 
+<SegmentTemplate media="./$RepresentationID$/$Number$.m4s" initialization="$RepresentationID$-init.mp4"/>
+    <!-- Video -->
+    <AdaptationSet id="1" mimeType="video/mp4" codecs="hev1.A1.80.L93.B0" segmentAlignment="true" startWithSAP="1">
+      <SegmentTemplate timescale="25" duration="25"/>
+      <Representation id="v2048" bandwidth="2048000"/>
+      <Representation id="v1024" bandwidth="1024000"/>
+      <Representation id="v512" bandwidth="512000"/>
+      <Representation id="v128" bandwidth="128000"/>
+    </AdaptationSet>
+    <!-- Audio -->
+    <AdaptationSet id="2" mimeType="audio/mp4" codecs="mp4a.40.2" segmentAlignment="true" startWithSAP="1" bitstreamSwitching="true">
+      <SegmentTemplate timescale="20" duration="20"/>
+      <Representation id="a128" bandwidth="128000"/>
+	  <Representation id="a64" bandwidth="64000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>
+```
+
+```xml
+<MPD
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns="urn:mpeg:dash:schema:mpd:2011" 
+xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd"
+type="dynamic" mediaPresentationDuration="PT300S" 
+timeShiftBufferDepth="PT600S" 
+minBufferTime="PT2S" 
+profiles="urn:mpeg:dash:profile:isoff-main:2011"
+publishTime="2014-10-17T17:17:07Z" 
+availabilityStartTime="2014-10-17T17:17:05Z">
+  <Period id="1" start="PT0S">
+   <BaseURL> http://example.com/1/</BaseURL> 
+<SegmentTemplate media="./$RepresentationID$/$Number$.m4s" initialization="$RepresentationID$-init.mp4"/>
+    <!-- Video -->
+    <AdaptationSet id="1" mimeType="video/mp4" codecs="hev1.A1.80.L93.B0" segmentAlignment="true" startWithSAP="1">
+      <SegmentTemplate timescale="25" duration="25"/>
+      <Representation id="v2048" bandwidth="2048000"/>
+      <Representation id="v1024" bandwidth="1024000"/>
+      <Representation id="v512" bandwidth="512000"/>
+      <Representation id="v128" bandwidth="128000"/>
+    </AdaptationSet>
+    <!-- Audio -->
+    <AdaptationSet id="2" mimeType="audio/mp4" codecs="mp4a.40.2" segmentAlignment="true" startWithSAP="1" bitstreamSwitching="true">
+      <SegmentTemplate timescale="20" duration="20"/>
+      <Representation id="a128" bandwidth="128000"/>
+	  <Representation id="a64" bandwidth="64000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>
+```
+
+
+```xml
+<MPD
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns="urn:mpeg:dash:schema:mpd:2011" 
+xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd"
+type="static" mediaPresentationDuration="PT300S" 
+timeShiftBufferDepth="PT600S" 
+minBufferTime="PT2S" 
+profiles="urn:mpeg:dash:profile:isoff-main:2011"
+publishTime="2014-10-17T17:17:10Z" 
+availabilityStartTime="2014-10-17T17:17:05Z">
+  <Period id="1" start="PT0S">
+   <BaseURL> http://example.com/1/</BaseURL> 
+<SegmentTemplate media="./$RepresentationID$/$Number$.m4s" initialization="$RepresentationID$-init.mp4"/>
+    <!-- Video -->
+    <AdaptationSet id="1" mimeType="video/mp4" codecs="hev1.A1.80.L93.B0" segmentAlignment="true" startWithSAP="1">
+      <SegmentTemplate timescale="25" duration="25"/>
+      <Representation id="v2048" bandwidth="2048000"/>
+      <Representation id="v1024" bandwidth="1024000"/>
+      <Representation id="v512" bandwidth="512000"/>
+      <Representation id="v128" bandwidth="128000"/>
+    </AdaptationSet>
+    <!-- Audio -->
+    <AdaptationSet id="2" mimeType="audio/mp4" codecs="mp4a.40.2" segmentAlignment="true" startWithSAP="1" bitstreamSwitching="true">
+      <SegmentTemplate timescale="20" duration="20"/>
+      <Representation id="a128" bandwidth="128000"/>
+	  <Representation id="a64" bandwidth="64000"/>
+    </AdaptationSet>
+  </Period>
+</MPD>
+```
+
 ## Reference Tools ## {#live2vod_reference-tools}
 
 NOTE: provide status for the following functionalities
