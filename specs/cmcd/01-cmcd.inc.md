@@ -1,31 +1,9 @@
 # Common Media Client Metadata in DASH # {#cmcd}
 
-## Introduction ## {#cmcd:introduction}
+## Introduction ## {#cmcd_introduction}
 
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 It adds an additional feature.
 
-## Scenarios ## {#cmcd:scenarios}
+The document is developed in [Google docs and can be accessed here](https://docs.google.com/document/d/1tmijOI2xB2w6rED4f-yFXQIPdxsVP8rm7DIgFWnjP1E/edit).
 
-
-## Content Offering Requirements and Recommendations ## {#cmcd:content-offering}
-
-
-## Client Implementation Requirements and Guidelines ## {#cmcd:client}
-
-
-
-## Examples ## {#cmcd:examples}
-
-NOTE: Add some MPD examples
-
-## Reference Tools ## {#cmcd:reference-tools}
-
-NOTE: provide status for the following functionalities
-
-  * Dash.js
-  * Live Sim
-  * Test Vectors
-  * JCCP
-
-## Additional Information ## {#cmcd:additional-information}
