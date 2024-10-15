@@ -1,15 +1,13 @@
 # [TITLE] # {#live2vod}
 
-## Introduction ## {#live2vod:introduction}
+## Introduction ## {#live2vod_introduction}
 
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]],
 clause 4.6. It obsoletes clause 4.6 of DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 
-[[#live2vod:scenarios]]
+## Scenarios and Motivation ## {#live2vod_scenarios}
 
-## Scenarios and Motivation ## {#live2vod:scenarios}
-
-### Common aspects ### {#live2vod:scenario-common-aspects}
+### Common aspects ### {#live2vod_scenario-common-aspects}
 
 A common scenario for DASH distribution is that a live distributed content is
 also made available On-Demand. Different use cases exist and are discussed in
@@ -48,7 +46,7 @@ the MPD and a media time within the Period. Specifically,
   <figcaption>Different Live to VoD Scenarios</figcaption>
 </figure>
 
-### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod:scenario-scheduled-and-bounded}
+### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod_scenario-scheduled-and-bounded}
 
 A first scenario for Live Content being converted to VOD is the case that a
 scheduled live event starting at a known date and time is also made available
@@ -57,14 +55,14 @@ well-known from sports events, for example football matches (for which the durat
 can be relatively easily predicted) or tennis matches (for which the duration may
 be quite arbitrary).
 
-### Extracting a time period from continuous live ### {#live2vod:scenario-extraction}
+### Extracting a time period from continuous live ### {#live2vod_scenario-extraction}
 
 In the second scenario, the content is extracted from a longer, e.g. 24/7 stream,
 at the beginning, the end, or in between. This allows that the content is
 offered in a recorded fashion to users. The On-demand content again is defined by a
 start and an end time in the live content.
 
-### Transition between Live and On-Demand ### {#live2vod:scenario-transition}
+### Transition between Live and On-Demand ### {#live2vod_scenario-transition}
 
 In an extension of the first scenario, the live service may be converted to a VOD service
 in a seamless manner. To allows this, the service is provided in live and on-demand
@@ -73,9 +71,9 @@ live service, the content and service remains on the portal, but the clients are
 no longer experience the joining of the live service at the live edge, but the
 On-Demand service from the start while using the same MPD URL.
 
-## Content Offering Requirements and Recommendations ## {#live2vod:content-offering}
+## Content Offering Requirements and Recommendations ## {#live2vod_content-offering}
 
-### Common aspects ### {#live2vod:content-offering-common-aspects}
+### Common aspects ### {#live2vod_content-offering-common-aspects}
 
 A live service is offered with an MPD, where for the MPD the `MPD@type` is set
 to `dynamic`. In addition, the MPD may be updated by having the
@@ -186,7 +184,7 @@ Specifically on the timing signaling of the Periods in the VoD offering,
     ISO/IEC 23009-1 [[!DASH]], Annex A.3.2, the `MPD@mediaPresentationDuration`
     attribute takes precendence over the *PeriodDuration*.
 
-### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod:content-offering-scheduled-and-bounded}
+### Scheduled and Bounded Live Service transitioned to VoD ### {#live2vod_content-offering-scheduled-and-bounded}
 
 In the specific scenario for a scheduled service, for which the start and end
 times of the live and VOD service coincide, it is recommended that for the live
@@ -195,7 +193,7 @@ initial Period, and the `Period@start` of the first Period of the live service
 is set to 0.
 
 If this is the case, the operations documented in the common aspects in clause
-[[#live2vod:content-offering-common-aspects]] are significantly simplified and
+[[#live2vod_content-offering-common-aspects]] are significantly simplified and
 no changes to period timing are needed. The only modifications to the MPD are as
 follows:
 
@@ -205,13 +203,13 @@ follows:
 
   * changing the `MPD@type` from `dynamic` to `static`
 
-### Extracting a time period from continuous live ### {#live2vod:content-offering-extraction}
+### Extracting a time period from continuous live ### {#live2vod_content-offering-extraction}
 
 In the scenario, for which a part from the live service extracted and made
 available as On-Demand content, basically all recommendations from the common
-aspects in clause [[#live2vod:content-offering-common-aspects]] apply.
+aspects in clause [[#live2vod_content-offering-common-aspects]] apply.
 
-### Transition between Live and On-Demand ### {#live2vod:content-offering-transition}
+### Transition between Live and On-Demand ### {#live2vod_content-offering-transition}
 
 In the case of transitioning the services, the content offering should take into
 account the following guidelines.
@@ -225,7 +223,7 @@ with the same Segment URLs may and should be shared across live and VOD MPD.
 
 However, there are relevant use cases for which a transition from live to On-demand content
 at the end of a live service and re-using the existing MPD URL, in particular when the live
-service follows the specific restrictions in section [[#live2vod:content-offering-scheduled-and-bounded]].
+service follows the specific restrictions in section [[#live2vod_content-offering-scheduled-and-bounded]].
 
 In this transitioning phase when the live service comes to an end, as a first action,
 once the URL and publish time of the last Segment is known for the live service,
@@ -262,16 +260,16 @@ playback of live, and have not implemented MPD updates in pause state.
 
 Hence, it is recommended that in the general case, service providers are
 permitted to change the MPD and replace the `@type` to be `static` and apply all
-of the modifications as documented in section [[#live2vod:content-offering-common-aspects]].
+of the modifications as documented in section [[#live2vod_content-offering-common-aspects]].
 
 In the specific service offering above for which the `MPD@availabilityStartTime` is
 set to a value that is aligned with the start of the live presentation, and for
 which the `Period@start` of the first Period is set to 0, none of the Period
-modifications described in section [[#live2vod:content-offering-common-aspects]]
+modifications described in section [[#live2vod_content-offering-common-aspects]]
 need to be done and the MPD can be used as is. In this case, the change
 from type `dynamic` to `static` may happen even earlier.
 
-## Client Behavior ## {#live2vod:client}
+## Client Behavior ## {#live2vod_client}
 
 For a DASH client, there is basically no difference on whether the content was
 generated from a live service or the content is provided as On-Demand. However,
@@ -303,11 +301,11 @@ DASH clients should support the transition from `MPD@type` being `dynamic` to
 `static` in the case when the `@minimumUpdatePeriod` is no longer present in the
 MPD, as long as the Period structure is not changed.
 
-## Examples ## {#live2vod:examples}
+## Examples ## {#live2vod_examples}
 
 NOTE: Add some MPD examples
 
-## Reference Tools ## {#live2vod:reference-tools}
+## Reference Tools ## {#live2vod_reference-tools}
 
 NOTE: provide status for the following functionalities
   * Dash.js
@@ -315,7 +313,7 @@ NOTE: provide status for the following functionalities
   * Test Vectors
   * JCCP
 
-## Additional Information ## {#live2vod:additional-information}
+## Additional Information ## {#live2vod_additional-information}
 
 
 
