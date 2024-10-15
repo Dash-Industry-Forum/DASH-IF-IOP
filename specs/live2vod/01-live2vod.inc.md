@@ -310,7 +310,7 @@ MPD, as long as the Period structure is not changed.
 
 ## Examples ## {#live2vod_examples}
 
-NOTE: Add some MPD examples
+In the following, three published MPDs are provided. 
 
 ```xml
 <MPD
