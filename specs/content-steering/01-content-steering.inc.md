@@ -1,28 +1,8 @@
 # Content Steering # {#content-steering}
 
-## Introduction ## {#content-steering:introduction}
+## Introduction ## {#content-steering_introduction}
 
 This feature description is an update to DASH-IF IOP Guidelines v4.3 [[!IOP43]].
 It adds an additional features.
 
-## Scenarios ## {#content-steering:scenarios}
-
-
-## Content Offering Requirements and Recommendations ## {#content-steering:content-offering}
-
-
-## Client Implementation Requirements and Guidelines ## {#content-steering:client}
-
-## Examples ## {#content-steering:examples}
-
-NOTE: Add some MPD examples
-
-## Reference Tools ## {#content-steering:reference-tools}
-
-NOTE: provide status for the following functionalities
-  * Dash.js
-  * Live Sim
-  * Test Vectors
-  * JCCP
-
-## Additional Information ## {#content-steering:additional-information}
+The document is developed in [Google docs and can be accessed here](https://docs.google.com/document/d/18DjRAQS4MMbP1zwOf0d_VU9X4A3rIvj6lAFk3_ChYQM/edit).
