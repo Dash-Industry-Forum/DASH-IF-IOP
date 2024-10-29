@@ -312,6 +312,8 @@ MPD, as long as the Period structure is not changed.
 
 In the following, three published MPDs are provided. 
 
+The first one is a live MPD that is published prior to the knowledge of the end of the Media Presentation at time 2014-10-17T17:17:05Z.
+
 ```xml
 <MPD
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -343,6 +345,7 @@ availabilityStartTime="2014-10-17T17:17:05Z">
   </Period>
 </MPD>
 ```
+After some time passes, a new live MPD that is published prior to the knowledge of the end of the Media Presentation at time 2014-10-17T17:17:07Z.
 
 ```xml
 <MPD
