@@ -1,0 +1,13 @@
+<pre class="metadata">
+Revision: 0.1
+Title: Support for LC-EVC in DASH
+Status: LD
+Shortname: l3d
+URL: https://dashif.org/Guidelines/master/lc-evc.html
+Group: dashif
+!Contributors: [Alan Stein](https://www.linkedin.com/in/ajstein/)
+</pre>
+
+<pre class=include>
+path: 01-lc-evc.inc.md
+</pre>
