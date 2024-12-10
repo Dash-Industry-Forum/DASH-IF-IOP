@@ -312,6 +312,8 @@ MPD, as long as the Period structure is not changed.
 
 In the following, three published MPDs are provided. 
 
+The first one is a live MPD and is open-ended.
+
 ```xml
 <MPD
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -321,8 +323,8 @@ type="dynamic" minimumUpdatePeriod="PT10S"
 timeShiftBufferDepth="PT600S" 
 minBufferTime="PT2S" 
 profiles="urn:mpeg:dash:profile:isoff-main:2011"
-publishTime="2014-10-17T17:17:05Z" 
-availabilityStartTime="2014-10-17T17:17:05Z">
+publishTime="2024-12-10T17:17:05Z" 
+availabilityStartTime="2024-12-10T16:17:05Z">
   <Period id="1" start="PT0S">
    <BaseURL> http://example.com/1/</BaseURL> 
 <SegmentTemplate media="./$RepresentationID$/$Number$.m4s" initialization="$RepresentationID$-init.mp4"/>
@@ -344,17 +346,19 @@ availabilityStartTime="2014-10-17T17:17:05Z">
 </MPD>
 ```
 
+At the time when the duration of the Media Presentation is known, the `MPD@mediaPresentationDuration` is added giving indication that the live presentation will terminate.
+
 ```xml
 <MPD
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xmlns="urn:mpeg:dash:schema:mpd:2011" 
 xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd"
-type="dynamic" mediaPresentationDuration="PT300S" 
+type="dynamic" mediaPresentationDuration="PT3600S" 
 timeShiftBufferDepth="PT600S" 
 minBufferTime="PT2S" 
 profiles="urn:mpeg:dash:profile:isoff-main:2011"
 publishTime="2014-10-17T17:17:07Z" 
-availabilityStartTime="2014-10-17T17:17:05Z">
+availabilityStartTime="2024-12-10T16:17:05Z">
   <Period id="1" start="PT0S">
    <BaseURL> http://example.com/1/</BaseURL> 
 <SegmentTemplate media="./$RepresentationID$/$Number$.m4s" initialization="$RepresentationID$-init.mp4"/>
@@ -382,12 +386,11 @@ availabilityStartTime="2014-10-17T17:17:05Z">
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xmlns="urn:mpeg:dash:schema:mpd:2011" 
 xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd"
-type="static" mediaPresentationDuration="PT300S" 
-timeShiftBufferDepth="PT600S" 
+type="static" mediaPresentationDuration="PT3600S" 
 minBufferTime="PT2S" 
 profiles="urn:mpeg:dash:profile:isoff-main:2011"
-publishTime="2014-10-17T17:17:10Z" 
-availabilityStartTime="2014-10-17T17:17:05Z">
+publishTime="2024-12-10T17:17:10Z" 
+availabilityStartTime="2024-12-10T16:17:05Z">
   <Period id="1" start="PT0S">
    <BaseURL> http://example.com/1/</BaseURL> 
 <SegmentTemplate media="./$RepresentationID$/$Number$.m4s" initialization="$RepresentationID$-init.mp4"/>
