@@ -3,7 +3,7 @@ Revision: 0.1
 Title: Conversion of Live Services to VoD
 Status: LD
 Shortname: live2vod
-URL: https://dashif.org/Guidelines/master/live2vod.html
+URL: https://dashif.org/Guidelines/live2vod
 Group: dashif
 
 !Contributors: [Thomas Stockhammer](https://linkedin.com/in/stockhammer), [Rufael Mekuria](https://www.linkedin.com/in/rufael-mekuria-652b4828/)
