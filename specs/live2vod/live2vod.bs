@@ -7,7 +7,6 @@ URL: https://dashif.org/Guidelines/live2vod
 Group: dashif
 
 !Contributors: [Thomas Stockhammer](https://linkedin.com/in/stockhammer), [Rufael Mekuria](https://www.linkedin.com/in/rufael-mekuria-652b4828/)
-!Contributor: Rufael Mekuria
 !Key Words: VoD, Live
 !Related Features: Live
 </pre>
