@@ -4,7 +4,7 @@ Title: Conversion of Live Services to VoD
 !Status: Community Review
 Shortname: live2vod
 URL: https://dashif.org/Guidelines/live2vod
-Group: dashif
+!Group: dashif
 
 !Disclaimer: This document is technically stable, but public is asked for comments in order to improve details. Community Review documents are published on the DASH-IF WG website in order to get feedback from the industry on tools and features that are documented for improved interoperability. For each of the documents, comments may be submitted on the technologies itself, on specific features, etc. These documents are only published temporarily for community review and will be replaced by a full version after the commenting period has closed and the comments have been addressed. Community Review documents may also be published as Change Requests to existing specifications. The following document is open for community review since January 7, 2025 until February 28th, 2025. Once the comments from community review are addressed, the document will be published as a DASH-IF Technical Specification. Please use github Bugtracker for any feedback: https://github.com/Dash-Industry-Forum/DASH-IF-IOP/issues.
 !Contributors: [Thomas Stockhammer](https://linkedin.com/in/stockhammer), [Rufael Mekuria](https://www.linkedin.com/in/rufael-mekuria-652b4828/)
