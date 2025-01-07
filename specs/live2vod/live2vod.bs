@@ -1,7 +1,7 @@
 <pre class="metadata">
 Revision: 0.1
 Title: Conversion of Live Services to VoD
-Status: LD
+Status: WGD
 Shortname: live2vod
 URL: https://dashif.org/Guidelines/live2vod
 Group: dashif
