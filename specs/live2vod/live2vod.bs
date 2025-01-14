@@ -1,7 +1,7 @@
 <pre class="metadata">
 Revision: 0.9
 Title: Conversion of Live Services to VoD
-!Status: Community Review
+Status: CR
 Shortname: live2vod
 URL: https://dashif.org/Guidelines/live2vod
 Group: dashif

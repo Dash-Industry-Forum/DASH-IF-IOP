@@ -11,6 +11,8 @@ RUN apk add --no-cache \
 
 COPY data/boilerplate/dashif /usr/lib/python3.12/site-packages/bikeshed/spec-data/boilerplate/dashif
 COPY build-tools/tools /tools
+COPY data/boilerplate/dashif.kdl /tmp/dashif.kdl
+RUN cat /tmp/dashif.kdl >> /usr/lib/python3.12/site-packages/bikeshed/spec-data/boilerplate/doctypes.kdl
 
 RUN mkdir /data
 WORKDIR /data
